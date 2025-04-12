@@ -1,0 +1,1 @@
+1. double: the most recent two cards in the pile are the same rank.

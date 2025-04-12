@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Egyptian Rat Screw</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Welcome Screen -->
+    <div id="welcome-screen" class="screen">
+        <h1>Egyptian Rat Screw</h1>
+        <button id="play-button">Play</button>
+    </div>
+
+    <!-- Gameplay Screen -->
+    <div id="gameplay-screen" class="screen hidden">
+        <div id="countdown-overlay" class="countdown-overlay hidden">
+            <div class="countdown-text">Game begins in <span id="countdown-number">3</span></div>
+        </div>
+        <div class="game-header">
+            <div class="deck-info">
+                <div id="deck-count">Cards: 22</div>
+                <div id="deck-display" class="deck"></div>
+            </div>
+            <div class="scores">
+                <div class="player-score">
+                    <span class="player-name">Player 1</span>
+                    <span id="player1-score">0</span>
+                </div>
+                <div class="player-score">
+                    <span class="player-name">Player 2</span>
+                    <span id="player2-score">0</span>
+                </div>
+            </div>
+        </div>
+        <div class="game-area">
+            <div id="card-pile" class="card-pile">
+            </div>
+        </div>
+    </div>
+
+    <!-- Round End Screen -->
+    <div id="round-end-screen" class="screen hidden">
+        <h2>Round Complete!</h2>
+        <div class="score-display">
+            <p>Current Score: <span id="round-score">0</span></p>
+            <p>Round: <span id="round-number">1</span></p>
+        </div>
+        <button id="continue-button">Continue to Next Round</button>
+    </div>
+
+    <!-- End Screen -->
+    <div id="end-screen" class="screen hidden">
+        <h2>Game Over!</h2>
+        <div class="score-display">
+            <p>Final Score: <span id="final-score">0</span></p>
+        </div>
+        <button id="replay-button">Play Again</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 

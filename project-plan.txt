@@ -1,0 +1,19 @@
+Egyptian Rat Screw Game
+Welcome screen
+- the name of the game, Egyptian Rat Screw
+- a play button, when pressed goes to the gameplay screen
+Gameplay screen
+- a standard deck of 52 playing cards, shuffled
+- upon landing on the gameplay screen, a timer starts.
+- every 1 second, a card is drawn from the deck and placed in a pile.
+- this continues until all cards in the deck are drawn, then the game progresses to the end screen.
+- a button labelled slap
+- when the player presses the slap button, check if the cards in the pile meet the list of conditions in conditions.txt.
+- if the cards in the pile correctly meet a condition, the player earns 10 points.
+- if they do not, the player loses one heart.
+- the player starts with 3 hearts.
+- the hearts are displayed on the top right of the screen.
+- if the player loses all their hearts, go to the end screen.
+End screen
+- display the player's score
+- a replay button
