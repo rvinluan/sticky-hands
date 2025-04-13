@@ -311,4 +311,14 @@ button:hover {
     bottom: 5px;
     right: 5px;
     transform: rotate(180deg);
+}
+
+#physics-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 5;
+    background: transparent;
 } 

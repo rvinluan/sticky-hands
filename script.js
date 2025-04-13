@@ -6,6 +6,7 @@ let player2Score = 0;
 let gameInterval;
 let isGameActive = false;
 let isPaused = false;
+let isDebugPaused = false; // New debug pause state
 let currentRound = 1;
 let drawInterval = 1000; // Start with 1 second interval
 const CARDS_PER_ROUND = 3; // Cards to add each round
@@ -250,7 +251,7 @@ async function handleSlap(event) {
     console.log('Slap detected');
     console.log('Tap position:', event.clientY);
     
-    if (!isGameActive || isPaused) {
+    if (!isGameActive || isPaused || isDebugPaused) {
         console.log('Game not active or paused');
         return;
     }
@@ -328,7 +329,7 @@ async function handleSlap(event) {
 
 // Draw card
 async function drawCard() {
-    if (!isGameActive || isPaused) {
+    if (!isGameActive || isPaused || isDebugPaused) {
         return;
     }
     
@@ -341,9 +342,6 @@ async function drawCard() {
     const card = deck.pop();
     card.fullyAnimated = false; // Initialize animation state
     cardPile.push(card);
-    
-    // Update deck count
-    //deckCountElement.textContent = `Cards: ${deck.length}`;
     
     // Create and display the card
     const cardElement = createCardElement(card, cardPile.length - 1);
@@ -481,9 +479,19 @@ document.addEventListener('keydown', (event) => {
         }
     }
 
-    // Gameplay screen: Keyboard shortcuts for slaps
+    // Gameplay screen: Keyboard shortcuts for slaps and debug
     if (!gameplayScreen.classList.contains('hidden') && 
         countdownOverlay.classList.contains('hidden')) {
+        // Debug pause toggle
+        if (event.key === '1') {
+            isDebugPaused = !isDebugPaused;
+            if (isDebugPaused) {
+                console.log('Debug: Game timer paused');
+            } else {
+                console.log('Debug: Game timer resumed');
+            }
+        }
+        
         // Create a mock event object for handleSlap
         const mockEvent = {
             clientY: event.key === 'd' ? 0 : window.innerHeight, // Top for player 1, bottom for player 2
