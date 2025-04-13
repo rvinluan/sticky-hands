@@ -15,7 +15,6 @@ body {
 
 .screen {
     text-align: center;
-    padding: 2rem;
     width: 100%;
     max-width: 800px;
 }
@@ -115,27 +114,27 @@ button:hover {
 }
 
 .scores {
-    display: flex;
-    gap: 2rem;
-}
-
-.player-score {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.player-name {
-    font-size: 1.2rem;
-    color: #333;
-    font-weight: bold;
+    height: 100vh;
+    width: 100vw;
+    position: absolute;
+    top: 0;
 }
 
 #player1-score, #player2-score {
-    font-size: 1.5rem;
-    color: #ff4444;
-    font-weight: bold;
+    position: absolute;
+    font: normal 300 9em/1 'Chakra Petch', sans-serif;
+    color: #fff;
+}
+
+#player2-score {
+    bottom: 0;
+    right: 0;
+}
+
+#player1-score {
+    top: 0;
+    left: 0;
+    transform: rotate(180deg);
 }
 
 .game-area {

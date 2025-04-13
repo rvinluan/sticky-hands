@@ -24,7 +24,6 @@ const cardPileElement = document.getElementById('card-pile');
 const finalScoreElement = document.getElementById('final-score');
 const roundScoreElement = document.getElementById('round-score');
 const roundNumberElement = document.getElementById('round-number');
-const deckCountElement = document.getElementById('deck-count');
 const countdownOverlay = document.getElementById('countdown-overlay');
 const countdownNumber = document.getElementById('countdown-number');
 const player1ScoreElement = document.getElementById('player1-score');
@@ -124,13 +123,13 @@ function initializeDeck() {
         deck = deck.slice(0, cardsForRound);
     }
     
-    updateDeckCount();
+    // updateDeckCount();
 }
 
 // Update deck count display
-function updateDeckCount() {
-    deckCountElement.textContent = `Cards: ${deck.length}`;
-}
+// function updateDeckCount() {
+//     deckCountElement.textContent = `Cards: ${deck.length}`;
+// }
 
 // Fisher-Yates shuffle algorithm
 function shuffleDeck(deckToShuffle = deck) {
@@ -262,16 +261,16 @@ async function handleSlap(event) {
     const conditionsMet = checkConditions(animatedCards);
     console.log('Conditions met:', conditionsMet);
     
+    // Determine which player slapped based on tap position
+    const viewportHeight = window.innerHeight;
+    const tapY = event.clientY;
+    const isPlayer1 = tapY < viewportHeight / 2;
+    console.log('Is Player 1:', isPlayer1);
+    
     if (conditionsMet.length > 0) {
         // Pause the game
         isPaused = true;
         clearInterval(gameInterval);
-        
-        // Determine which player slapped based on tap position
-        const viewportHeight = window.innerHeight;
-        const tapY = event.clientY;
-        const isPlayer1 = tapY < viewportHeight / 2;
-        console.log('Is Player 1:', isPlayer1);
         
         // Update score for the correct player
         if (isPlayer1) {
@@ -301,8 +300,17 @@ async function handleSlap(event) {
         isPaused = true;
         clearInterval(gameInterval);
         
-        // Show incorrect slap message
-        showToast('Incorrect Slap!', 'error');
+        // Apply penalty to the player who slapped incorrectly
+        if (isPlayer1) {
+            player1Score -= 5;
+            player1ScoreElement.textContent = player1Score;
+        } else {
+            player2Score -= 5;
+            player2ScoreElement.textContent = player2Score;
+        }
+        
+        // Show incorrect slap message with penalty
+        showToast('Incorrect Slap! -5 points', 'error');
         
         // Wait for 0.5 seconds
         await new Promise(resolve => setTimeout(resolve, 500));
@@ -335,7 +343,7 @@ async function drawCard() {
     cardPile.push(card);
     
     // Update deck count
-    deckCountElement.textContent = `Cards: ${deck.length}`;
+    //deckCountElement.textContent = `Cards: ${deck.length}`;
     
     // Create and display the card
     const cardElement = createCardElement(card, cardPile.length - 1);
