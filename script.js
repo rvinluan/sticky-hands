@@ -143,17 +143,41 @@ function shuffleDeck(deckToShuffle = deck) {
 // Create card element
 function createCardElement(card, index) {
     const cardElement = document.createElement('div');
-    cardElement.classList.add("card");
-    cardElement.textContent = `${card.rank}${card.suit}`;
+    cardElement.className = 'card';
+    
+    // Set the final position for the animation
+    const offset = -5 + (Math.random() * 10);
+    const finalPosition = offset;
+    cardElement.style.setProperty('--final-position', `${finalPosition}px`);
+
+    // Add rank and suit
+    const rankElement = document.createElement('div');
+    rankElement.className = 'card-rank';
+    rankElement.textContent = card.rank;
+    cardElement.appendChild(rankElement);
+    
+    const suitElement = document.createElement('div');
+    suitElement.className = 'card-suit';
+    suitElement.textContent = card.suit;
+    cardElement.appendChild(suitElement);
+    
+    // Set card color based on suit
     if (card.suit === '♥' || card.suit === '♦') {
-        cardElement.classList.add("red");
+        cardElement.style.color = 'red';
+    } else {
+        cardElement.style.color = 'black';
     }
     
-    // Position the card in the stack
-    if (index > 0) {
-        cardElement.style.transform = `translateX(${index * 5}px)`;
-        cardElement.style.zIndex = index;
-    }
+    // Add animation class after a small delay to ensure the initial position is set
+    setTimeout(() => {
+        cardElement.classList.add('animate');
+        
+        // Listen for animation end
+        cardElement.addEventListener('animationend', () => {
+            // Mark the card as fully animated
+            card.fullyAnimated = true;
+        });
+    }, 10);
     
     return cardElement;
 }
@@ -201,7 +225,9 @@ async function handleSlap(event) {
         return;
     }
     
-    const conditionsMet = checkConditions(cardPile);
+    // Only check conditions for fully animated cards
+    const animatedCards = cardPile.filter(card => card.fullyAnimated);
+    const conditionsMet = checkConditions(animatedCards);
     console.log('Conditions met:', conditionsMet);
     
     if (conditionsMet.length > 0) {
@@ -262,14 +288,8 @@ async function handleSlap(event) {
 
 // Draw card
 async function drawCard() {
-    // Check for missed slap opportunities
-    if (cardPile.length >= 2) {
-        const lastTwoCards = cardPile.slice(-2);
-        const conditionsMet = checkConditions(lastTwoCards);
-        if (conditionsMet.length > 0) {
-            // Just continue the game without showing any message
-            // No return statement here, so the game continues
-        }
+    if (!isGameActive || isPaused) {
+        return;
     }
     
     if (deck.length === 0) {
@@ -279,6 +299,7 @@ async function drawCard() {
     }
     
     const card = deck.pop();
+    card.fullyAnimated = false; // Initialize animation state
     cardPile.push(card);
     
     // Update deck count
@@ -286,10 +307,6 @@ async function drawCard() {
     
     // Create and display the card
     const cardElement = createCardElement(card, cardPile.length - 1);
-    // Position the card with smaller offset and left shift
-    const offset = (cardPile.length - 1) * 7;
-    cardElement.style.transform = `translateX(${offset - 60}px)`;
-    
     cardPileElement.appendChild(cardElement);
 }
 
@@ -421,6 +438,22 @@ document.addEventListener('keydown', (event) => {
     if (!roundEndScreen.classList.contains('hidden')) {
         if (event.key === 'Enter') {
             startNewRound();
+        }
+    }
+
+    // Gameplay screen: Keyboard shortcuts for slaps
+    if (!gameplayScreen.classList.contains('hidden') && 
+        countdownOverlay.classList.contains('hidden')) {
+        // Create a mock event object for handleSlap
+        const mockEvent = {
+            clientY: event.key === 'd' ? 0 : window.innerHeight, // Top for player 1, bottom for player 2
+            preventDefault: () => {}
+        };
+
+        if (event.key === 'd') { // Player 1 slap
+            handleSlap(mockEvent);
+        } else if (event.key === 'k') { // Player 2 slap
+            handleSlap(mockEvent);
         }
     }
 }); 
