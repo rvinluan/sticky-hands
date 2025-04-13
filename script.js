@@ -146,20 +146,47 @@ function createCardElement(card, index) {
     cardElement.className = 'card';
     
     // Set the final position for the animation
-    const offset = -5 + (Math.random() * 10);
-    const finalPosition = offset;
-    cardElement.style.setProperty('--final-position', `${finalPosition}px`);
-
-    // Add rank and suit
-    const rankElement = document.createElement('div');
-    rankElement.className = 'card-rank';
-    rankElement.textContent = card.rank;
-    cardElement.appendChild(rankElement);
+    const offset = index * 7;
+    const finalPosition = offset - 60;
     
-    const suitElement = document.createElement('div');
-    suitElement.className = 'card-suit';
-    suitElement.textContent = card.suit;
-    cardElement.appendChild(suitElement);
+    // Add random rotation between -5 and 5 degrees
+    const rotation = (Math.random() * 10) - 5;
+    
+    // Combine translation and rotation in the transform property
+    cardElement.style.setProperty('--final-position', `${finalPosition}px`);
+    cardElement.style.setProperty('--rotation', `${rotation}deg`);
+    
+    // Create top left rank and suit
+    const topLeftContainer = document.createElement('div');
+    topLeftContainer.className = 'card-corner top-left';
+    
+    const topLeftRank = document.createElement('span');
+    topLeftRank.className = 'card-rank';
+    topLeftRank.textContent = card.rank;
+    topLeftContainer.appendChild(topLeftRank);
+    
+    const topLeftSuit = document.createElement('span');
+    topLeftSuit.className = 'card-suit';
+    topLeftSuit.textContent = card.suit;
+    topLeftContainer.appendChild(topLeftSuit);
+    
+    cardElement.appendChild(topLeftContainer);
+    
+    // Create bottom right rank and suit (rotated)
+    const bottomRightContainer = document.createElement('div');
+    bottomRightContainer.className = 'card-corner bottom-right';
+    
+    const bottomRightRank = document.createElement('span');
+    bottomRightRank.className = 'card-rank';
+    bottomRightRank.textContent = card.rank;
+    bottomRightContainer.appendChild(bottomRightRank);
+    
+    const bottomRightSuit = document.createElement('span');
+    bottomRightSuit.className = 'card-suit';
+    bottomRightSuit.textContent = card.suit;
+    bottomRightContainer.appendChild(bottomRightSuit);
+    
+    cardElement.appendChild(bottomRightContainer);
     
     // Set card color based on suit
     if (card.suit === '♥' || card.suit === '♦') {
@@ -167,6 +194,9 @@ function createCardElement(card, index) {
     } else {
         cardElement.style.color = 'black';
     }
+    
+    // Initialize animation state
+    card.fullyAnimated = false;
     
     // Add animation class after a small delay to ensure the initial position is set
     setTimeout(() => {
@@ -176,6 +206,7 @@ function createCardElement(card, index) {
         cardElement.addEventListener('animationend', () => {
             // Mark the card as fully animated
             card.fullyAnimated = true;
+            console.log('Card animation complete:', card);
         });
     }, 10);
     
@@ -227,6 +258,7 @@ async function handleSlap(event) {
     
     // Only check conditions for fully animated cards
     const animatedCards = cardPile.filter(card => card.fullyAnimated);
+    console.log('Animated cards:', animatedCards);
     const conditionsMet = checkConditions(animatedCards);
     console.log('Conditions met:', conditionsMet);
     
