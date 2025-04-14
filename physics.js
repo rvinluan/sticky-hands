@@ -250,42 +250,6 @@ function checkCenterAndPause() {
 // Add the check to the engine update
 Matter.Events.on(engine, 'afterUpdate', checkCenterAndPause);
 
-// Create falling objects
-function createFallingObject() {
-    const x = Math.random() * window.innerWidth;
-    const size = Math.random() * 30 + 20;
-    const shape = Math.random() > 0.5 ? 'circle' : 'rectangle';
-    
-    let body;
-    if (shape === 'circle') {
-        body = Bodies.circle(x, -50, size / 2, {
-            restitution: 0.6,
-            friction: 0.1,
-            render: {
-                fillStyle: '#ff0000'
-            }
-        });
-    } else {
-        body = Bodies.rectangle(x, -50, size, size, {
-            restitution: 0.6,
-            friction: 0.1,
-            render: {
-                fillStyle: '#ff0000'
-            }
-        });
-    }
-    
-    World.add(world, body);
-    
-    // Remove the object after 5 seconds
-    setTimeout(() => {
-        World.remove(world, body);
-    }, 5000);
-}
-
-// Create falling objects periodically
-// setInterval(createFallingObject, 1000);
-
 // Handle window resize
 window.addEventListener('resize', () => {
     render.options.width = window.innerWidth;
