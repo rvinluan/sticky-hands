@@ -3,6 +3,7 @@ const { Engine, Render, World, Bodies, Body, Composite, Constraint, Vector } = M
 
 // Create an engine
 const engine = Engine.create();
+engine.gravity.y = 0; // Disable gravity
 const world = engine.world;
 
 // Create a renderer
@@ -25,6 +26,13 @@ const ground = Bodies.rectangle(window.innerWidth / 2, window.innerHeight + 50, 
     }
 });
 
+const ceiling = Bodies.rectangle(window.innerWidth / 2, -50, window.innerWidth, 100, { 
+    isStatic: true,
+    render: {
+        fillStyle: 'transparent'
+    }
+});
+
 const leftWall = Bodies.rectangle(-50, window.innerHeight / 2, 100, window.innerHeight, {
     isStatic: true,
     render: {
@@ -40,15 +48,19 @@ const rightWall = Bodies.rectangle(window.innerWidth + 50, window.innerHeight / 
 });
 
 // Function to create a ball and chain
-function createBallAndChain(x, linkCount) {
+function createBallAndChain(x, linkCount, anchorTop = false) {
     const chainLinks = [];
     const constraints = [];
     const linkWidth = 10;
     const linkHeight = 30;
     const ballRadius = 30;
     
+    // Calculate starting position based on anchor point
+    const startY = anchorTop ? 0 : window.innerHeight;
+    const yDirection = anchorTop ? 1 : -1;
+    
     // Create the ball
-    const ball = Bodies.circle(x, window.innerHeight - (linkHeight*linkCount), ballRadius, {
+    const ball = Bodies.circle(x, startY + (linkCount*linkHeight*yDirection), ballRadius, {
         restitution: 0,
         friction: 0.4,
         sleepThreshold: 10,
@@ -63,7 +75,7 @@ function createBallAndChain(x, linkCount) {
     
     // Create chain links
     for (let i = 0; i < linkCount; i++) {
-        const link = Bodies.rectangle(x, window.innerHeight - (i * (linkHeight*1.5)), linkWidth, linkHeight, {
+        const link = Bodies.rectangle(x, startY + (i * (linkHeight*1.5) * yDirection), linkWidth, linkHeight, {
             isStatic: i === 0, // First link is static
             restitution: 0,
             friction: 0.8,
@@ -106,23 +118,51 @@ function createBallAndChain(x, linkCount) {
     });
     constraints.push(ballConstraint);
     
-    // Add all bodies and constraints to the world
-    World.add(world, [...chainLinks, ball, ...constraints]);
+    // Create a composite containing all parts
+    const composite = Composite.create({
+        bodies: [...chainLinks, ball],
+        constraints: constraints
+    });
     
     return {
+        composite,
         ball,
         chainLinks,
         constraints
     };
 }
 
-// Create a ball and chain
-const ballAndChain = createBallAndChain(window.innerWidth / 2, 6);
+// Create two ball and chains
+const chain1 = createBallAndChain(window.innerWidth / 2 - 100, 6, true); // Top chain
+const chain2 = createBallAndChain(window.innerWidth / 2 + 100, 6, false);  // Bottom chain
+
+// Add the composites to the world
+World.add(world, [chain1.composite, chain2.composite]);
+
+// Add constant downward force
+const gravityForce = Vector.create(0, 0.001); // Custom gravity force
+const reverseGravityForce = Vector.create(0, -0.001); // Upward gravity force
+
+function applyGravity() {
+    // Apply downward force to chain1
+    Composite.allBodies(chain1.composite).forEach(body => {
+        Body.applyForce(body, body.position, reverseGravityForce);
+    });
+    
+    // Apply upward force to chain2
+    Composite.allBodies(chain2.composite).forEach(body => {
+        Body.applyForce(body, body.position, gravityForce);
+    });
+}
+
+// Add gravity force to the engine update
+Matter.Events.on(engine, 'beforeUpdate', applyGravity);
 
 // Function to fling the ball toward center
-function fling() {
+function fling(isPlayer1 = true) {
+    const whichChain = isPlayer1 ? chain1 : chain2;
     // Get the ball's current position
-    const ballPos = ballAndChain.ball.position;
+    const ballPos = whichChain.ball.position;
     
     // Center of screen coordinates
     const centerX = window.innerWidth / 2;
@@ -144,7 +184,7 @@ function fling() {
     );
     
     // Apply the force to the ball
-    Body.applyForce(ballAndChain.ball, ballAndChain.ball.position, force);
+    Body.applyForce(whichChain.ball, whichChain.ball.position, force);
 }
 
 // Double tap detection
@@ -158,7 +198,7 @@ document.addEventListener('touchstart', (event) => {
     if (tapLength < doubleTapThreshold && tapLength > 0) {
         event.preventDefault(); // Prevent zoom
     }
-    fling();
+    fling(event.touches[0].clientY < window.innerHeight / 2);
     lastTapTime = currentTime;
 });
 
@@ -170,7 +210,7 @@ document.addEventListener('keydown', (event) => {
 });
 
 // Add bodies to the world
-World.add(world, [ground, leftWall, rightWall]);
+World.add(world, [ground, ceiling, leftWall, rightWall]);
 
 // Run the engine
 Engine.run(engine);
@@ -184,7 +224,7 @@ const bottomThreshold = window.innerHeight - 200; // Y position to consider "bot
 let hitstopTimeout = null;
 
 function checkCenterAndPause() {        
-    const ballPos = ballAndChain.ball.position;
+    const ballPos = chain1.ball.position;
     const centerY = window.innerHeight / 2;
     
     if (!hitstop && !justHit) {        
@@ -260,6 +300,15 @@ window.addEventListener('resize', () => {
         { x: window.innerWidth, y: window.innerHeight + 50 },
         { x: window.innerWidth, y: window.innerHeight + 150 },
         { x: 0, y: window.innerHeight + 150 }
+    ]);
+
+    // Update ceiling position
+    Body.setPosition(ceiling, { x: window.innerWidth / 2, y: -50 });
+    Body.setVertices(ceiling, [
+        { x: 0, y: -50 },
+        { x: window.innerWidth, y: -50 },
+        { x: window.innerWidth, y: -150 },
+        { x: 0, y: -150 }
     ]);
 
     // Update wall positions
