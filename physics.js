@@ -202,10 +202,13 @@ document.addEventListener('touchstart', (event) => {
     lastTapTime = currentTime;
 });
 
-// Add keyboard event listener for 'p' key
+// Add keyboard event listener for 'p' and 'q' keys
 document.addEventListener('keydown', (event) => {
     if (event.key.toLowerCase() === 'p') {
-        fling();
+        fling(true);
+    }
+    if (event.key.toLowerCase() === 'q') {
+        fling(false);
     }
 });
 
@@ -220,20 +223,23 @@ Render.run(render);
 let hitstop = false;
 let justHit = false;
 const centerThreshold = 10; // Distance from center to trigger effect
-const bottomThreshold = window.innerHeight - 200; // Y position to consider "bottom"
+const bottomThreshold = window.innerHeight - 200; // Y position to consider "bottom" for chain2
+const topThreshold = 200; // Y position to consider "top" for chain1
 let hitstopTimeout = null;
 
 function checkCenterAndPause() {        
-    const ballPos = chain1.ball.position;
+    const ball1Pos = chain1.ball.position;
+    const ball2Pos = chain2.ball.position;
     const centerY = window.innerHeight / 2;
     
     if (!hitstop && !justHit) {        
-        if (ballPos.y < centerY + centerThreshold) {
+        // Check if ball1 is above center or ball2 is below center
+        if (ball1Pos.y > centerY + centerThreshold || ball2Pos.y < centerY - centerThreshold) {
             hitstop = true;
             justHit = true;
             engine.timing.timeScale = 0; // Pause physics
             
-            // Resume after 0.5 seconds
+            // Resume after 0.3 seconds
             hitstopTimeout = setTimeout(() => {
                 engine.timing.timeScale = 1;
                 hitstop = false;
@@ -241,9 +247,15 @@ function checkCenterAndPause() {
             }, 300);
         }
     }
-    //Check if ball has returned to bottom
-    if (justHit && ballPos.y > bottomThreshold) {
-        justHit = false;
+    
+    // Check if balls have returned to their respective positions
+    if (justHit) {
+        const ball1Returned = ball1Pos.y < topThreshold;
+        const ball2Returned = ball2Pos.y > bottomThreshold;
+        
+        if (ball1Returned && ball2Returned) {
+            justHit = false;
+        }
     }
 }
 
