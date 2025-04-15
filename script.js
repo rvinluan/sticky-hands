@@ -147,7 +147,8 @@ function createCardElement(card, index) {
     
     // Set the final position for the animation
     const offset = index * 7;
-    const finalPosition = offset - 60;
+    const maxOffset = 50; // Maximum offset in pixels
+    const finalPosition = Math.min(offset - 60, maxOffset);
     
     // Add random rotation between -5 and 5 degrees
     const rotation = (Math.random() * 10) - 5;
@@ -206,7 +207,6 @@ function createCardElement(card, index) {
         cardElement.addEventListener('animationend', () => {
             // Mark the card as fully animated
             card.fullyAnimated = true;
-            console.log('Card animation complete:', card);
         });
     }, 10);
     
@@ -222,10 +222,9 @@ function showToast(message, type = 'error', duration = 500) {
     // Set the animation duration using CSS variable
     toast.style.setProperty('--toast-duration', `${duration}ms`);
     
-    // Position toast above the card pile
-    const pileRect = cardPileElement.getBoundingClientRect();
-    toast.style.left = `${pileRect.left + pileRect.width / 2}px`;
-    toast.style.top = `${pileRect.top - 30}px`;
+    // Position toast in the center of the screen
+    toast.style.left = '50%';
+    toast.style.top = '50%';
     
     document.body.appendChild(toast);
     
@@ -283,7 +282,7 @@ async function handleSlap(event) {
         }
         
         // Show success message
-        showToast(`${conditionsMet[0].name}! +${conditionsMet[0].points} points`, 'success');
+        showToast(`${conditionsMet[0].name}! +${conditionsMet[0].points} points`, 'success', 1000);
         
         // Wait for 0.5 seconds
         await new Promise(resolve => setTimeout(resolve, 500));
@@ -311,7 +310,7 @@ async function handleSlap(event) {
         }
         
         // Show incorrect slap message with penalty
-        showToast('Incorrect Slap! -5 points', 'error');
+        showToast('Incorrect Slap! -5 points', 'error', 1000);
         
         // Wait for 0.5 seconds
         await new Promise(resolve => setTimeout(resolve, 500));
@@ -340,6 +339,7 @@ async function drawCard() {
     }
     
     const card = deck.pop();
+    console.log(deck.length);
     card.fullyAnimated = false; // Initialize animation state
     cardPile.push(card);
     
@@ -355,11 +355,26 @@ function endRound() {
     
     // Update round end screen
     roundScoreElement.textContent = player1Score + player2Score;
-    roundNumberElement.textContent = currentRound;
+    roundNumberElement.textContent = currentRound + 1; // Show next round number
     
     // Show round end screen
     gameplayScreen.classList.add('hidden');
     roundEndScreen.classList.remove('hidden');
+    
+    // Start countdown for next round
+    let countdown = 5;
+    const countdownElement = document.getElementById('round-countdown');
+    countdownElement.textContent = countdown;
+    
+    const countdownInterval = setInterval(() => {
+        countdown--;
+        countdownElement.textContent = countdown;
+        
+        if (countdown <= 0) {
+            clearInterval(countdownInterval);
+            startNewRound();
+        }
+    }, 1000);
 }
 
 // Start new round
@@ -382,17 +397,22 @@ async function startNewRound() {
     roundEndScreen.classList.add('hidden');
     gameplayScreen.classList.remove('hidden');
     
-    // Show countdown overlay
-    countdownOverlay.classList.remove('hidden');
-    
-    // Start countdown
-    for (let i = 3; i > 0; i--) {
-        countdownNumber.textContent = i;
-        await new Promise(resolve => setTimeout(resolve, 1000));
+    // Only show countdown for the first round
+    if (currentRound === 1) { // 2 because we already incremented currentRound
+        // Show countdown overlay
+        countdownOverlay.classList.remove('hidden');
+        
+        // Start countdown
+        for (let i = 3; i > 0; i--) {
+            countdownNumber.textContent = i;
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+        
+        // Hide countdown
+        countdownOverlay.classList.add('hidden');
     }
     
-    // Hide countdown and start game
-    countdownOverlay.classList.add('hidden');
+    // Start the game
     gameInterval = setInterval(drawCard, drawInterval);
 }
 
@@ -450,9 +470,14 @@ function endGame() {
 }
 
 // Event listeners
-playButton.addEventListener('click', startGame);
-replayButton.addEventListener('click', startGame);
-continueButton.addEventListener('click', startNewRound);
+playButton.addEventListener('click', (event) => {
+    event.stopPropagation();
+    startGame();
+});
+replayButton.addEventListener('click', (event) => {
+    event.stopPropagation();
+    startGame();
+});
 
 // Touch controls
 document.body.addEventListener('click', (event) => {
