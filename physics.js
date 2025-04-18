@@ -227,40 +227,16 @@ const bottomThreshold = window.innerHeight - 200; // Y position to consider "bot
 const topThreshold = 200; // Y position to consider "top" for chain1
 let hitstopTimeout = null;
 
-function checkCenterAndPause() {        
-    const ball1Pos = chain1.ball.position;
-    const ball2Pos = chain2.ball.position;
-    const centerY = window.innerHeight / 2;
-    
-    if (!hitstop && !justHit) {        
-        // Check if ball1 is above center or ball2 is below center
-        if (ball1Pos.y > centerY + centerThreshold || ball2Pos.y < centerY - centerThreshold) {
-            hitstop = true;
-            justHit = true;
-            engine.timing.timeScale = 0; // Pause physics
+function triggerPhysicsHitstop() {
+    engine.timing.timeScale = 0; // Pause physics
             
-            // Resume after 0.3 seconds
-            hitstopTimeout = setTimeout(() => {
-                engine.timing.timeScale = 1;
-                hitstop = false;
-                hitstopTimeout = null;
-            }, 300);
-        }
-    }
-    
-    // Check if balls have returned to their respective positions
-    if (justHit) {
-        const ball1Returned = ball1Pos.y < topThreshold;
-        const ball2Returned = ball2Pos.y > bottomThreshold;
-        
-        if (ball1Returned && ball2Returned) {
-            justHit = false;
-        }
-    }
+    // Resume after 0.3 seconds
+    hitstopTimeout = setTimeout(() => {
+        engine.timing.timeScale = 1;
+        hitstop = false;
+        hitstopTimeout = null;
+    }, 300);
 }
-
-// Add the check to the engine update
-Matter.Events.on(engine, 'afterUpdate', checkCenterAndPause);
 
 // Handle window resize
 window.addEventListener('resize', () => {

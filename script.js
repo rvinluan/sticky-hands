@@ -271,6 +271,7 @@ async function handleSlap(event) {
         // Pause the game
         isPaused = true;
         clearInterval(gameInterval);
+        triggerPhysicsHitstop();
         
         // Update score for the correct player
         if (isPlayer1) {
@@ -295,7 +296,7 @@ async function handleSlap(event) {
         // Resume the game
         isPaused = false;
         gameInterval = setInterval(drawCard, drawInterval);
-    } else {
+    } else if (animatedCards.length > 0) { // Only penalize if there are cards that have finished animating
         // Pause the game
         isPaused = true;
         clearInterval(gameInterval);
@@ -471,7 +472,8 @@ function endGame() {
 
 // Event listeners
 playButton.addEventListener('click', (event) => {
-    event.stopPropagation();
+    console.log('Play button clicked');
+    // event.stopPropagation();
     startGame();
 });
 replayButton.addEventListener('click', (event) => {
