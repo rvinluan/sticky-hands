@@ -235,7 +235,7 @@ function triggerPhysicsHitstop() {
         engine.timing.timeScale = 1;
         hitstop = false;
         hitstopTimeout = null;
-    }, 300);
+    }, 500);
 }
 
 // Handle window resize

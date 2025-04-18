@@ -1,6 +1,8 @@
 // Game state
 let deck = [];
+let unusedCards = []; // Array to store unused cards
 let cardPile = [];
+let discardPile = []; // Track discarded cards
 let player1Score = 0;
 let player2Score = 0;
 let gameInterval;
@@ -9,9 +11,11 @@ let isPaused = false;
 let isDebugPaused = false; // New debug pause state
 let currentRound = 1;
 let drawInterval = 1000; // Start with 1 second interval
-const CARDS_PER_ROUND = 3; // Cards to add each round
-const INITIAL_DECK_SIZE = 22; // Starting deck size
+const CARDS_PER_ROUND = 6; // Cards to add each round
+const INITIAL_DECK_SIZE = 18; // Starting deck size
 const WINNING_ROUNDS = 10; // Number of rounds to win
+let currentDeckSize = 0; // Track current deck size
+let activeConditions = new Set(); // Track which conditions are active
 
 // DOM elements
 const welcomeScreen = document.getElementById('welcome-screen');
@@ -59,6 +63,56 @@ function areConsecutive(rank1, rank2) {
 
 // Game conditions
 const conditions = {
+    joker: {
+        check: (pile) => {
+            if (pile.length < 1) return false;
+            const lastCard = pile[pile.length - 1];
+            return lastCard.rank === 'joker';
+        },
+        points: 2,
+        name: 'Joker',
+        description: 'Slap when a joker appears',
+        emoji: '🤡'
+    },
+    nice: {
+        check: (pile) => {
+            if (pile.length < 2) return false;
+            const lastCard = pile[pile.length - 1];
+            const secondLastCard = pile[pile.length - 2];
+            return lastCard.rank === '9' && secondLastCard.rank === '6';
+        },
+        points: 5,
+        name: 'Nice',
+        description: 'Slap when a 6 is followed by a 9',
+        emoji: '😏'
+    },
+    sandwich: {
+        check: (pile) => {
+            if (pile.length < 3) return false;
+            const lastCard = pile[pile.length - 1];
+            const middleCard = pile[pile.length - 2];
+            const firstCard = pile[pile.length - 3];
+            return lastCard.rank === firstCard.rank && lastCard.rank !== middleCard.rank;
+        },
+        points: 8,
+        name: 'Sandwich',
+        description: 'Slap when the top card matches the 3rd card with a different card in between',
+        emoji: '🥪'
+    },
+    flush: {
+        check: (pile) => {
+            if (pile.length < 3) return false;
+            const lastCard = pile[pile.length - 1];
+            const secondLastCard = pile[pile.length - 2];
+            const thirdLastCard = pile[pile.length - 3];
+            return lastCard.suit === secondLastCard.suit && 
+                   lastCard.suit === thirdLastCard.suit;
+        },
+        points: 12,
+        name: 'Flush',
+        description: 'Slap when the top 3 cards are all the same suit',
+        emoji: '🚽'
+    },
     double: {
         check: (pile) => {
             if (pile.length < 2) return false;
@@ -68,7 +122,8 @@ const conditions = {
         },
         points: 10,
         name: 'Double',
-        description: 'Last two cards are the same rank'
+        description: 'Last two cards are the same rank',
+        emoji: '👯‍♀️'
     },
     sumTo13: {
         check: (pile) => {
@@ -80,7 +135,8 @@ const conditions = {
         },
         points: 10,
         name: 'Sum to 13',
-        description: 'Last two cards sum to 13 (A=11, J/Q/K=10)'
+        description: 'Last two cards sum to 13 (A=11, J/Q/K=10)',
+        emoji: '🍀'
     },
     consecutive: {
         check: (pile) => {
@@ -91,40 +147,89 @@ const conditions = {
         },
         points: 5,
         name: 'Consecutive',
-        description: 'Last two cards are consecutive (A can connect to K or 2)'
+        description: 'Last two cards are consecutive (A can connect to K or 2)',
+        emoji: '➡️'
     }
 };
 
 // Display game conditions
 function displayConditions() {
-    conditionsListElement.innerHTML = '';
-    Object.values(conditions).forEach((condition, index) => {
-        const span = document.createElement('span');
-        span.textContent = `${condition.name} (+${condition.points})`;
-        conditionsListElement.appendChild(span);
+    const conditionsDisplay = document.getElementById('conditions-display');
+    conditionsDisplay.innerHTML = '';
+    
+    // Only show active conditions
+    Object.entries(conditions).forEach(([key, condition]) => {
+        if (activeConditions.has(key)) {
+            const conditionItem = document.createElement('div');
+            conditionItem.className = 'condition-item';
+            
+            const emojiSpan = document.createElement('span');
+            emojiSpan.className = 'condition-emoji';
+            emojiSpan.textContent = condition.emoji;
+            
+            conditionItem.appendChild(emojiSpan);
+            conditionsDisplay.appendChild(conditionItem);
+        }
     });
 }
 
 // Initialize deck
 function initializeDeck() {
-    deck = [];
-    for (const suit of suits) {
-        for (const rank of ranks) {
-            deck.push({ suit, rank });
-        }
-    }
-    shuffleDeck();
-    
-    // If it's the first round, take INITIAL_DECK_SIZE cards
     if (currentRound === 1) {
-        deck = deck.slice(0, INITIAL_DECK_SIZE);
+        // First round: create initial deck and unused cards
+        deck = [];
+        unusedCards = [];
+        discardPile = [];
+        
+        // Create all possible cards
+        for (const suit of suits) {
+            for (const rank of ranks) {
+                unusedCards.push({ suit, rank });
+            }
+        }
+        
+        // Shuffle unused cards
+        shuffleDeck(unusedCards);
+        
+        // Take initial cards for the deck
+        deck = unusedCards.splice(0, INITIAL_DECK_SIZE - 2);
+        // Add jokers to deck
+        deck.push({ rank: 'joker' });
+        deck.push({ rank: 'joker' });   
+        // Shuffle deck
+        shuffleDeck(deck);   
+        currentDeckSize = deck.length;
     } else {
-        // For subsequent rounds, take INITIAL_DECK_SIZE + (round-1) * CARDS_PER_ROUND cards
-        const cardsForRound = INITIAL_DECK_SIZE + (currentRound - 1) * CARDS_PER_ROUND;
-        deck = deck.slice(0, cardsForRound);
+        // Subsequent rounds: add new cards from unused cards to existing deck
+        const newCardsNeeded = CARDS_PER_ROUND;
+        
+        // Add discard pile back to deck
+        deck.push(...discardPile);
+        discardPile = [];
+        
+        // If we don't have enough unused cards, reshuffle the used cards back into unused
+        if (unusedCards.length < newCardsNeeded) {
+            // Get all cards that have been played
+            const playedCards = cardPile;
+            // Add them back to unused cards
+            unusedCards.push(...playedCards);
+            // Remove jokers from unused cards (we want to keep them in the deck)
+            unusedCards = unusedCards.filter(card => card.rank !== 'joker');
+            // Shuffle the unused cards
+            shuffleDeck(unusedCards);
+        }
+        
+        // Take new cards from unused cards and add to existing deck
+        const newCards = unusedCards.splice(0, newCardsNeeded);
+        deck.push(...newCards);
+        shuffleDeck();
+        
+        currentDeckSize += newCardsNeeded;
     }
     
-    // updateDeckCount();
+    // Clear the card pile at the start of each round
+    cardPile = [];
+    cardPileElement.innerHTML = '';
 }
 
 // Update deck count display
@@ -157,43 +262,54 @@ function createCardElement(card, index) {
     cardElement.style.setProperty('--final-position', `${finalPosition}px`);
     cardElement.style.setProperty('--rotation', `${rotation}deg`);
     
-    // Create top left rank and suit
-    const topLeftContainer = document.createElement('div');
-    topLeftContainer.className = 'card-corner top-left';
-    
-    const topLeftRank = document.createElement('span');
-    topLeftRank.className = 'card-rank';
-    topLeftRank.textContent = card.rank;
-    topLeftContainer.appendChild(topLeftRank);
-    
-    const topLeftSuit = document.createElement('span');
-    topLeftSuit.className = 'card-suit';
-    topLeftSuit.textContent = card.suit;
-    topLeftContainer.appendChild(topLeftSuit);
-    
-    cardElement.appendChild(topLeftContainer);
-    
-    // Create bottom right rank and suit (rotated)
-    const bottomRightContainer = document.createElement('div');
-    bottomRightContainer.className = 'card-corner bottom-right';
-    
-    const bottomRightRank = document.createElement('span');
-    bottomRightRank.className = 'card-rank';
-    bottomRightRank.textContent = card.rank;
-    bottomRightContainer.appendChild(bottomRightRank);
-    
-    const bottomRightSuit = document.createElement('span');
-    bottomRightSuit.className = 'card-suit';
-    bottomRightSuit.textContent = card.suit;
-    bottomRightContainer.appendChild(bottomRightSuit);
-    
-    cardElement.appendChild(bottomRightContainer);
-    
-    // Set card color based on suit
-    if (card.suit === '♥' || card.suit === '♦') {
-        cardElement.style.color = 'red';
+    if (card.rank === 'joker') {
+        // Create joker card
+        const jokerContent = document.createElement('div');
+        jokerContent.className = 'joker-content';
+        jokerContent.innerHTML = `
+            <div class="joker-emoji">🤡</div>
+            <div class="joker-text">JOKER</div>
+        `;
+        cardElement.appendChild(jokerContent);
     } else {
-        cardElement.style.color = 'black';
+        // Create regular card corners
+        const topLeftContainer = document.createElement('div');
+        topLeftContainer.className = 'card-corner top-left';
+        
+        const topLeftRank = document.createElement('span');
+        topLeftRank.className = 'card-rank';
+        topLeftRank.textContent = card.rank;
+        topLeftContainer.appendChild(topLeftRank);
+        
+        const topLeftSuit = document.createElement('span');
+        topLeftSuit.className = 'card-suit';
+        topLeftSuit.textContent = card.suit;
+        topLeftContainer.appendChild(topLeftSuit);
+        
+        cardElement.appendChild(topLeftContainer);
+        
+        // Create bottom right rank and suit (rotated)
+        const bottomRightContainer = document.createElement('div');
+        bottomRightContainer.className = 'card-corner bottom-right';
+        
+        const bottomRightRank = document.createElement('span');
+        bottomRightRank.className = 'card-rank';
+        bottomRightRank.textContent = card.rank;
+        bottomRightContainer.appendChild(bottomRightRank);
+        
+        const bottomRightSuit = document.createElement('span');
+        bottomRightSuit.className = 'card-suit';
+        bottomRightSuit.textContent = card.suit;
+        bottomRightContainer.appendChild(bottomRightSuit);
+        
+        cardElement.appendChild(bottomRightContainer);
+        
+        // Set card color based on suit
+        if (card.suit === '♥' || card.suit === '♦') {
+            cardElement.style.color = 'red';
+        } else {
+            cardElement.style.color = 'black';
+        }
     }
     
     // Initialize animation state
@@ -237,8 +353,9 @@ function showToast(message, type = 'error', duration = 500) {
 // Check for conditions
 function checkConditions(pile) {
     const metConditions = [];
+    // Only check active conditions
     for (const [key, condition] of Object.entries(conditions)) {
-        if (condition.check(pile)) {
+        if (activeConditions.has(key) && condition.check(pile)) {
             metConditions.push({ name: condition.name, points: condition.points });
         }
     }
@@ -340,6 +457,7 @@ async function drawCard() {
     }
     
     const card = deck.pop();
+    discardPile.push(card); // Add to discard pile
     console.log(deck.length);
     card.fullyAnimated = false; // Initialize animation state
     cardPile.push(card);
@@ -384,6 +502,20 @@ async function startNewRound() {
     currentRound++;
     drawInterval = Math.max(100, drawInterval - 100); // Don't go below 100ms
     
+    // Add a new random condition if there are still inactive ones
+    if (currentRound > 1) {
+        const inactiveConditions = Object.keys(conditions).filter(key => !activeConditions.has(key));
+        if (inactiveConditions.length > 0) {
+            const randomIndex = Math.floor(Math.random() * inactiveConditions.length);
+            const newCondition = inactiveConditions[randomIndex];
+            activeConditions.add(newCondition);
+            
+            // Show toast for new condition
+            const condition = conditions[newCondition];
+            showToast(`New Condition: ${condition.emoji} ${condition.name} (+${condition.points})`, 'success', 2000);
+        }
+    }
+    
     // Reset round state
     cardPile = [];
     // Clear only the cards, not the overlay
@@ -393,6 +525,7 @@ async function startNewRound() {
     
     // Initialize deck and UI
     initializeDeck();
+    displayConditions();
     
     // Show gameplay screen
     roundEndScreen.classList.add('hidden');
@@ -427,8 +560,13 @@ async function startGame() {
     currentRound = 1;
     drawInterval = 1000;
     
+    // Reset active conditions to only joker
+    activeConditions.clear();
+    activeConditions.add('joker');
+    
     // Initialize deck and UI
     initializeDeck();
+    displayConditions();
     player1ScoreElement.textContent = '0';
     player2ScoreElement.textContent = '0';
     
