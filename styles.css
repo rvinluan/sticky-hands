@@ -439,4 +439,60 @@ button:hover {
     font-weight: bold;
     color: #ff0000;
     text-transform: uppercase;
+}
+
+#new-condition-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--palette-grey1);
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    padding: 2rem;
+}
+
+#new-condition-screen:not(.hidden) {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.condition-header {
+    text-align: center;
+    width: 100%;
+}
+
+.condition-header.player1 {
+    transform: rotate(180deg);
+}
+
+.condition-emoji-large {
+    font-size: 8rem;
+    margin: 2rem 0;
+    text-align: center;
+}
+
+.condition-info {
+    text-align: center;
+    margin: 1rem 0;
+}
+
+.condition-info h3 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: black;
+    font-family: 'Gooper';
+}
+
+.condition-info p {
+    font-size: 1.2rem;
+    color: black;
+    font-family: 'Fragment Mono', monospace;
 } 

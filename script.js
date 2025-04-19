@@ -21,6 +21,7 @@ let activeConditions = new Set(); // Track which conditions are active
 const welcomeScreen = document.getElementById('welcome-screen');
 const gameplayScreen = document.getElementById('gameplay-screen');
 const roundStartScreen = document.getElementById('round-start-screen');
+const newConditionScreen = document.getElementById('new-condition-screen');
 const endScreen = document.getElementById('end-screen');
 const playButton = document.getElementById('play-button');
 const replayButton = document.getElementById('replay-button');
@@ -29,10 +30,14 @@ const finalScoreElement = document.getElementById('final-score');
 const roundNumberElement = document.getElementById('round-number');
 const roundNumberElement2 = document.getElementById('round-number-2');
 const countdownBar = document.getElementById('countdown-bar');
+const newConditionCountdownBar = document.getElementById('new-condition-countdown-bar');
 const player1ScoreElement = document.getElementById('player1-score');
 const player2ScoreElement = document.getElementById('player2-score');
 const player1StatusText = document.querySelector('.player1 .status-text');
 const player2StatusText = document.querySelector('.player2 .status-text');
+const conditionEmojiLarge = document.querySelector('.condition-emoji-large');
+const conditionName = document.querySelector('.condition-name');
+const conditionDescription = document.querySelector('.condition-description');
 
 // Card suits and ranks
 const suits = ['♠', '♥', '♦', '♣'];
@@ -509,8 +514,36 @@ function endRound() {
     });
 }
 
+// Show new condition screen
+async function showNewConditionScreen(condition) {
+    // Update condition info for both players
+    const conditionEmojiLargeElements = document.querySelectorAll('.condition-emoji-large');
+    const conditionNameElements = document.querySelectorAll('.condition-name');
+    const conditionDescriptionElements = document.querySelectorAll('.condition-description');
+    
+    conditionEmojiLargeElements.forEach(el => el.textContent = condition.emoji);
+    conditionNameElements.forEach(el => el.textContent = condition.name);
+    conditionDescriptionElements.forEach(el => el.textContent = condition.description);
+    
+    // Show new condition screen
+    gameplayScreen.classList.add('hidden');
+    newConditionScreen.classList.remove('hidden');
+    
+    // Reset countdown bar
+    newConditionCountdownBar.style.width = '350px';
+    
+    // Animate countdown with 6 second duration
+    await animateCountdown(newConditionCountdownBar, 6000);
+    
+    // Hide new condition screen
+    newConditionScreen.classList.add('hidden');
+    gameplayScreen.classList.remove('hidden');
+}
+
 // Start new round
 async function startNewRound() {
+    // Increment round and decrease interval
+    currentRound++;
     drawInterval = Math.max(100, drawInterval - 100); // Don't go below 100ms
     
     // Add a new random condition if there are still inactive ones
@@ -521,9 +554,8 @@ async function startNewRound() {
             const newCondition = inactiveConditions[randomIndex];
             activeConditions.add(newCondition);
             
-            // Show toast for new condition
-            const condition = conditions[newCondition];
-            showToast(`New Condition: ${condition.emoji} ${condition.name} (+${condition.points})`, 'success', 2000);
+            // Show new condition screen
+            await showNewConditionScreen(conditions[newCondition]);
         }
     }
     
@@ -547,9 +579,8 @@ async function startNewRound() {
 }
 
 // Helper function to animate the countdown bar
-function animateCountdown(bar) {
+function animateCountdown(bar, duration = 3000) {
     return new Promise(resolve => {
-        const duration = 3000; // 3 seconds
         const startTime = performance.now();
         const startWidth = 350;
         
