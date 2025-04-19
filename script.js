@@ -12,7 +12,7 @@ let isDebugPaused = false; // New debug pause state
 let currentRound = 1;
 let drawInterval = 1000; // Start with 1 second interval
 const CARDS_PER_ROUND = 6; // Cards to add each round
-const INITIAL_DECK_SIZE = 18; // Starting deck size
+const INITIAL_DECK_SIZE = 15; // Starting deck size
 const WINNING_ROUNDS = 10; // Number of rounds to win
 let currentDeckSize = 0; // Track current deck size
 let activeConditions = new Set(); // Track which conditions are active
@@ -20,19 +20,19 @@ let activeConditions = new Set(); // Track which conditions are active
 // DOM elements
 const welcomeScreen = document.getElementById('welcome-screen');
 const gameplayScreen = document.getElementById('gameplay-screen');
-const roundEndScreen = document.getElementById('round-end-screen');
+const roundStartScreen = document.getElementById('round-start-screen');
 const endScreen = document.getElementById('end-screen');
 const playButton = document.getElementById('play-button');
 const replayButton = document.getElementById('replay-button');
-const continueButton = document.getElementById('continue-button');
 const cardPileElement = document.getElementById('card-pile');
 const finalScoreElement = document.getElementById('final-score');
-const roundScoreElement = document.getElementById('round-score');
 const roundNumberElement = document.getElementById('round-number');
-const countdownOverlay = document.getElementById('countdown-overlay');
-const countdownNumber = document.getElementById('countdown-number');
+const roundNumberElement2 = document.getElementById('round-number-2');
+const countdownBar = document.getElementById('countdown-bar');
 const player1ScoreElement = document.getElementById('player1-score');
 const player2ScoreElement = document.getElementById('player2-score');
+const player1StatusText = document.querySelector('.player1 .status-text');
+const player2StatusText = document.querySelector('.player2 .status-text');
 
 // Card suits and ranks
 const suits = ['♠', '♥', '♦', '♣'];
@@ -467,39 +467,50 @@ async function drawCard() {
     cardPileElement.appendChild(cardElement);
 }
 
+// Update round start screen
+function updateRoundStartScreen() {
+    // Update round numbers for next round
+    roundNumberElement.textContent = currentRound;
+    roundNumberElement2.textContent = currentRound;
+    
+    // Update status text based on scores
+    if (player1Score > player2Score) {
+        player1StatusText.textContent = "you're winning";
+        player2StatusText.textContent = "you're losing";
+    } else if (player2Score > player1Score) {
+        player1StatusText.textContent = "you're losing";
+        player2StatusText.textContent = "you're winning";
+    } else {
+        player1StatusText.textContent = "you're tied";
+        player2StatusText.textContent = "you're tied";
+    }
+}
+
 // End round
 function endRound() {
     isGameActive = false;
     clearInterval(gameInterval);
     
-    // Update round end screen
-    roundScoreElement.textContent = player1Score + player2Score;
-    roundNumberElement.textContent = currentRound + 1; // Show next round number
-    
-    // Show round end screen
+    // Show round start screen
     gameplayScreen.classList.add('hidden');
-    roundEndScreen.classList.remove('hidden');
-    
-    // Start countdown for next round
-    let countdown = 5;
-    const countdownElement = document.getElementById('round-countdown');
-    countdownElement.textContent = countdown;
-    
-    const countdownInterval = setInterval(() => {
-        countdown--;
-        countdownElement.textContent = countdown;
+    roundStartScreen.classList.remove('hidden');
         
-        if (countdown <= 0) {
-            clearInterval(countdownInterval);
-            startNewRound();
-        }
-    }, 1000);
+    // Reset countdown bar
+    countdownBar.style.width = '350px';
+
+    // Increment round and decrease interval
+    currentRound++;
+    // Update round start screen
+    updateRoundStartScreen();
+    
+    // Start countdown and then start new round
+    animateCountdown(countdownBar).then(() => {
+        startNewRound();
+    });
 }
 
 // Start new round
 async function startNewRound() {
-    // Increment round and decrease interval
-    currentRound++;
     drawInterval = Math.max(100, drawInterval - 100); // Don't go below 100ms
     
     // Add a new random condition if there are still inactive ones
@@ -528,26 +539,37 @@ async function startNewRound() {
     displayConditions();
     
     // Show gameplay screen
-    roundEndScreen.classList.add('hidden');
+    roundStartScreen.classList.add('hidden');
     gameplayScreen.classList.remove('hidden');
-    
-    // Only show countdown for the first round
-    if (currentRound === 1) { // 2 because we already incremented currentRound
-        // Show countdown overlay
-        countdownOverlay.classList.remove('hidden');
-        
-        // Start countdown
-        for (let i = 3; i > 0; i--) {
-            countdownNumber.textContent = i;
-            await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-        
-        // Hide countdown
-        countdownOverlay.classList.add('hidden');
-    }
     
     // Start the game
     gameInterval = setInterval(drawCard, drawInterval);
+}
+
+// Helper function to animate the countdown bar
+function animateCountdown(bar) {
+    return new Promise(resolve => {
+        const duration = 3000; // 3 seconds
+        const startTime = performance.now();
+        const startWidth = 350;
+        
+        function animate(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Calculate new width
+            const newWidth = startWidth * (1 - progress);
+            bar.style.width = `${newWidth}px`;
+            
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                resolve();
+            }
+        }
+        
+        requestAnimationFrame(animate);
+    });
 }
 
 // Start game
@@ -574,23 +596,24 @@ async function startGame() {
     const cards = cardPileElement.querySelectorAll('.card');
     cards.forEach(card => card.remove());
     
-    // Show gameplay screen
+    // Show round start screen
     welcomeScreen.classList.add('hidden');
-    gameplayScreen.classList.remove('hidden');
+    gameplayScreen.classList.add('hidden');
     endScreen.classList.add('hidden');
-    roundEndScreen.classList.add('hidden');
+    roundStartScreen.classList.remove('hidden');
     
-    // Show countdown overlay
-    countdownOverlay.classList.remove('hidden');
+    // Update round start screen
+    updateRoundStartScreen();
     
-    // Start countdown
-    for (let i = 3; i > 0; i--) {
-        countdownNumber.textContent = i;
-        await new Promise(resolve => setTimeout(resolve, 1000));
-    }
+    // Reset countdown bar
+    countdownBar.style.width = '350px';
     
-    // Hide countdown and start game
-    countdownOverlay.classList.add('hidden');
+    // Animate countdown
+    await animateCountdown(countdownBar);
+    
+    // Start the game
+    roundStartScreen.classList.add('hidden');
+    gameplayScreen.classList.remove('hidden');
     gameInterval = setInterval(drawCard, drawInterval);
 }
 
@@ -604,7 +627,7 @@ function endGame() {
     
     // Show end screen
     gameplayScreen.classList.add('hidden');
-    roundEndScreen.classList.add('hidden');
+    roundStartScreen.classList.add('hidden');
     endScreen.classList.remove('hidden');
 }
 
@@ -621,9 +644,9 @@ replayButton.addEventListener('click', (event) => {
 
 // Touch controls
 document.body.addEventListener('click', (event) => {
-    // Only handle slaps if the gameplay screen is visible and countdown is not showing
+    // Only handle slaps if the gameplay screen is visible and round start screen is hidden
     if (!gameplayScreen.classList.contains('hidden') && 
-        countdownOverlay.classList.contains('hidden')) {
+        roundStartScreen.classList.contains('hidden')) {
         handleSlap(event);
     }
 });
@@ -637,8 +660,8 @@ document.addEventListener('keydown', (event) => {
         }
     }
     
-    // Round end screen: Enter to continue
-    if (!roundEndScreen.classList.contains('hidden')) {
+    // Round start screen: Enter to continue
+    if (!roundStartScreen.classList.contains('hidden')) {
         if (event.key === 'Enter') {
             startNewRound();
         }
@@ -646,7 +669,7 @@ document.addEventListener('keydown', (event) => {
 
     // Gameplay screen: Keyboard shortcuts for slaps and debug
     if (!gameplayScreen.classList.contains('hidden') && 
-        countdownOverlay.classList.contains('hidden')) {
+        roundStartScreen.classList.contains('hidden')) {
         // Debug pause toggle
         if (event.key === '1') {
             isDebugPaused = !isDebugPaused;

@@ -261,32 +261,71 @@ button:hover {
     }
 }
 
-.countdown-overlay {
-    position: absolute;
-    top: 25%;
-    left: 0;
-    width: 100%;
-    height: 50%;
-    background-color: var(--palette-grey2);
+.countdown-bar {
+    width: 350px;
+    height: 20px;
+    background-color: var(--palette-neongreen);
+}
+
+.countdown-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    margin-top: 2rem;
 }
 
-.countdown-overlay.hidden {
-    display: none;
-}
-
-.countdown-text {
-    font-size: 1.2rem;
-    color: black;
+.round-start-screen {
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    background-color: var(--palette-grey1);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
 }
 
-#countdown-number {
-    font-weight: bold;
-    font-size: 1.4rem;
+.round-start-screen:not(.hidden) {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.round-header {
+    width: 100%;
+    text-align: center;
+    padding: 1rem;
+}
+
+.round-header.player1 {
+    transform: rotate(180deg);
+}
+
+.round-header h2 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: black;
+    font-family: 'Gooper';
+}
+
+.status-text {
+    font-size: 1.5rem;
+    color: black;
+    font-family: 'Fragment Mono', monospace;
+}
+
+.countdown-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 2rem 0;
 }
 
 .score-display {
@@ -305,7 +344,6 @@ button:hover {
 
 #round-number {
     font-weight: bold;
-    font-size: 1.4rem;
 }
 
 #round-score, #final-score {

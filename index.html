@@ -20,13 +20,10 @@
 
     <!-- Gameplay Screen -->
     <div id="gameplay-screen" class="screen hidden">
-        <div id="countdown-overlay" class="countdown-overlay hidden">
-            <div class="countdown-text">Round begins in <span id="countdown-number">3</span></div>
+        <div class="scores">
+            <p id="player1-score">0</p>
+            <p id="player2-score">0</p>
         </div>
-            <div class="scores">
-                <p id="player1-score">0</p>
-                <p id="player2-score">0</p>
-            </div>
         <div class="game-area">
             <div id="conditions-display" class="conditions-display"></div>
             <div id="card-pile" class="card-pile">
@@ -34,13 +31,18 @@
         </div>
     </div>
 
-    <!-- Round End Screen -->
-    <div id="round-end-screen" class="screen hidden">
-        <h2>Round Complete!</h2>
-        <div class="score-display">
-            <p>Current Score: <span id="round-score">0</span></p>
-            <p>Next Round: <span id="round-number">1</span></p>
-            <p>Starting in <span id="round-countdown">5</span> seconds...</p>
+    <!-- Round Start Screen -->
+    <div id="round-start-screen" class="round-start-screen hidden">
+        <div class="round-header player1">
+            <h2>Round <span id="round-number">1</span></h2>
+            <p class="status-text"></p>
+        </div>
+        <div class="countdown-container">
+            <div id="countdown-bar" class="countdown-bar"></div>
+        </div>
+        <div class="round-header player2">
+            <h2>Round <span id="round-number-2">1</span></h2>
+            <p class="status-text"></p>
         </div>
     </div>
 
