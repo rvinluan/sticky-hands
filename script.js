@@ -38,6 +38,7 @@ const player2StatusText = document.querySelector('.player2 .status-text');
 const conditionEmojiLarge = document.querySelector('.condition-emoji-large');
 const conditionName = document.querySelector('.condition-name');
 const conditionDescription = document.querySelector('.condition-description');
+const burstEffect = document.getElementById('burst-effect');
 
 // Card suits and ranks
 const suits = ['♠', '♥', '♦', '♣'];
@@ -335,24 +336,39 @@ function createCardElement(card, index) {
 }
 
 // Show toast message
-function showToast(message, type = 'error', duration = 500) {
+function showToast(message, type = 'error', duration = 500, player = null) {
     const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
+    toast.className = `toast ${type} toast-invisible`;
+    
+    // Add player-specific class if provided
+    if (player === 'player1') {
+        toast.classList.add('player1');
+    } else if (player === 'player2') {
+        toast.classList.add('player2');
+    }
+    
     toast.textContent = message;
-    
-    // Set the animation duration using CSS variable
-    toast.style.setProperty('--toast-duration', `${duration}ms`);
-    
-    // Position toast in the center of the screen
-    toast.style.left = '50%';
-    toast.style.top = '50%';
-    
     document.body.appendChild(toast);
     
-    // Remove toast after animation
-    setTimeout(() => {
-        toast.remove();
-    }, duration);
+    // Force reflow to ensure initial state is applied before transition
+    toast.offsetHeight;
+    
+    // Transition to visible state
+    requestAnimationFrame(() => {
+        toast.classList.remove('toast-invisible');
+        toast.classList.add('toast-visible');
+        
+        // After a delay, transition back to invisible
+        setTimeout(() => {
+            toast.classList.remove('toast-visible');
+            toast.classList.add('toast-invisible');
+            
+            // Remove element after transition completes
+            toast.addEventListener('transitionend', () => {
+                toast.remove();
+            }, { once: true });
+        }, 800); // Stay visible for 0.8 seconds
+    });
 }
 
 // Check for conditions
@@ -390,6 +406,52 @@ async function handleSlap(event) {
     console.log('Is Player 1:', isPlayer1);
     
     if (conditionsMet.length > 0) {
+        // Get top card and second-most top card for positioning
+        const cardElements = cardPileElement.querySelectorAll('.card');
+        let topCardElement = null;
+        let targetCardOffset = 0;
+        
+        if (cardElements.length > 0) {
+            // Get the top card for insertion point
+            topCardElement = cardElements[cardElements.length - 1];
+            
+            // Get the offset from second-most card if available, or top card if not
+            const offsetCardElement = cardElements.length > 1 ? 
+                cardElements[cardElements.length - 2] : 
+                topCardElement;
+                
+            if (offsetCardElement) {
+                // Extract the final position from the card's style
+                const finalPositionStyle = offsetCardElement.style.getPropertyValue('--final-position');
+                // Parse the offset value from the CSS value
+                targetCardOffset = parseInt(finalPositionStyle) || 0;
+            }
+            
+            // Insert the burst effect after the top card
+            // This places it visually behind the top card but above all other cards
+            if (offsetCardElement.nextSibling) {
+                cardPileElement.insertBefore(burstEffect, offsetCardElement.nextSibling);
+            } else {
+                cardPileElement.appendChild(burstEffect);
+            }
+        } else {
+            // If no cards, add to card pile directly
+            cardPileElement.appendChild(burstEffect);
+        }
+        
+        // Show burst effect at the target card's position
+        burstEffect.style.transform = `translate(calc(-50% + ${targetCardOffset}px), -50%)`;
+        burstEffect.classList.remove('hidden');
+        burstEffect.classList.add('show');
+        
+        // Hide burst effect after 500ms
+        setTimeout(() => {
+            burstEffect.classList.remove('show');
+            burstEffect.classList.add('hidden');
+            // Reset transform
+            burstEffect.style.transform = 'translate(-50%, -50%)';
+        }, 500);
+        
         // Pause the game
         isPaused = true;
         clearInterval(gameInterval);
@@ -405,7 +467,7 @@ async function handleSlap(event) {
         }
         
         // Show success message
-        showToast(`${conditionsMet[0].name}! +${conditionsMet[0].points} points`, 'success', 1000);
+        showToast(`${conditionsMet[0].name}! +${conditionsMet[0].points} points`, 'success', 1000, isPlayer1 ? 'player1' : 'player2');
         
         // Wait for 0.5 seconds
         await new Promise(resolve => setTimeout(resolve, 500));
@@ -433,7 +495,7 @@ async function handleSlap(event) {
         }
         
         // Show incorrect slap message with penalty
-        showToast('Incorrect Slap! -5 points', 'error', 1000);
+        showToast('Incorrect Slap! -5 points', 'error', 1000, isPlayer1 ? 'player1' : 'player2');
         
         // Wait for 0.5 seconds
         await new Promise(resolve => setTimeout(resolve, 500));
