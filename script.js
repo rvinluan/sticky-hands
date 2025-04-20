@@ -434,6 +434,11 @@ async function handleSlap(event) {
             } else {
                 cardPileElement.appendChild(burstEffect);
             }
+            
+            // Pause all card animations
+            cardElements.forEach(card => {
+                card.style.animationPlayState = 'paused';
+            });
         } else {
             // If no cards, add to card pile directly
             cardPileElement.appendChild(burstEffect);
@@ -450,6 +455,12 @@ async function handleSlap(event) {
             burstEffect.classList.add('hidden');
             // Reset transform
             burstEffect.style.transform = 'translate(-50%, -50%)';
+            
+            // Resume all card animations
+            const allCardElements = cardPileElement.querySelectorAll('.card');
+            allCardElements.forEach(card => {
+                card.style.animationPlayState = 'running';
+            });
         }, 500);
         
         // Pause the game
@@ -485,6 +496,12 @@ async function handleSlap(event) {
         isPaused = true;
         clearInterval(gameInterval);
         
+        // Pause all card animations
+        const cardElements = cardPileElement.querySelectorAll('.card');
+        cardElements.forEach(card => {
+            card.style.animationPlayState = 'paused';
+        });
+        
         // Apply penalty to the player who slapped incorrectly
         if (isPlayer1) {
             player1Score -= 5;
@@ -499,6 +516,11 @@ async function handleSlap(event) {
         
         // Wait for 0.5 seconds
         await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Resume all card animations before clearing
+        cardElements.forEach(card => {
+            card.style.animationPlayState = 'running';
+        });
         
         // Clear the card pile after 1 second
         await new Promise(resolve => setTimeout(resolve, 500));
@@ -785,4 +807,4 @@ document.addEventListener('keydown', (event) => {
             handleSlap(mockEvent);
         }
     }
-}); 
+});
