@@ -187,31 +187,6 @@ function fling(isPlayer1 = true) {
     Body.applyForce(whichChain.ball, whichChain.ball.position, force);
 }
 
-// Double tap detection
-let lastTapTime = 0;
-const doubleTapThreshold = 300; // milliseconds between taps
-
-document.addEventListener('touchstart', (event) => {
-    const currentTime = new Date().getTime();
-    const tapLength = currentTime - lastTapTime;
-    
-    if (tapLength < doubleTapThreshold && tapLength > 0) {
-        event.preventDefault(); // Prevent zoom
-    }
-    fling(event.touches[0].clientY < window.innerHeight / 2);
-    lastTapTime = currentTime;
-});
-
-// Add keyboard event listener for 'p' and 'q' keys
-document.addEventListener('keydown', (event) => {
-    if (event.key.toLowerCase() === 'p') {
-        fling(true);
-    }
-    if (event.key.toLowerCase() === 'q') {
-        fling(false);
-    }
-});
-
 // Add bodies to the world
 World.add(world, [ground, ceiling, leftWall, rightWall]);
 

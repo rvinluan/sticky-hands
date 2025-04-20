@@ -384,9 +384,8 @@ function checkConditions(pile) {
 }
 
 // Handle slap
-async function handleSlap(event) {
+async function handleSlap(event, player) {
     console.log('Slap detected');
-    console.log('Tap position:', event.clientY);
     
     if (!isGameActive || isPaused || isDebugPaused) {
         console.log('Game not active or paused');
@@ -398,12 +397,6 @@ async function handleSlap(event) {
     console.log('Animated cards:', animatedCards);
     const conditionsMet = checkConditions(animatedCards);
     console.log('Conditions met:', conditionsMet);
-    
-    // Determine which player slapped based on tap position
-    const viewportHeight = window.innerHeight;
-    const tapY = event.clientY;
-    const isPlayer1 = tapY < viewportHeight / 2;
-    console.log('Is Player 1:', isPlayer1);
     
     if (conditionsMet.length > 0) {
         // Get top card and second-most top card for positioning
@@ -429,8 +422,8 @@ async function handleSlap(event) {
             
             // Insert the burst effect after the top card
             // This places it visually behind the top card but above all other cards
-            if (offsetCardElement.nextSibling) {
-                cardPileElement.insertBefore(burstEffect, offsetCardElement.nextSibling);
+            if (offsetCardElement) {
+                cardPileElement.insertBefore(burstEffect, offsetCardElement);
             } else {
                 cardPileElement.appendChild(burstEffect);
             }
@@ -463,13 +456,14 @@ async function handleSlap(event) {
             });
         }, 500);
         
-        // Pause the game
-        isPaused = true;
-        clearInterval(gameInterval);
-        triggerPhysicsHitstop();
+        // Pause game AFTER a small delay to allow fling animation to start
+        setTimeout(() => {
+            isPaused = true;
+            triggerPhysicsHitstop();
+        }, 50);
         
         // Update score for the correct player
-        if (isPlayer1) {
+        if (player === 'player1') {
             player1Score += conditionsMet[0].points;
             player1ScoreElement.textContent = player1Score;
         } else {
@@ -478,13 +472,11 @@ async function handleSlap(event) {
         }
         
         // Show success message
-        showToast(`${conditionsMet[0].name}! +${conditionsMet[0].points} points`, 'success', 1000, isPlayer1 ? 'player1' : 'player2');
+        showToast(`${conditionsMet[0].name}! +${conditionsMet[0].points} points`, 'success', 1000, player);
         
         // Wait for 0.5 seconds
         await new Promise(resolve => setTimeout(resolve, 500));
         
-        // Clear pile after 1 second
-        await new Promise(resolve => setTimeout(resolve, 500));
         cardPile = [];
         cardPileElement.innerHTML = '';
         
@@ -503,7 +495,7 @@ async function handleSlap(event) {
         });
         
         // Apply penalty to the player who slapped incorrectly
-        if (isPlayer1) {
+        if (player === 'player1') {
             player1Score -= 5;
             player1ScoreElement.textContent = player1Score;
         } else {
@@ -512,7 +504,7 @@ async function handleSlap(event) {
         }
         
         // Show incorrect slap message with penalty
-        showToast('Incorrect Slap! -5 points', 'error', 1000, isPlayer1 ? 'player1' : 'player2');
+        showToast('Incorrect Slap! -5 points', 'error', 1000, player);
         
         // Wait for 0.5 seconds
         await new Promise(resolve => setTimeout(resolve, 500));
@@ -757,15 +749,6 @@ replayButton.addEventListener('click', (event) => {
     startGame();
 });
 
-// Touch controls
-document.body.addEventListener('click', (event) => {
-    // Only handle slaps if the gameplay screen is visible and round start screen is hidden
-    if (!gameplayScreen.classList.contains('hidden') && 
-        roundStartScreen.classList.contains('hidden')) {
-        handleSlap(event);
-    }
-});
-
 // Keyboard controls
 document.addEventListener('keydown', (event) => {
     // Welcome screen: Enter to start game
@@ -797,14 +780,115 @@ document.addEventListener('keydown', (event) => {
         
         // Create a mock event object for handleSlap
         const mockEvent = {
-            clientY: event.key === 'd' ? 0 : window.innerHeight, // Top for player 1, bottom for player 2
             preventDefault: () => {}
         };
 
         if (event.key === 'd') { // Player 1 slap
-            handleSlap(mockEvent);
+            handleSlap(mockEvent, 'player1');
         } else if (event.key === 'k') { // Player 2 slap
-            handleSlap(mockEvent);
+            handleSlap(mockEvent, 'player2');
         }
     }
+});
+
+// Prevent pull-to-refresh behavior
+let touchStartY = 0;
+let touchStartX = 0;
+
+document.addEventListener('touchstart', function(e) {
+    touchStartY = e.touches[0].clientY;
+    touchStartX = e.touches[0].clientX;
+}, { passive: false });
+
+document.addEventListener('touchmove', function(e) {
+    const touchY = e.touches[0].clientY;
+    const touchDiff = touchY - touchStartY;
+    
+    // If pulling down, prevent default behavior
+    if (touchDiff > 0) {
+        e.preventDefault();
+    }
+}, { passive: false });
+
+// Detect swipes for slapping
+document.addEventListener('touchend', function(e) {
+    console.log('Tap detected');
+    var isGameplayRelevant = true;
+
+    // Only process swipes when game is active
+    if (!isGameActive || isPaused || isDebugPaused || 
+        roundStartScreen.classList.contains('hidden') === false ||
+        newConditionScreen.classList.contains('hidden') === false) {
+        isGameplayRelevant = false;
+    }
+    
+    const touchEndY = e.changedTouches[0].clientY;
+    const touchEndX = e.changedTouches[0].clientX;
+    const deltaY = touchEndY - touchStartY;
+    const deltaX = touchEndX - touchStartX;
+    const viewportHeight = window.innerHeight;
+    
+    // Determine if this is a vertical swipe (more vertical than horizontal)
+    const isVerticalSwipe = Math.abs(deltaY) > Math.abs(deltaX);
+    
+    // Minimum swipe distance (in pixels)
+    const minSwipeDistance = 20;
+    
+    // Check for player 1 swipe (top half, swiping down)
+    if (isVerticalSwipe && 
+        touchStartY < viewportHeight / 2 && 
+        deltaY > minSwipeDistance) {
+        // Create mock event for handleSlap with position in top half
+        const mockEvent = {
+            clientY: viewportHeight * 0.25,  // 1/4 down the screen
+            preventDefault: () => {}
+        };
+        
+        // First trigger the fling animation
+        fling(true);
+        
+        // Then handle the slap if gameplay is relevant
+        if(isGameplayRelevant) {
+            handleSlap(mockEvent, 'player1');
+        }
+    }
+    
+    // Check for player 2 swipe (bottom half, swiping up)
+    if (isVerticalSwipe && 
+        touchStartY > viewportHeight / 2 && 
+        deltaY < -minSwipeDistance) {
+        console.log('Player 2 swipe detected');
+        // Create mock event for handleSlap with position in bottom half
+        const mockEvent = {
+            clientY: viewportHeight * 0.75,  // 3/4 down the screen
+            preventDefault: () => {}
+        };
+        
+        // First trigger the fling animation
+        fling(false);
+        
+        // Then handle the slap if gameplay is relevant
+        if(isGameplayRelevant) {
+            handleSlap(mockEvent, 'player2');
+        }
+    }
+});
+
+// Tap detection for slapping
+gameplayScreen.addEventListener('click', function(e) {
+    // Only process taps when gameplay is active
+    if (!isGameActive || isPaused || isDebugPaused || 
+        roundStartScreen.classList.contains('hidden') === false ||
+        newConditionScreen.classList.contains('hidden') === false) {
+        return;
+    }
+    
+    // Determine which player tapped based on tap position
+    const viewportHeight = window.innerHeight;
+    const tapY = e.clientY;
+    const player = tapY < viewportHeight / 2 ? 'player1' : 'player2';
+    console.log('Tap detected by', player);
+    
+    // Pass the event and player to handleSlap
+    // handleSlap(e, player);
 });

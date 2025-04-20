@@ -25,6 +25,7 @@ html, body {
     -ms-touch-action: none;
     user-select: none;
     -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
 }
 
@@ -44,6 +45,7 @@ body {
     text-align: center;
     width: 100%;
     max-width: 800px;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .hidden {
@@ -178,7 +180,8 @@ button:hover {
     justify-content: center;
     cursor: pointer;
     overflow: hidden;
-    pointer-events: none;
+    pointer-events: auto;
+    touch-action: manipulation;
 }
 
 .card-pile {
