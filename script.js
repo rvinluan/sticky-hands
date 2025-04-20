@@ -21,6 +21,7 @@ let activeConditions = new Set(); // Track which conditions are active
 let player1LastTouchStart = { x: 0, y: 0, time: 0 };
 let player2LastTouchStart = { x: 0, y: 0, time: 0 };
 let lastSlapTime = 0;
+let justSlapped = false;
 const MIN_SLAP_INTERVAL = 300; // Minimum time between slaps in ms
 
 // Track recent slaps from both players
@@ -396,10 +397,15 @@ function checkConditions(pile) {
 
 // Handle slap
 async function handleSlap(event, player) {    
-    if (!isGameActive || isPaused || isDebugPaused) {
-        console.log('Game not active or paused');
+    if (!isGameActive || isDebugPaused || justSlapped) {
+        console.log('Game not active or paused or just slapped');
         return;
     }
+
+    justSlapped = true;
+    setTimeout(() => {
+        justSlapped = false;
+    }, 1000);
     
     // Only check conditions for fully animated cards
     const animatedCards = cardPile.filter(card => card.fullyAnimated);
@@ -820,8 +826,13 @@ document.addEventListener('touchmove', function(e) {
 
 // Detect swipes for slapping
 document.addEventListener('touchend', function(e) {
+    console.log("touches");
+    console.log(e.touches);
+    console.log("changedTouches");
+    console.log(e.changedTouches);
+
     // Only process swipes when game is active
-    if (!isGameActive || isPaused || isDebugPaused || 
+    if (!isGameActive || isDebugPaused || 
         roundStartScreen.classList.contains('hidden') === false ||
         newConditionScreen.classList.contains('hidden') === false) {
         return;
@@ -831,7 +842,6 @@ document.addEventListener('touchend', function(e) {
     const touchEndY = e.changedTouches[0].clientY;
     const touchEndX = e.changedTouches[0].clientX;
     const viewportHeight = window.innerHeight;
-
     // Determine which player based on where the touch ended
     const isPlayer1Area = touchEndY < viewportHeight / 2;
     
@@ -851,26 +861,4 @@ document.addEventListener('touchend', function(e) {
         // Handle the slap
         handleSlap(mockEvent, player);
     }
-});
-
-// Tap detection for slapping
-gameplayScreen.addEventListener('click', function(e) {
-    // Only process taps when gameplay is active
-    if (!isGameActive || isPaused || isDebugPaused || 
-        roundStartScreen.classList.contains('hidden') === false ||
-        newConditionScreen.classList.contains('hidden') === false) {
-        return;
-    }
-    
-    const currentTime = Date.now();
-    
-    // Determine which player tapped based on tap position
-    const viewportHeight = window.innerHeight;
-    const tapY = e.clientY;
-    const player = tapY < viewportHeight / 2 ? 'player1' : 'player2';
-        
-    console.log('Tap detected by', player);
-    
-    // Pass the event and player to handleSlap
-    handleSlap(e, player);
 });
