@@ -17,6 +17,17 @@ const WINNING_ROUNDS = 10; // Number of rounds to win
 let currentDeckSize = 0; // Track current deck size
 let activeConditions = new Set(); // Track which conditions are active
 
+// Variables to track player swipes
+let player1LastTouchStart = { x: 0, y: 0, time: 0 };
+let player2LastTouchStart = { x: 0, y: 0, time: 0 };
+let lastSlapTime = 0;
+const MIN_SLAP_INTERVAL = 300; // Minimum time between slaps in ms
+
+// Track recent slaps from both players
+let player1RecentSlap = { time: 0, valid: false };
+let player2RecentSlap = { time: 0, valid: false };
+const SIMULTANEOUS_THRESHOLD = 150; // ms - threshold for considering slaps simultaneous
+
 // DOM elements
 const welcomeScreen = document.getElementById('welcome-screen');
 const gameplayScreen = document.getElementById('gameplay-screen');
@@ -384,9 +395,7 @@ function checkConditions(pile) {
 }
 
 // Handle slap
-async function handleSlap(event, player) {
-    console.log('Slap detected');
-    
+async function handleSlap(event, player) {    
     if (!isGameActive || isPaused || isDebugPaused) {
         console.log('Game not active or paused');
         return;
@@ -394,9 +403,7 @@ async function handleSlap(event, player) {
     
     // Only check conditions for fully animated cards
     const animatedCards = cardPile.filter(card => card.fullyAnimated);
-    console.log('Animated cards:', animatedCards);
     const conditionsMet = checkConditions(animatedCards);
-    console.log('Conditions met:', conditionsMet);
     
     if (conditionsMet.length > 0) {
         // Get top card and second-most top card for positioning
@@ -459,6 +466,7 @@ async function handleSlap(event, player) {
         // Pause game AFTER a small delay to allow fling animation to start
         setTimeout(() => {
             isPaused = true;
+            clearInterval(gameInterval);
             triggerPhysicsHitstop();
         }, 50);
         
@@ -477,6 +485,8 @@ async function handleSlap(event, player) {
         // Wait for 0.5 seconds
         await new Promise(resolve => setTimeout(resolve, 500));
         
+        // After 1 second, clear the card pile
+        await new Promise(resolve => setTimeout(resolve, 500));
         cardPile = [];
         cardPileElement.innerHTML = '';
         
@@ -796,8 +806,6 @@ let touchStartY = 0;
 let touchStartX = 0;
 
 document.addEventListener('touchstart', function(e) {
-    touchStartY = e.touches[0].clientY;
-    touchStartX = e.touches[0].clientX;
 }, { passive: false });
 
 document.addEventListener('touchmove', function(e) {
@@ -812,65 +820,36 @@ document.addEventListener('touchmove', function(e) {
 
 // Detect swipes for slapping
 document.addEventListener('touchend', function(e) {
-    console.log('Tap detected');
-    var isGameplayRelevant = true;
-
     // Only process swipes when game is active
     if (!isGameActive || isPaused || isDebugPaused || 
         roundStartScreen.classList.contains('hidden') === false ||
         newConditionScreen.classList.contains('hidden') === false) {
-        isGameplayRelevant = false;
+        return;
     }
     
+    const currentTime = Date.now();
     const touchEndY = e.changedTouches[0].clientY;
     const touchEndX = e.changedTouches[0].clientX;
-    const deltaY = touchEndY - touchStartY;
-    const deltaX = touchEndX - touchStartX;
     const viewportHeight = window.innerHeight;
+
+    // Determine which player based on where the touch ended
+    const isPlayer1Area = touchEndY < viewportHeight / 2;
     
-    // Determine if this is a vertical swipe (more vertical than horizontal)
-    const isVerticalSwipe = Math.abs(deltaY) > Math.abs(deltaX);
-    
-    // Minimum swipe distance (in pixels)
-    const minSwipeDistance = 20;
-    
-    // Check for player 1 swipe (top half, swiping down)
-    if (isVerticalSwipe && 
-        touchStartY < viewportHeight / 2 && 
-        deltaY > minSwipeDistance) {
-        // Create mock event for handleSlap with position in top half
+    if (true) {                
+        const player = isPlayer1Area ? 'player1' : 'player2';
+        console.log(`${player} swipe detected`);
+        
+        // Create mock event
         const mockEvent = {
-            clientY: viewportHeight * 0.25,  // 1/4 down the screen
+            clientY: isPlayer1Area ? viewportHeight * 0.25 : viewportHeight * 0.75,
             preventDefault: () => {}
         };
         
-        // First trigger the fling animation
-        fling(true);
+        // Trigger fling animation
+        fling(isPlayer1Area);
         
-        // Then handle the slap if gameplay is relevant
-        if(isGameplayRelevant) {
-            handleSlap(mockEvent, 'player1');
-        }
-    }
-    
-    // Check for player 2 swipe (bottom half, swiping up)
-    if (isVerticalSwipe && 
-        touchStartY > viewportHeight / 2 && 
-        deltaY < -minSwipeDistance) {
-        console.log('Player 2 swipe detected');
-        // Create mock event for handleSlap with position in bottom half
-        const mockEvent = {
-            clientY: viewportHeight * 0.75,  // 3/4 down the screen
-            preventDefault: () => {}
-        };
-        
-        // First trigger the fling animation
-        fling(false);
-        
-        // Then handle the slap if gameplay is relevant
-        if(isGameplayRelevant) {
-            handleSlap(mockEvent, 'player2');
-        }
+        // Handle the slap
+        handleSlap(mockEvent, player);
     }
 });
 
@@ -883,12 +862,15 @@ gameplayScreen.addEventListener('click', function(e) {
         return;
     }
     
+    const currentTime = Date.now();
+    
     // Determine which player tapped based on tap position
     const viewportHeight = window.innerHeight;
     const tapY = e.clientY;
     const player = tapY < viewportHeight / 2 ? 'player1' : 'player2';
+        
     console.log('Tap detected by', player);
     
     // Pass the event and player to handleSlap
-    // handleSlap(e, player);
+    handleSlap(e, player);
 });
