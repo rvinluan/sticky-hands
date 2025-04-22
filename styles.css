@@ -439,6 +439,13 @@ button:hover {
     background: var(--palette-green);
     border-radius: 50%;
     padding: 0.5rem;
+    transform: rotate(-90deg);
+    animation: spin 4s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 .condition-name {
