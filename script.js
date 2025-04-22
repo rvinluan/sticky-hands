@@ -13,7 +13,7 @@ let currentRound = 1;
 let drawInterval = 1000; // Start with 1 second interval
 const CARDS_PER_ROUND = 6; // Cards to add each round
 const INITIAL_DECK_SIZE = 15; // Starting deck size
-const WINNING_ROUNDS = 10; // Number of rounds to win
+const WINNING_ROUNDS = 7; // Number of rounds to win the game
 let currentDeckSize = 0; // Track current deck size
 let activeConditions = new Set(); // Track which conditions are active
 
@@ -588,6 +588,12 @@ function endRound() {
     isGameActive = false;
     clearInterval(gameInterval);
     
+    // Check if we've reached the winning number of rounds
+    if (currentRound >= WINNING_ROUNDS) {
+        endGame();
+        return;
+    }
+    
     // Show round start screen
     gameplayScreen.classList.add('hidden');
     roundStartScreen.classList.remove('hidden');
@@ -635,11 +641,10 @@ async function showNewConditionScreen(condition) {
 // Start new round
 async function startNewRound() {
     // Increment round and decrease interval
-    currentRound++;
-    drawInterval = Math.max(100, drawInterval - 100); // Don't go below 100ms
+    drawInterval = Math.max(500, drawInterval - 100); // Don't go below 100ms
     
     // Add a new random condition if there are still inactive ones
-    if (currentRound > 1) {
+    if (currentRound > 1 && currentRound % 2 == 0) {
         const inactiveConditions = Object.keys(conditions).filter(key => !activeConditions.has(key));
         if (inactiveConditions.length > 0) {
             const randomIndex = Math.floor(Math.random() * inactiveConditions.length);
@@ -826,13 +831,8 @@ document.addEventListener('touchmove', function(e) {
 
 // Detect swipes for slapping
 document.addEventListener('touchend', function(e) {
-    console.log("touches");
-    console.log(e.touches);
-    console.log("changedTouches");
-    console.log(e.changedTouches);
-
     // Only process swipes when game is active
-    if (!isGameActive || isDebugPaused || 
+    if (isDebugPaused || 
         roundStartScreen.classList.contains('hidden') === false ||
         newConditionScreen.classList.contains('hidden') === false) {
         return;

@@ -66,7 +66,7 @@ function createBallAndChain(x, linkCount, anchorTop = false) {
         sleepThreshold: 10,
         render: {
             sprite: {
-                texture: 'hand.png',
+                texture: 'hand-raspberry.png',
                 xScale: 0.24,
                 yScale: 0.24
             }
@@ -80,7 +80,7 @@ function createBallAndChain(x, linkCount, anchorTop = false) {
             restitution: 0,
             friction: 0.8,
             render: {
-                fillStyle: '#C0FF52'
+                fillStyle: '#D03291'
             }
         });
         chainLinks.push(link);
@@ -95,7 +95,7 @@ function createBallAndChain(x, linkCount, anchorTop = false) {
                 stiffness: .3, // Less stiffness for more elasticity
                 render: {
                     type: 'line',
-                    strokeStyle: '#C0FF52',
+                    strokeStyle: '#D03291',
                     lineWidth: linkWidth
                 }
             });
@@ -112,7 +112,7 @@ function createBallAndChain(x, linkCount, anchorTop = false) {
         stiffness: 1,
         render: {
             type: 'line',
-            strokeStyle: '#C0FF52',
+            strokeStyle: '#D03291',
             lineWidth: linkWidth
         }
     });
