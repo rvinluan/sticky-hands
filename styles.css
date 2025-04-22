@@ -55,11 +55,40 @@ body {
 h1 {
     font-size: 4rem;
     line-height: .8;
-    letter-spacing: 4px;
     margin-bottom: 2rem;
     color: var(--palette-green);
     font-family: 'Gooper';
 }
+
+/* Individual letter styles for the title */
+h1 span {
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+@keyframes letterFloat {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+}
+
+#welcome-screen h1 span {
+    animation: letterFloat 1.3s ease-in-out infinite;
+    animation-delay: calc(var(--delay) * 0.2s);
+}
+
+#letter-s1 { --delay: 1; }
+#letter-t { --delay: 2; }
+#letter-i { --delay: 3; }
+#letter-c { --delay: 4; }
+#letter-k { --delay: 5; }
+#letter-y { --delay: 6; }
+#letter-space { --delay: 7; }
+#letter-h { --delay: 8; }
+#letter-a { --delay: 9; }
+#letter-n { --delay: 10; }
+#letter-d { --delay: 11; }
+#letter-s2 { --delay: 12; }
 
 h2 {
     font-size: 2.5rem;
