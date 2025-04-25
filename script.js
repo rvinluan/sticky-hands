@@ -13,7 +13,7 @@ let currentRound = 1;
 let drawInterval = 1000; // Start with 1 second interval
 const CARDS_PER_ROUND = 6; // Cards to add each round
 const INITIAL_DECK_SIZE = 15; // Starting deck size
-const WINNING_ROUNDS = 7; // Number of rounds to win the game
+const WINNING_ROUNDS = 1; // Number of rounds to win the game
 let currentDeckSize = 0; // Track current deck size
 let activeConditions = new Set(); // Track which conditions are active
 
@@ -38,7 +38,8 @@ const endScreen = document.getElementById('end-screen');
 const playButton = document.getElementById('play-button');
 const replayButton = document.getElementById('replay-button');
 const cardPileElement = document.getElementById('card-pile');
-const finalScoreElement = document.getElementById('final-score');
+const finalScoreElement = document.getElementById('final-score');   
+const finalScoreElement2 = document.getElementById('final-score-2');
 const roundNumberElement = document.getElementById('round-number');
 const roundNumberElement2 = document.getElementById('round-number-2');
 const countdownBar = document.getElementById('countdown-bar');
@@ -751,7 +752,9 @@ function endGame() {
     clearInterval(gameInterval);
     
     // Update final score
-    finalScoreElement.textContent = player1Score + player2Score;
+    finalScoreElement.textContent = player1Score;
+    finalScoreElement2.textContent = player2Score;
+
     
     // Show end screen
     gameplayScreen.classList.add('hidden');
@@ -812,21 +815,14 @@ document.addEventListener('keydown', (event) => {
     }
 });
 
-// Prevent pull-to-refresh behavior
-let touchStartY = 0;
-let touchStartX = 0;
+var originalTouches = [];
 
 document.addEventListener('touchstart', function(e) {
-}, { passive: false });
-
-document.addEventListener('touchmove', function(e) {
-    const touchY = e.touches[0].clientY;
-    const touchDiff = touchY - touchStartY;
-    
-    // If pulling down, prevent default behavior
-    if (touchDiff > 0) {
-        e.preventDefault();
-    }
+    let index = e.changedTouches[0].identifier;
+    originalTouches[index] = {
+        x: e.changedTouches[0].clientX,
+        y: e.changedTouches[0].clientY
+    };
 }, { passive: false });
 
 // Detect swipes for slapping
@@ -837,13 +833,13 @@ document.addEventListener('touchend', function(e) {
         newConditionScreen.classList.contains('hidden') === false) {
         return;
     }
-    
-    const currentTime = Date.now();
-    const touchEndY = e.changedTouches[0].clientY;
-    const touchEndX = e.changedTouches[0].clientX;
+
     const viewportHeight = window.innerHeight;
-    // Determine which player based on where the touch ended
-    const isPlayer1Area = touchEndY < viewportHeight / 2;
+    
+    // Determine which player based on the touch identifier
+    const index = e.changedTouches[0].identifier;
+    const touchStartedOriginal = originalTouches[index].y;
+    const isPlayer1Area = touchStartedOriginal < viewportHeight / 2;
     
     if (true) {                
         const player = isPlayer1Area ? 'player1' : 'player2';

@@ -542,6 +542,7 @@ button:hover {
     font-size: 8rem;
     margin: 2rem 0;
     text-align: center;
+    animation: spin 4s linear infinite;
 }
 
 .condition-info {
