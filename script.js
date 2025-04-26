@@ -12,8 +12,8 @@ let isDebugPaused = false; // New debug pause state
 let currentRound = 1;
 let drawInterval = 1000; // Start with 1 second interval
 const CARDS_PER_ROUND = 6; // Cards to add each round
-const INITIAL_DECK_SIZE = 8; // Starting deck size
-const WINNING_ROUNDS = 7; // Number of rounds to win the game
+const INITIAL_DECK_SIZE = 6; // Starting deck size
+const WINNING_ROUNDS = 9; // Number of rounds to win the game
 let currentDeckSize = 0; // Track current deck size
 let activeConditions = new Set(); // Track which conditions are active
 
@@ -671,7 +671,8 @@ async function startNewRound() {
     drawInterval = Math.max(500, drawInterval - 100); // Don't go below 100ms
     
     // Add a new random condition if there are still inactive ones
-    if (currentRound > 1 &&currentRound % 2 == 0) {
+    const newConditionRounds = [2, 4, 7];
+    if (newConditionRounds.includes(currentRound)) {
         const inactiveConditions = Object.keys(conditions).filter(key => !activeConditions.has(key));
         if (inactiveConditions.length > 0) {
             const randomIndex = Math.floor(Math.random() * inactiveConditions.length);
