@@ -1,13 +1,14 @@
+const GHPATH = '/sticky-hands';
 const CACHE_NAME = 'sticky-hands-v1';
 const ASSETS = [
-  '/',
-  '/index.html',
-  '/styles.css',
-  '/script.js',
-  '/physics.js',
-  '/burst.svg',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png',
+  `${GHPATH}`,
+  `${GHPATH}/index.html`,
+  `${GHPATH}/styles.css`,
+  `${GHPATH}/script.js`,
+  `${GHPATH}/physics.js`,
+  `${GHPATH}/burst.svg`,
+  `${GHPATH}/icons/icon-192x192.png`,
+  `${GHPATH}/icons/icon-512x512.png`,
   'https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js'
 ];
 
