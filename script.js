@@ -13,7 +13,7 @@ let currentRound = 1;
 let drawInterval = 1000; // Start with 1 second interval
 const CARDS_PER_ROUND = 6; // Cards to add each round
 const INITIAL_DECK_SIZE = 8; // Starting deck size
-const WINNING_ROUNDS = 1; // Number of rounds to win the game
+const WINNING_ROUNDS = 7; // Number of rounds to win the game
 let currentDeckSize = 0; // Track current deck size
 let activeConditions = new Set(); // Track which conditions are active
 
