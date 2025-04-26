@@ -415,6 +415,16 @@ button:hover {
     display: inline-block;
 }
 
+.card.joker {
+    background: radial-gradient(circle, var(--palette-green) 0%, var(--palette-green) 25%, white 50%);
+}
+
+.joker .card-rank {
+    color: black;
+    font-family: 'Gooper';
+    text-transform: uppercase;
+}
+
 .card-corner {
     position: absolute;
     display: flex;

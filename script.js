@@ -282,14 +282,38 @@ function createCardElement(card, index) {
     cardElement.style.setProperty('--rotation', `${rotation}deg`);
     
     if (card.rank === 'joker') {
-        // Create joker card
+        // Add joker class to the card element
+        cardElement.classList.add('joker');
+        
+        // Create top left corner (rotated 180 degrees)
+        const topLeftContainer = document.createElement('div');
+        topLeftContainer.className = 'card-corner top-left';
+        
+        const topLeftText = document.createElement('span');
+        topLeftText.className = 'card-rank';
+        topLeftText.textContent = 'JOKER!';
+        topLeftContainer.appendChild(topLeftText);
+        
+        cardElement.appendChild(topLeftContainer);
+        
+        // Create joker content for the center
         const jokerContent = document.createElement('div');
         jokerContent.className = 'joker-content';
         jokerContent.innerHTML = `
             <div class="joker-emoji">🤡</div>
-            <div class="joker-text">JOKER</div>
         `;
         cardElement.appendChild(jokerContent);
+        
+        // Create bottom right corner
+        const bottomRightContainer = document.createElement('div');
+        bottomRightContainer.className = 'card-corner bottom-right';
+        
+        const bottomRightText = document.createElement('span');
+        bottomRightText.className = 'card-rank';
+        bottomRightText.textContent = 'JOKER!';
+        bottomRightContainer.appendChild(bottomRightText);
+        
+        cardElement.appendChild(bottomRightContainer);
     } else {
         // Create regular card corners
         const topLeftContainer = document.createElement('div');
@@ -401,6 +425,8 @@ async function handleSlap(event, player) {
     if (!isGameActive || isDebugPaused || justSlapped) {
         console.log('Game not active or paused or just slapped');
         return;
+    } else {
+        // debugger;
     }
 
     justSlapped = true;
