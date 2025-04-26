@@ -571,6 +571,8 @@ button:hover {
     font-size: 1.2rem;
     color: black;
     font-family: 'Fragment Mono', monospace;
+    max-width: 50vw;
+    margin: auto;
 }
 
 .burst-effect {

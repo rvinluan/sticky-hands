@@ -10,10 +10,10 @@ let isGameActive = false;
 let isPaused = false;
 let isDebugPaused = false; // New debug pause state
 let currentRound = 1;
-let drawInterval = 1000; // Start with 1 second interval
 const CARDS_PER_ROUND = 6; // Cards to add each round
 const INITIAL_DECK_SIZE = 6; // Starting deck size
 const WINNING_ROUNDS = 9; // Number of rounds to win the game
+let drawInterval = 500 + ((WINNING_ROUNDS - 1) * 100);
 let currentDeckSize = 0; // Track current deck size
 let activeConditions = new Set(); // Track which conditions are active
 
@@ -735,7 +735,7 @@ async function showNewConditionScreen(condition) {
 // Start new round
 async function startNewRound() {
     // Increment round and decrease interval
-    drawInterval = Math.max(500, drawInterval - 100); // Don't go below 100ms
+    drawInterval = 500 + ((WINNING_ROUNDS - currentRound) * 100);
     
     // Add a new random condition if there are still inactive ones
     const newConditionRounds = [2, 4, 7];
@@ -803,7 +803,7 @@ async function startGame() {
     cardPile = [];
     isGameActive = true;
     currentRound = 1;
-    drawInterval = 1000;
+    drawInterval = 500 + ((WINNING_ROUNDS - 1) * 100);
     
     // Reset active conditions to only joker
     activeConditions.clear();
