@@ -56,7 +56,7 @@ function createBallAndChain(x, linkCount, anchorTop = false) {
     const ballRadius = 30;
     
     // Calculate starting position based on anchor point
-    const startY = anchorTop ? 0 : window.innerHeight;
+    const startY = anchorTop ? linkHeight/2 : window.innerHeight - linkHeight/2;
     const yDirection = anchorTop ? 1 : -1;
     
     // Create the ball
@@ -214,31 +214,31 @@ function triggerPhysicsHitstop() {
 }
 
 // Handle window resize
-window.addEventListener('resize', () => {
-    render.options.width = window.innerWidth;
-    render.options.height = window.innerHeight;
-    render.canvas.width = window.innerWidth;
-    render.canvas.height = window.innerHeight;
+// window.addEventListener('resize', () => {
+//     render.options.width = window.innerWidth;
+//     render.options.height = window.innerHeight;
+//     render.canvas.width = window.innerWidth;
+//     render.canvas.height = window.innerHeight;
     
-    // Update ground position
-    Body.setPosition(ground, { x: window.innerWidth / 2, y: window.innerHeight + 50 });
-    Body.setVertices(ground, [
-        { x: 0, y: window.innerHeight + 50 },
-        { x: window.innerWidth, y: window.innerHeight + 50 },
-        { x: window.innerWidth, y: window.innerHeight + 150 },
-        { x: 0, y: window.innerHeight + 150 }
-    ]);
+//     // Update ground position
+//     Body.setPosition(ground, { x: window.innerWidth / 2, y: window.innerHeight + 50 });
+//     Body.setVertices(ground, [
+//         { x: 0, y: window.innerHeight + 50 },
+//         { x: window.innerWidth, y: window.innerHeight + 50 },
+//         { x: window.innerWidth, y: window.innerHeight + 150 },
+//         { x: 0, y: window.innerHeight + 150 }
+//     ]);
 
-    // Update ceiling position
-    Body.setPosition(ceiling, { x: window.innerWidth / 2, y: -50 });
-    Body.setVertices(ceiling, [
-        { x: 0, y: -50 },
-        { x: window.innerWidth, y: -50 },
-        { x: window.innerWidth, y: -150 },
-        { x: 0, y: -150 }
-    ]);
+//     // Update ceiling position
+//     Body.setPosition(ceiling, { x: window.innerWidth / 2, y: -50 });
+//     Body.setVertices(ceiling, [
+//         { x: 0, y: -50 },
+//         { x: window.innerWidth, y: -50 },
+//         { x: window.innerWidth, y: -150 },
+//         { x: 0, y: -150 }
+//     ]);
 
-    // Update wall positions
-    Body.setPosition(leftWall, { x: -50, y: window.innerHeight / 2 });
-    Body.setPosition(rightWall, { x: window.innerWidth + 50, y: window.innerHeight / 2 });
-}); 
+//     // Update wall positions
+//     Body.setPosition(leftWall, { x: -50, y: window.innerHeight / 2 });
+//     Body.setPosition(rightWall, { x: window.innerWidth + 50, y: window.innerHeight / 2 });
+// }); 
