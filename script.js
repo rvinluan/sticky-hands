@@ -12,7 +12,7 @@ let isDebugPaused = false; // New debug pause state
 let currentRound = 1;
 let drawInterval = 1000; // Start with 1 second interval
 const CARDS_PER_ROUND = 6; // Cards to add each round
-const INITIAL_DECK_SIZE = 15; // Starting deck size
+const INITIAL_DECK_SIZE = 8; // Starting deck size
 const WINNING_ROUNDS = 1; // Number of rounds to win the game
 let currentDeckSize = 0; // Track current deck size
 let activeConditions = new Set(); // Track which conditions are active
@@ -141,7 +141,7 @@ const conditions = {
         },
         points: 10,
         name: 'Double',
-        description: 'Last two cards are the same rank',
+        description: 'Slap when the last two cards are the same rank',
         emoji: '👯‍♀️'
     },
     sumTo13: {
@@ -154,7 +154,7 @@ const conditions = {
         },
         points: 10,
         name: 'Sum to 13',
-        description: 'Last two cards sum to 13 (A=11, J/Q/K=10)',
+        description: 'Slap when the last two cards sum to 13 (A=11, J/Q/K=10)',
         emoji: '🍀'
     },
     consecutive: {
@@ -166,7 +166,7 @@ const conditions = {
         },
         points: 5,
         name: 'Consecutive',
-        description: 'Last two cards are consecutive (A can connect to K or 2)',
+        description: 'Slap when the last two cards are consecutive (A can connect to K or 2)',
         emoji: '➡️'
     }
 };
@@ -645,7 +645,7 @@ async function startNewRound() {
     drawInterval = Math.max(500, drawInterval - 100); // Don't go below 100ms
     
     // Add a new random condition if there are still inactive ones
-    if (currentRound > 1 && currentRound % 2 == 0) {
+    if (currentRound > 1 &&currentRound % 2 == 0) {
         const inactiveConditions = Object.keys(conditions).filter(key => !activeConditions.has(key));
         if (inactiveConditions.length > 0) {
             const randomIndex = Math.floor(Math.random() * inactiveConditions.length);
@@ -740,10 +740,14 @@ async function startGame() {
     // Animate countdown
     await animateCountdown(countdownBar);
     
+    // Show new condition screen
+    await showNewConditionScreen(conditions['joker']);
+    
     // Start the game
     roundStartScreen.classList.add('hidden');
     gameplayScreen.classList.remove('hidden');
     gameInterval = setInterval(drawCard, drawInterval);
+
 }
 
 // End game
@@ -751,10 +755,25 @@ function endGame() {
     isGameActive = false;
     clearInterval(gameInterval);
     
-    // Update final score
-    finalScoreElement.textContent = player1Score;
-    finalScoreElement2.textContent = player2Score;
-
+    const endScreen = document.getElementById('end-screen');
+    const winnerScoreElement = document.getElementById('winner-score');
+    const loserScoreElement = document.getElementById('loser-score');
+    
+    // Determine the winner
+    const player1Won = player1Score > player2Score;
+    
+    // Set appropriate class for positioning
+    if (player1Won) {
+        endScreen.classList.add('player1-won');
+        endScreen.classList.remove('player2-won');
+        winnerScoreElement.textContent = player1Score;
+        loserScoreElement.textContent = player2Score;
+    } else {
+        endScreen.classList.add('player2-won');
+        endScreen.classList.remove('player1-won');
+        winnerScoreElement.textContent = player2Score;
+        loserScoreElement.textContent = player1Score;
+    }
     
     // Show end screen
     gameplayScreen.classList.add('hidden');

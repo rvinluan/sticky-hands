@@ -81,13 +81,16 @@
     </div>
 
     <!-- End Screen -->
-    <div id="end-screen" class="screen hidden">
-        <h2>Game Over!</h2>
-        <div class="score-display">
-            <p>Player 1 Final Score: <span id="final-score">0</span></p>
-            <p>Player 2 Final Score: <span id="final-score-2">0</span></p>
+    <div id="end-screen" class="screen end-screen-container hidden">
+        <div class="winner-container">
+            <img src="burst.svg" class="winner-burst">
+            <h2>You Win!</h2>
+            <p class="winner-score"><span id="winner-score">0</span> 🏆</p>
+            <button id="replay-button">Play Again</button>
         </div>
-        <button id="replay-button">Play Again</button>
+        <div class="loser-container">
+            <p class="loser-message">On the other hand, you lost. You scored <span id="loser-score">0</span> points.</p>
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>

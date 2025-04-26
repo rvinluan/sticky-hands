@@ -48,7 +48,7 @@ body {
     -webkit-tap-highlight-color: transparent;
 }
 
-.hidden {
+.screen.hidden {
     display: none;
 }
 
@@ -577,4 +577,79 @@ button:hover {
 
 .burst-effect.show {
     opacity: 1;
+}
+
+/* End screen base positioning */
+.end-screen-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 999;
+}
+
+.winner-container {
+    position: relative;
+    width: 100%;
+    height: 50vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.winner-burst {
+    position: absolute;
+    width: 170vw;
+    height: auto;
+    z-index: -1;
+}
+
+.winner-container h2 {
+    font-family: 'Gooper', sans-serif;
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    color: black;
+    z-index: 1;
+}
+
+.winner-score {
+    font-family: 'Chakra Petch';
+    font-size: 6rem;
+    margin-bottom: 2rem;
+    z-index: 1;
+}
+
+.loser-container {
+    width: 100%;
+    height: 50vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loser-message {
+    font-size: 1.3rem;
+    color: black;
+    text-align: center;
+    max-width: 80%;
+}
+
+/* Player 1 won (top player) */
+
+.end-screen-container.player2-won {
+    flex-direction:column-reverse;
+}
+
+.player1-won .winner-container {
+    transform: rotate(180deg);
+}
+
+.player2-won .loser-container {
+    transform: rotate(180deg);
 } 
