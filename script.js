@@ -168,6 +168,73 @@ const conditions = {
         name: 'Consecutive',
         description: 'Slap when the last two cards are consecutive (A can connect to K or 2)',
         emoji: '➡️'
+    },
+    blackjack: {
+        check: (pile) => {
+            if (pile.length < 1) return false;
+            const lastCard = pile[pile.length - 1];
+            return lastCard.rank === 'J' && (lastCard.suit === '♠' || lastCard.suit === '♣');
+        },
+        points: 7,
+        name: 'Blackjack',
+        description: 'Slap when a black Jack appears',
+        emoji: '⚫️'
+    },
+    radio: {
+        check: (pile) => {
+            if (pile.length < 2) return false;
+            const lastCard = pile[pile.length - 1];
+            const secondLastCard = pile[pile.length - 2];
+            return lastCard.rank === '4' && secondLastCard.rank === '10';
+        },
+        points: 6,
+        name: 'Radio',
+        description: 'Slap when a 10 is followed by a 4',
+        emoji: '📻'
+    },
+    marriage: {
+        check: (pile) => {
+            if (pile.length < 2) return false;
+            const lastCard = pile[pile.length - 1];
+            const secondLastCard = pile[pile.length - 2];
+            return (lastCard.rank === 'K' && secondLastCard.rank === 'Q') || 
+                   (lastCard.rank === 'Q' && secondLastCard.rank === 'K');
+        },
+        points: 8,
+        name: 'Marriage',
+        description: 'Slap when a king and a queen are adjacent',
+        emoji: '💍'
+    },
+    lovers: {
+        check: (pile) => {
+            if (pile.length < 2) return false;
+            const lastCard = pile[pile.length - 1];
+            const secondLastCard = pile[pile.length - 2];
+            return lastCard.suit === '♥' && secondLastCard.suit === '♥';
+        },
+        points: 9,
+        name: 'Lovers',
+        description: 'Slap when the top two cards are hearts',
+        emoji: '💕'
+    },
+    evenSteven: {
+        check: (pile) => {
+            if (pile.length < 3) return false;
+            const lastCard = pile[pile.length - 1];
+            const secondLastCard = pile[pile.length - 2];
+            const thirdLastCard = pile[pile.length - 3];
+            
+            // Check if all three are even (2, 4, 6, 8, 10)
+            const isEven = rank => ['2', '4', '6', '8', '10'].includes(rank);
+            
+            return isEven(lastCard.rank) && 
+                   isEven(secondLastCard.rank) && 
+                   isEven(thirdLastCard.rank);
+        },
+        points: 11,
+        name: 'Even Steven',
+        description: 'Slap when 3 cards in a row are even',
+        emoji: '✌️'
     }
 };
 
