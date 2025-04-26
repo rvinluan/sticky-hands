@@ -90,8 +90,8 @@ function createBallAndChain(x, linkCount, anchorTop = false) {
             const constraint = Constraint.create({
                 bodyA: chainLinks[i - 1],
                 bodyB: link,
-                pointA: { x: 0, y: -linkHeight/2 },
-                pointB: { x: 0, y: linkHeight/2 },
+                pointA: { x: 0, y: linkHeight/2 * yDirection },
+                pointB: { x: 0, y: linkHeight/2 * yDirection * -1 },
                 stiffness: .3, // Less stiffness for more elasticity
                 render: {
                     type: 'line',
@@ -108,7 +108,7 @@ function createBallAndChain(x, linkCount, anchorTop = false) {
         bodyA: ball,
         bodyB: chainLinks[chainLinks.length - 1],
         pointA: { x: 0, y: ballRadius-5 },
-        pointB: { x: 0, y: -linkHeight/2 },
+        pointB: { x: 0, y: linkHeight/2 * yDirection},
         stiffness: 1,
         render: {
             type: 'line',
