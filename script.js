@@ -319,17 +319,7 @@ function checkConditions(pile) {
 async function handleSlap(event, player) {    
     if (!isGameActive || isDebugPaused || justSlapped) {
         console.log('Game not active or paused or just slapped');
-        return;
-    } else {
-        // debugger;
-    }
-
-    justSlapped = true;
-    setTimeout(() => {
-        justSlapped = false;
-    }, 1000);
-    
-    // Handle color cycling on welcome screen
+        // Handle color cycling on welcome screen
     if (welcomeScreen && !welcomeScreen.classList.contains('hidden')) {
         if (player === 'player1') {
             player1ColorIndex = (player1ColorIndex + 1) % colors.length;
@@ -337,6 +327,9 @@ async function handleSlap(event, player) {
             Composite.allBodies(chain1.composite).forEach(body => {
                 if (body.render) {
                     body.render.fillStyle = colors[player1ColorIndex];
+                }
+                if (body.label == "Circle Body") {
+                    body.render.sprite.texture = `hand-${colorNames[player1ColorIndex]}.png`;
                 }
             });
             Composite.allConstraints(chain1.composite).forEach(constraint => {
@@ -351,6 +344,9 @@ async function handleSlap(event, player) {
                 if (body.render) {
                     body.render.fillStyle = colors[player2ColorIndex];
                 }
+                if (body.label == "Circle Body") {
+                    body.render.sprite.texture = `hand-${colorNames[player2ColorIndex]}.png`;
+                }
             });
             Composite.allConstraints(chain2.composite).forEach(constraint => {
                 if (constraint.render) {
@@ -358,8 +354,16 @@ async function handleSlap(event, player) {
                 }
             });
         }
-        return;
     }
+        return;
+    } else {
+        // debugger;
+    }
+
+    justSlapped = true;
+    setTimeout(() => {
+        justSlapped = false;
+    }, 1000);
 
     // Only check conditions for fully animated cards
     const animatedCards = cardPile.filter(card => card.fullyAnimated);
