@@ -17,6 +17,10 @@ let drawInterval = 500 + ((WINNING_ROUNDS - 1) * 100);
 let currentDeckSize = 0; // Track current deck size
 let activeConditions = new Set(); // Track which conditions are active
 
+// Track current colors for each player's chain
+let player1ColorIndex = 0;
+let player2ColorIndex = 1;
+
 // Variables to track player swipes
 let player1LastTouchStart = { x: 0, y: 0, time: 0 };
 let player2LastTouchStart = { x: 0, y: 0, time: 0 };
@@ -325,6 +329,38 @@ async function handleSlap(event, player) {
         justSlapped = false;
     }, 1000);
     
+    // Handle color cycling on welcome screen
+    if (welcomeScreen && !welcomeScreen.classList.contains('hidden')) {
+        if (player === 'player1') {
+            player1ColorIndex = (player1ColorIndex + 1) % colors.length;
+            // Update chain1 color
+            Composite.allBodies(chain1.composite).forEach(body => {
+                if (body.render) {
+                    body.render.fillStyle = colors[player1ColorIndex];
+                }
+            });
+            Composite.allConstraints(chain1.composite).forEach(constraint => {
+                if (constraint.render) {
+                    constraint.render.strokeStyle = colors[player1ColorIndex];
+                }
+            });
+        } else {
+            player2ColorIndex = (player2ColorIndex + 1) % colors.length;
+            // Update chain2 color
+            Composite.allBodies(chain2.composite).forEach(body => {
+                if (body.render) {
+                    body.render.fillStyle = colors[player2ColorIndex];
+                }
+            });
+            Composite.allConstraints(chain2.composite).forEach(constraint => {
+                if (constraint.render) {
+                    constraint.render.strokeStyle = colors[player2ColorIndex];
+                }
+            });
+        }
+        return;
+    }
+
     // Only check conditions for fully animated cards
     const animatedCards = cardPile.filter(card => card.fullyAnimated);
     const conditionsMet = checkConditions(animatedCards);

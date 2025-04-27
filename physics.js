@@ -1,6 +1,10 @@
 // Matter.js setup
 const { Engine, Render, World, Bodies, Body, Composite, Constraint, Vector } = Matter;
 
+// Color palette array
+const colors = ['#614EF1', '#FF7252', '#D03291', '#FFEC3D'];
+const colorNames = ['indigo', 'orange', 'raspberry', 'yellow'];
+
 // Create an engine
 const engine = Engine.create();
 engine.gravity.y = 0; // Disable gravity
@@ -48,7 +52,7 @@ const rightWall = Bodies.rectangle(window.innerWidth + 50, window.innerHeight / 
 });
 
 // Function to create a ball and chain
-function createBallAndChain(x, linkCount, anchorTop = false) {
+function createBallAndChain(x, linkCount, anchorTop = false, colorIndex = 0) {
     const chainLinks = [];
     const constraints = [];
     const linkWidth = 10;
@@ -66,7 +70,7 @@ function createBallAndChain(x, linkCount, anchorTop = false) {
         sleepThreshold: 10,
         render: {
             sprite: {
-                texture: 'hand-raspberry.png',
+                texture: `hand-${colorNames[colorIndex]}.png`,
                 xScale: 0.24,
                 yScale: 0.24
             }
@@ -80,7 +84,7 @@ function createBallAndChain(x, linkCount, anchorTop = false) {
             restitution: 0,
             friction: 0.8,
             render: {
-                fillStyle: '#D03291'
+                fillStyle: colors[colorIndex]
             }
         });
         chainLinks.push(link);
@@ -95,7 +99,7 @@ function createBallAndChain(x, linkCount, anchorTop = false) {
                 stiffness: .3, // Less stiffness for more elasticity
                 render: {
                     type: 'line',
-                    strokeStyle: '#D03291',
+                    strokeStyle: colors[colorIndex],
                     lineWidth: linkWidth
                 }
             });
@@ -112,7 +116,7 @@ function createBallAndChain(x, linkCount, anchorTop = false) {
         stiffness: 1,
         render: {
             type: 'line',
-            strokeStyle: '#D03291',
+            strokeStyle: colors[colorIndex],
             lineWidth: linkWidth
         }
     });
@@ -133,8 +137,8 @@ function createBallAndChain(x, linkCount, anchorTop = false) {
 }
 
 // Create two ball and chains
-const chain1 = createBallAndChain(window.innerWidth / 2 - 100, 6, true); // Top chain
-const chain2 = createBallAndChain(window.innerWidth / 2 + 100, 6, false);  // Bottom chain
+const chain1 = createBallAndChain(window.innerWidth / 2 - 100, 6, true, 0); // Top chain
+const chain2 = createBallAndChain(window.innerWidth / 2 + 100, 6, false, 1);  // Bottom chain
 
 // Add the composites to the world
 World.add(world, [chain1.composite, chain2.composite]);
