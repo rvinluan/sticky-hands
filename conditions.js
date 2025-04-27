@@ -18,7 +18,7 @@ const conditionsObject = {
             const secondLastCard = pile[pile.length - 2];
             return lastCard.rank === '9' && secondLastCard.rank === '6';
         },
-        points: 5,
+        points: 20,
         name: 'Nice',
         description: 'Slap when a 6 is followed by a 9',
         emoji: '😏'
@@ -31,7 +31,7 @@ const conditionsObject = {
             const firstCard = pile[pile.length - 3];
             return lastCard.rank === firstCard.rank && lastCard.rank !== middleCard.rank;
         },
-        points: 8,
+        points: 10,
         name: 'Sandwich',
         description: 'Slap when the top card matches the 3rd card with a different card in between',
         emoji: '🥪'
@@ -57,7 +57,7 @@ const conditionsObject = {
             const secondLastCard = pile[pile.length - 2];
             return lastCard.rank === secondLastCard.rank;
         },
-        points: 10,
+        points: 8,
         name: 'Double',
         description: 'Slap when the last two cards are the same rank',
         emoji: '👯‍♀️'
@@ -67,10 +67,10 @@ const conditionsObject = {
             if (pile.length < 2) return false;
             const lastCard = pile[pile.length - 1];
             const secondLastCard = pile[pile.length - 2];
-            const sum = getCardValue(lastCard.rank) + getCardValue(secondLastCard.rank);
+            const sum = getCardValueFunction(lastCard.rank) + getCardValueFunction(secondLastCard.rank);
             return sum === 13;
         },
-        points: 10,
+        points: 8,
         name: 'Sum to 13',
         description: 'Slap when the last two cards sum to 13 (A=11, J/Q/K=10)',
         emoji: '🍀'
@@ -80,7 +80,7 @@ const conditionsObject = {
             if (pile.length < 2) return false;
             const lastCard = pile[pile.length - 1];
             const secondLastCard = pile[pile.length - 2];
-            return areConsecutive(lastCard.rank, secondLastCard.rank);
+            return areConsecutiveFunction(lastCard.rank, secondLastCard.rank);
         },
         points: 5,
         name: 'Consecutive',
@@ -93,7 +93,7 @@ const conditionsObject = {
             const lastCard = pile[pile.length - 1];
             return lastCard.rank === 'J' && (lastCard.suit === '♠' || lastCard.suit === '♣');
         },
-        points: 7,
+        points: 5,
         name: 'Blackjack',
         description: 'Slap when a black Jack appears',
         emoji: '⚫️'
@@ -105,7 +105,7 @@ const conditionsObject = {
             const secondLastCard = pile[pile.length - 2];
             return lastCard.rank === '4' && secondLastCard.rank === '10';
         },
-        points: 6,
+        points: 20,
         name: 'Radio',
         description: 'Slap when a 10 is followed by a 4',
         emoji: '📻'
@@ -118,7 +118,7 @@ const conditionsObject = {
             return (lastCard.rank === 'K' && secondLastCard.rank === 'Q') || 
                    (lastCard.rank === 'Q' && secondLastCard.rank === 'K');
         },
-        points: 8,
+        points: 12,
         name: 'Marriage',
         description: 'Slap when a king and a queen are adjacent',
         emoji: '💍'
@@ -130,7 +130,7 @@ const conditionsObject = {
             const secondLastCard = pile[pile.length - 2];
             return lastCard.suit === '♥' && secondLastCard.suit === '♥';
         },
-        points: 9,
+        points: 8,
         name: 'Lovers',
         description: 'Slap when the top two cards are hearts',
         emoji: '💕'
@@ -149,7 +149,7 @@ const conditionsObject = {
                    isEven(secondLastCard.rank) && 
                    isEven(thirdLastCard.rank);
         },
-        points: 11,
+        points: 12,
         name: 'Even Steven',
         description: 'Slap when 3 cards in a row are even',
         emoji: '✌️'
@@ -174,14 +174,25 @@ function areConsecutiveFunction(rank1, rank2) {
     }
     
     // Handle regular number cards
-    const val1 = getCardValue(rank1);
-    const val2 = getCardValue(rank2);
+    const val1 = getCardValueFunction(rank1);
+    const val2 = getCardValueFunction(rank2);
     return Math.abs(val1 - val2) === 1;
 }
 
-// Export the conditions and helper functions
-window.gameConditions = {
-    conditionsObject,
-    getCardValueFunction,
-    areConsecutiveFunction
-}; 
+// Export for Node.js
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        conditionsObject,
+        getCardValueFunction,
+        areConsecutiveFunction
+    };
+}
+
+// Export for browser
+if (typeof window !== 'undefined') {
+    window.gameConditions = {
+        conditionsObject,
+        getCardValueFunction,
+        areConsecutiveFunction
+    };
+} 
