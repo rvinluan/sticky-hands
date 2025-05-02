@@ -27,7 +27,7 @@ let player2LastTouchStart = { x: 0, y: 0, time: 0 };
 let lastSlapTime = 0;
 let justSlapped = false;
 const MIN_SLAP_INTERVAL = 300; // Minimum time between slaps in ms
-
+const SWIPE_THRESHOLD = 70; // Minimum distance for a swipe in pixels
 // Track recent slaps from both players
 let player1RecentSlap = { time: 0, valid: false };
 let player2RecentSlap = { time: 0, valid: false };
@@ -315,46 +315,46 @@ function checkConditions(pile) {
     return metConditions;
 }
 
+function changeColor(player) {
+    if (player === 'player1') {
+        player1ColorIndex = (player1ColorIndex + 1) % colors.length;
+        // Update chain1 color
+        Composite.allBodies(chain1.composite).forEach(body => {
+            if (body.render) {
+                body.render.fillStyle = colors[player1ColorIndex];
+            }
+            if (body.label == "Circle Body") {
+                body.render.sprite.texture = `hand-${colorNames[player1ColorIndex]}.png`;
+            }
+        });
+        Composite.allConstraints(chain1.composite).forEach(constraint => {
+            if (constraint.render) {
+                constraint.render.strokeStyle = colors[player1ColorIndex];
+            }
+        });
+    } else {
+        player2ColorIndex = (player2ColorIndex + 1) % colors.length;
+        // Update chain2 color
+        Composite.allBodies(chain2.composite).forEach(body => {
+            if (body.render) {
+                body.render.fillStyle = colors[player2ColorIndex];
+            }
+            if (body.label == "Circle Body") {
+                body.render.sprite.texture = `hand-${colorNames[player2ColorIndex]}.png`;
+            }
+        });
+        Composite.allConstraints(chain2.composite).forEach(constraint => {
+            if (constraint.render) {
+                constraint.render.strokeStyle = colors[player2ColorIndex];
+            }
+        });
+    }
+}
+
 // Handle slap
 async function handleSlap(event, player) {    
     if (!isGameActive || isDebugPaused || justSlapped) {
         console.log('Game not active or paused or just slapped');
-        // Handle color cycling on welcome screen
-    if (welcomeScreen && !welcomeScreen.classList.contains('hidden')) {
-        if (player === 'player1') {
-            player1ColorIndex = (player1ColorIndex + 1) % colors.length;
-            // Update chain1 color
-            Composite.allBodies(chain1.composite).forEach(body => {
-                if (body.render) {
-                    body.render.fillStyle = colors[player1ColorIndex];
-                }
-                if (body.label == "Circle Body") {
-                    body.render.sprite.texture = `hand-${colorNames[player1ColorIndex]}.png`;
-                }
-            });
-            Composite.allConstraints(chain1.composite).forEach(constraint => {
-                if (constraint.render) {
-                    constraint.render.strokeStyle = colors[player1ColorIndex];
-                }
-            });
-        } else {
-            player2ColorIndex = (player2ColorIndex + 1) % colors.length;
-            // Update chain2 color
-            Composite.allBodies(chain2.composite).forEach(body => {
-                if (body.render) {
-                    body.render.fillStyle = colors[player2ColorIndex];
-                }
-                if (body.label == "Circle Body") {
-                    body.render.sprite.texture = `hand-${colorNames[player2ColorIndex]}.png`;
-                }
-            });
-            Composite.allConstraints(chain2.composite).forEach(constraint => {
-                if (constraint.render) {
-                    constraint.render.strokeStyle = colors[player2ColorIndex];
-                }
-            });
-        }
-    }
         return;
     } else {
         // debugger;
@@ -817,9 +817,12 @@ document.addEventListener('touchend', function(e) {
     const index = e.changedTouches[0].identifier;
     const touchStartedOriginal = originalTouches[index].y;
     const isPlayer1Area = touchStartedOriginal < viewportHeight / 2;
-    
-    if (true) {                
-        const player = isPlayer1Area ? 'player1' : 'player2';
+    const yDelta = e.changedTouches[0].clientY - originalTouches[index].y;
+    const xDelta = e.changedTouches[0].clientX - originalTouches[index].x;
+    const distance = Math.sqrt(xDelta * xDelta + yDelta * yDelta);
+    const player = isPlayer1Area ? 'player1' : 'player2';
+
+    if (distance > SWIPE_THRESHOLD) {                
         console.log(`${player} swipe detected`);
         
         // Create mock event
@@ -833,5 +836,10 @@ document.addEventListener('touchend', function(e) {
         
         // Handle the slap
         handleSlap(mockEvent, player);
+    } else {
+        // Handle color cycling on welcome screen
+        if (welcomeScreen && !welcomeScreen.classList.contains('hidden')) {
+            changeColor(player);
+        }
     }
 });
