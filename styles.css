@@ -664,4 +664,36 @@ button:hover {
 
 .player2-won .loser-container {
     transform: rotate(180deg);
+}
+
+/* Tutorial styles */
+.tutorial {
+    text-align: center;
+    margin: 4rem 0;
+    font-family: 'Fragment Mono', monospace;
+    color: rgba(0,0,0,0.3);
+}
+
+.tutorial p {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.tutorial .arrow {
+    font-size: 2rem;
+    animation: bounce 1s infinite;
+}
+
+.tutorial.player1 {
+    transform: rotate(180deg);
+    margin-bottom: 8rem;
+}
+
+.tutorial.player2 {
+    margin-top: 8rem;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
 } 
