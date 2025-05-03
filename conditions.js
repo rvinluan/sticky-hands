@@ -132,26 +132,82 @@ const conditionsObject = {
         },
         points: 8,
         name: 'Lovers',
-        description: 'Slap when the top two cards are hearts',
+        description: 'Slap when two cards in a row are hearts',
         emoji: '💕'
+    },
+    spades: {
+        check: (pile) => {
+            if (pile.length < 2) return false;
+            const lastCard = pile[pile.length - 1];
+            const secondLastCard = pile[pile.length - 2];
+            return lastCard.suit === '♠' && secondLastCard.suit === '♠';
+        },
+        points: 8,
+        name: 'Dig It',
+        description: 'Slap when two cards in a row are spades',
+        emoji: '🪏'
+    },
+    clubs: {
+        check: (pile) => {
+            if (pile.length < 2) return false;
+            const lastCard = pile[pile.length - 1];
+            const secondLastCard = pile[pile.length - 2];
+            return lastCard.suit === '♣' && secondLastCard.suit === '♣';
+        },
+        points: 8,
+        name: 'Party Night',
+        description: 'Slap when two cards in a row are clubs',
+        emoji: '🪩'
+    },
+    diamonds: {
+        check: (pile) => {
+            if (pile.length < 2) return false;
+            const lastCard = pile[pile.length - 1];
+            const secondLastCard = pile[pile.length - 2];
+            return lastCard.suit === '♦' && secondLastCard.suit === '♦';
+        },
+        points: 8,
+        name: 'Rich Vein',
+        description: 'Slap when two cards in a row are diamonds',
+        emoji: '💎'
+    },
+    lucky7: {
+        check: (pile) => {
+            if (pile.length < 1) return false;
+            const lastCard = pile[pile.length - 1];
+            return lastCard.rank === '7';
+        },
+        points: 7,
+        name: 'Lucky 7',
+        description: 'Slap when a 7 appears',
+        emoji: '🍀'
+    },
+    spiders: {
+        check: (pile) => {
+            if (pile.length < 1) return false;
+            const lastCard = pile[pile.length - 1];
+            return lastCard.rank === '8';
+        },
+        points: 8,
+        name: 'Spiders!',
+        description: 'Slap when an 8 appears',
+        emoji: '🕷️'
     },
     evenSteven: {
         check: (pile) => {
-            if (pile.length < 3) return false;
+            if (pile.length < 2) return false;
             const lastCard = pile[pile.length - 1];
             const secondLastCard = pile[pile.length - 2];
-            const thirdLastCard = pile[pile.length - 3];
             
             // Check if all three are even (2, 4, 6, 8, 10)
             const isEven = rank => ['2', '4', '6', '8', '10'].includes(rank);
             
             return isEven(lastCard.rank) && 
-                   isEven(secondLastCard.rank) && 
-                   isEven(thirdLastCard.rank);
+                   isEven(secondLastCard.rank);
         },
-        points: 12,
+        points: 6,
         name: 'Even Steven',
-        description: 'Slap when 3 cards in a row are even',
+        description: 'Slap when 2 cards are both even',
         emoji: '✌️'
     }
 };
