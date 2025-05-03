@@ -11,7 +11,7 @@ let isPaused = false;
 let isDebugPaused = false; // New debug pause state
 let currentRound = 1;
 const CARDS_PER_ROUND = 6; // Cards to add each round
-const INITIAL_DECK_SIZE = 6; // Starting deck size
+const INITIAL_DECK_SIZE = 10; // Starting deck size
 const WINNING_ROUNDS = 9; // Number of rounds to win the game
 let drawInterval = 500 + ((WINNING_ROUNDS - 1) * 100);
 let currentDeckSize = 0; // Track current deck size
@@ -602,7 +602,7 @@ async function startNewRound() {
     drawInterval = 500 + ((WINNING_ROUNDS - currentRound) * 100);
     
     // Add a new random condition if there are still inactive ones
-    const newConditionRounds = [2, 4, 7];
+    const newConditionRounds = [3, 5, 7];
     if (newConditionRounds.includes(currentRound)) {
         const inactiveConditions = Object.keys(conditions).filter(key => !activeConditions.has(key));
         if (inactiveConditions.length > 0) {
@@ -669,9 +669,11 @@ async function startGame() {
     currentRound = 1;
     drawInterval = 500 + ((WINNING_ROUNDS - 1) * 100);
     
-    // Reset active conditions to only joker
+    // Reset active conditions and add initial conditions
     activeConditions.clear();
     activeConditions.add('joker');
+    activeConditions.add('consecutive');
+    activeConditions.add('double');
     
     // Initialize deck and UI
     initializeDeck();
@@ -683,29 +685,44 @@ async function startGame() {
     const cards = cardPileElement.querySelectorAll('.card');
     cards.forEach(card => card.remove());
     
-    // Show round start screen
+    // Hide all screens except initial conditions
     welcomeScreen.classList.add('hidden');
     gameplayScreen.classList.add('hidden');
     endScreen.classList.add('hidden');
-    roundStartScreen.classList.remove('hidden');
-    
-    // Update round start screen
-    updateRoundStartScreen();
-    
-    // Reset countdown bar
-    countdownBar.style.width = '350px';
-    
-    // Animate countdown
-    await animateCountdown(countdownBar);
-    
-    // Show new condition screen
-    await showNewConditionScreen(conditions['joker']);
-    
-    // Start the game
     roundStartScreen.classList.add('hidden');
-    gameplayScreen.classList.remove('hidden');
-    gameInterval = setInterval(drawCard, drawInterval);
-
+    
+    // Show initial conditions screen
+    const initialConditionsScreen = document.getElementById('initial-conditions-screen');
+    const tapText = document.querySelector('.tap-text');
+    initialConditionsScreen.classList.remove('hidden');
+    
+    // Handle tap interactions
+    let tapCount = 0;
+    const handleTap = () => {
+        tapCount++;
+        if (tapCount === 1) {
+            tapText.textContent = 'tap once to advance';
+        } else if (tapCount === 2) {
+            // Remove event listener and proceed to round start
+            initialConditionsScreen.removeEventListener('click', handleTap);
+            initialConditionsScreen.classList.add('hidden');
+            
+            // Show round start screen
+            roundStartScreen.classList.remove('hidden');
+            updateRoundStartScreen();
+            countdownBar.style.width = '350px';
+            
+            // Animate countdown and then start game
+            animateCountdown(countdownBar).then(() => {
+                roundStartScreen.classList.add('hidden');
+                gameplayScreen.classList.remove('hidden');
+                gameInterval = setInterval(drawCard, drawInterval);
+            });
+        }
+    };
+    
+    // Add click event listener
+    initialConditionsScreen.addEventListener('click', handleTap);
 }
 
 // End game

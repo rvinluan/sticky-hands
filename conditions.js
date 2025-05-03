@@ -33,7 +33,7 @@ const conditionsObject = {
         },
         points: 10,
         name: 'Sandwich',
-        description: 'Slap when the top card matches the 3rd card with a different card in between',
+        description: 'Slap when two of the same card sandwich another (e.g. 4, 7, 4)',
         emoji: '🥪'
     },
     flush: {
@@ -47,7 +47,7 @@ const conditionsObject = {
         },
         points: 12,
         name: 'Flush',
-        description: 'Slap when the top 3 cards are all the same suit',
+        description: 'Slap when 3 cards in a row are the same suit',
         emoji: '🚽'
     },
     double: {
@@ -59,7 +59,7 @@ const conditionsObject = {
         },
         points: 8,
         name: 'Double',
-        description: 'Slap when the last two cards are the same rank',
+        description: 'Slap when two cards are the same rank',
         emoji: '👯‍♀️'
     },
     sumTo13: {
@@ -84,7 +84,7 @@ const conditionsObject = {
         },
         points: 5,
         name: 'Consecutive',
-        description: 'Slap when the last two cards are consecutive (A can connect to K or 2)',
+        description: 'Slap when two cards are consecutive (A can connect to K or 2)',
         emoji: '➡️'
     },
     blackjack: {
