@@ -186,7 +186,7 @@ function createCardElement(card, index) {
         
         const topLeftText = document.createElement('span');
         topLeftText.className = 'card-rank';
-        topLeftText.textContent = 'JOKER!';
+        topLeftText.textContent = 'JOKER';
         topLeftContainer.appendChild(topLeftText);
         
         cardElement.appendChild(topLeftContainer);
@@ -205,7 +205,7 @@ function createCardElement(card, index) {
         
         const bottomRightText = document.createElement('span');
         bottomRightText.className = 'card-rank';
-        bottomRightText.textContent = 'JOKER!';
+        bottomRightText.textContent = 'JOKER';
         bottomRightContainer.appendChild(bottomRightText);
         
         cardElement.appendChild(bottomRightContainer);
@@ -769,6 +769,9 @@ replayButton.addEventListener('click', (event) => {
 
 // Keyboard controls
 document.addEventListener('keydown', (event) => {
+    if (event.key === '9') {
+        debugger;
+    }
     // Welcome screen: Enter to start game
     if (!welcomeScreen.classList.contains('hidden')) {
         if (event.key === 'Enter') {
