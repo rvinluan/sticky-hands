@@ -191,6 +191,13 @@ function fling(isPlayer1 = true) {
     Body.applyForce(whichChain.ball, whichChain.ball.position, force);
 }
 
+function stopAllForces(isPlayer1 = true) {
+    const whichChain = isPlayer1 ? chain1 : chain2;
+    Composite.allBodies(whichChain.composite).forEach(body => {
+        Body.setVelocity(body, { x: 0, y: 0 });
+    });
+}
+
 // Add bodies to the world
 World.add(world, [ground, ceiling, leftWall, rightWall]);
 
@@ -206,8 +213,9 @@ const bottomThreshold = window.innerHeight - 200; // Y position to consider "bot
 const topThreshold = 200; // Y position to consider "top" for chain1
 let hitstopTimeout = null;
 
-function triggerPhysicsHitstop() {
+function triggerPhysicsHitstop(isPlayer1 = true) {
     engine.timing.timeScale = 0; // Pause physics
+    stopAllForces(isPlayer1);
             
     // Resume after 0.3 seconds
     hitstopTimeout = setTimeout(() => {

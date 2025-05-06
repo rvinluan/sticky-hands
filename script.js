@@ -351,6 +351,41 @@ function changeColor(player) {
     }
 }
 
+// Function to animate cards flying off screen
+async function animateCardsFlyOff(player) {
+    const cardElements = cardPileElement.querySelectorAll('.card');
+    const viewportHeight = window.innerHeight;
+    
+    // Set the animation direction based on player
+    const direction = player === 'player1' ? -1 : 1;
+    const targetY = direction * (viewportHeight + 100); // Fly off screen with some extra distance
+    
+    // Create and apply the animation to each card
+    const animations = Array.from(cardElements).map((card, index) => {
+        return new Promise(resolve => {
+            // Add a slight delay based on card position for a cascading effect
+            const delay = index * 50;
+            
+            // Preserve current transform in inline style
+            const currentTransform = card.style.transform || '';
+            
+            // Add fly-off animation
+            if(player === 'player1') {
+                card.classList.add('should-fly-off-top');
+            } else {
+                card.classList.add('should-fly-off-bottom');
+            }
+            // debugger;
+            
+            // Resolve after animation completes
+            setTimeout(resolve, 500 + delay);
+        });
+    });
+    
+    // Wait for all animations to complete
+    await Promise.all(animations);
+}
+
 // Handle slap
 async function handleSlap(event, player) {    
     if (!isGameActive || isDebugPaused || justSlapped) {
@@ -431,8 +466,8 @@ async function handleSlap(event, player) {
         setTimeout(() => {
             isPaused = true;
             clearInterval(gameInterval);
-            triggerPhysicsHitstop();
-        }, 50);
+            triggerPhysicsHitstop(player === 'player1');
+        }, 100);
         
         // Update score for the correct player
         if (player === 'player1') {
@@ -446,13 +481,12 @@ async function handleSlap(event, player) {
         // Show success message
         showToast(`${conditionsMet[0].name}! +${conditionsMet[0].points} points`, 'success', 1000, player);
         
-        // Wait for 0.5 seconds
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // Animate cards flying off screen
+        await animateCardsFlyOff(player);
         
-        // After 1 second, clear the card pile
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // Clear the card pile after animation
         cardPile = [];
-        cardPileElement.innerHTML = '';
+        // cardPileElement.innerHTML = '';
         
         // Resume the game
         isPaused = false;

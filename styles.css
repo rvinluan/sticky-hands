@@ -235,6 +235,7 @@ button:hover {
     padding: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     transform: translateX(100vw) rotate(var(--rotation, 0deg));
+    transition: margin-top 0.5s ease-out;
 }
 
 .card.animate {
@@ -247,6 +248,36 @@ button:hover {
     }
     to {
         transform: translateX(var(--final-position)) rotate(var(--rotation, 0deg));
+    }
+}
+
+.card.should-fly-off-top {
+    animation: flyOffTop 0.5s ease-in-out forwards;
+    transform: translateX(var(--final-position)) rotate(var(--rotation, 0deg));
+}
+
+@keyframes flyOffTop {
+    0% {
+        margin-top: 0;
+    }
+    100% {
+        margin-top: -150vh;
+    }
+}
+
+.card.should-fly-off-bottom {
+    animation: flyOffBottom 0.5s ease-in-out forwards;
+    transform: translateX(var(--final-position)) rotate(var(--rotation, 0deg));
+}
+
+@keyframes flyOffBottom {
+    0% {
+        margin-top: 0;
+        transform: translateX(var(--final-position)) rotate(var(--rotation, 0deg));
+    }
+    100% {
+        margin-top: 150vh;
+        transform: translateX(0) rotate(var(--rotation, 0deg));
     }
 }
 
@@ -422,7 +453,7 @@ button:hover {
 .joker .card-rank {
     color: black;
     font-family: 'Chakra Petch';
-    font-weight: 400;
+    font-weight: 700;
     letter-spacing: 3px;
     font-size: 2.2em;
     text-transform: uppercase;
