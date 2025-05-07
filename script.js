@@ -359,7 +359,7 @@ async function animateCardsFlyOff(player) {
     // Set the animation direction based on player
     const direction = player === 'player1' ? -1 : 1;
     const targetY = direction * (viewportHeight + 100); // Fly off screen with some extra distance
-    
+
     // Create and apply the animation to each card
     const animations = Array.from(cardElements).map((card, index) => {
         return new Promise(resolve => {
@@ -368,6 +368,12 @@ async function animateCardsFlyOff(player) {
             
             // Preserve current transform in inline style
             const currentTransform = card.style.transform || '';
+            //get current position
+            var style = window.getComputedStyle(card);
+            var matrix = new WebKitCSSMatrix(style.transform);
+            const currentPosition = matrix.m41;
+            //set final position to current position
+            card.style.setProperty('--final-position', `${currentPosition}px`);
             
             // Add fly-off animation
             if(player === 'player1') {
