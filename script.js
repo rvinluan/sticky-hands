@@ -269,7 +269,7 @@ function createCardElement(card, index) {
 }
 
 // Show toast message
-function showToast(message, type = 'error', duration = 500, player = null) {
+function showToast(message, type = 'error', duration = 500, player = null, points = null) {
     const toast = document.createElement('div');
     toast.className = `toast ${type} toast-invisible`;
     
@@ -280,7 +280,20 @@ function showToast(message, type = 'error', duration = 500, player = null) {
         toast.classList.add('player2');
     }
     
-    toast.textContent = message;
+    // Create message text element
+    const messageText = document.createElement('div');
+    messageText.className = 'toast-message';
+    messageText.textContent = message + '!';
+    toast.appendChild(messageText);
+    
+    // Add points element if points are provided
+    if (points !== null) {
+        const pointsElement = document.createElement('div');
+        pointsElement.className = 'toast-points';
+        pointsElement.textContent = points > 0 ? `+${points}` : points;
+        toast.appendChild(pointsElement);
+    }
+    
     document.body.appendChild(toast);
     
     // Force reflow to ensure initial state is applied before transition
@@ -496,7 +509,7 @@ async function handleSlap(event, player) {
         }
         
         // Show success message
-        showToast(`${conditionsMet[0].name}! +${conditionsMet[0].points} points`, 'success', 1000, player);
+        showToast(conditionsMet[0].name, 'success', 1000, player, conditionsMet[0].points);
         
         // Animate cards flying off screen
         await animateCardsFlyOff(player);
@@ -529,7 +542,7 @@ async function handleSlap(event, player) {
         }
         
         // Show incorrect slap message with penalty
-        showToast('Incorrect Slap! -5 points', 'error', 1000, player);
+        showToast('Incorrect Slap', 'error', 1000, player, -5);
         
         // Wait for 0.5 seconds
         await new Promise(resolve => setTimeout(resolve, 500));
