@@ -12,8 +12,9 @@ let isDebugPaused = false; // New debug pause state
 let currentRound = 1;
 const CARDS_PER_ROUND = 6; // Cards to add each round
 const INITIAL_DECK_SIZE = 10; // Starting deck size
-const WINNING_ROUNDS = 9; // Number of rounds to win the game
-let drawInterval = 500 + ((WINNING_ROUNDS - 1) * 100);
+const WINNING_SCORE = 30; // Score needed to win the game
+const ROUNDS_TO_MAX_SPEED = 9; // Number of rounds until max speed is reached
+let drawInterval = 500 + ((ROUNDS_TO_MAX_SPEED - 1) * 100); // Start slower, get faster
 let currentDeckSize = 0; // Track current deck size
 let activeConditions = new Set(); // Track which conditions are active
 
@@ -479,9 +480,19 @@ async function handleSlap(event, player) {
         if (player === 'player1') {
             player1Score += conditionsMet[0].points;
             player1ScoreElement.textContent = player1Score;
+            // Check if player 1 has won
+            if (player1Score >= WINNING_SCORE) {
+                endGame();
+                return;
+            }
         } else {
             player2Score += conditionsMet[0].points;
             player2ScoreElement.textContent = player2Score;
+            // Check if player 2 has won
+            if (player2Score >= WINNING_SCORE) {
+                endGame();
+                return;
+            }
         }
         
         // Show success message
@@ -586,12 +597,6 @@ function endRound() {
     isGameActive = false;
     clearInterval(gameInterval);
     
-    // Check if we've reached the winning number of rounds
-    if (currentRound >= WINNING_ROUNDS) {
-        endGame();
-        return;
-    }
-    
     // Show round start screen
     gameplayScreen.classList.add('hidden');
     roundStartScreen.classList.remove('hidden');
@@ -599,7 +604,7 @@ function endRound() {
     // Reset countdown bar
     countdownBar.style.width = '350px';
 
-    // Increment round and decrease interval
+    // Increment round
     currentRound++;
     // Update round start screen
     updateRoundStartScreen();
@@ -638,8 +643,8 @@ async function showNewConditionScreen(condition) {
 
 // Start new round
 async function startNewRound() {
-    // Increment round and decrease interval
-    drawInterval = 500 + ((WINNING_ROUNDS - currentRound) * 100);
+    // Calculate draw interval based on current round
+    drawInterval = 500 + ((ROUNDS_TO_MAX_SPEED - currentRound) * 100);
     
     // Add a new random condition if there are still inactive ones
     const newConditionRounds = [3, 5, 7];
@@ -701,13 +706,20 @@ function animateCountdown(bar, duration = 3000) {
 
 // Start game
 async function startGame() {
+    // Clear any existing game interval
+    if (gameInterval) {
+        clearInterval(gameInterval);
+    }
+    
     // Reset game state
     player1Score = 0;
     player2Score = 0;
     cardPile = [];
     isGameActive = true;
+    isPaused = false;
+    isDebugPaused = false;
     currentRound = 1;
-    drawInterval = 500 + ((WINNING_ROUNDS - 1) * 100);
+    drawInterval = 500 + ((ROUNDS_TO_MAX_SPEED - 1) * 100);
     
     // Reset active conditions and add initial conditions
     activeConditions.clear();
