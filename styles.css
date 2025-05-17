@@ -7,6 +7,15 @@
     font-display: swap;
 }
 
+@font-face {
+    font-family: 'Departure Mono';
+    src: url('DepartureMono-Regular.woff2') format('woff2'),
+         url('DepartureMono-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -104,7 +113,7 @@ h3 {
 
 button {
     padding: 1rem 2rem;
-    font-family: 'Fragment Mono', monospace;
+    font-family: 'Departure Mono', monospace;
     font-size: 1.2rem;
     background-color: black;
     color: white;
@@ -452,7 +461,7 @@ button:hover {
 
 .joker .card-rank {
     color: black;
-    font-family: 'Chakra Petch';
+    font-family: 'Departure Mono', monospace;
     font-weight: 700;
     letter-spacing: 3px;
     font-size: 2.2em;
@@ -463,7 +472,10 @@ button:hover {
     position: absolute;
     display: flex;
     align-items: center;
-    gap: 5px;
+    flex-direction: column;
+    gap: 0;
+    font-family: 'Departure Mono', monospace;
+    line-height: 0.8;
 }
 
 .card-corner.top-left {

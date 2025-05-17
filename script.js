@@ -799,7 +799,7 @@ function endGame() {
 // Event listeners
 playButton.addEventListener('click', (event) => {
     console.log('Play button clicked');
-    // event.stopPropagation();
+    event.stopPropagation();
     startGame();
 });
 replayButton.addEventListener('click', (event) => {
