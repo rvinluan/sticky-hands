@@ -911,7 +911,19 @@ document.addEventListener('touchend', function(e) {
     } else {
         // Handle color cycling on welcome screen
         if (welcomeScreen && !welcomeScreen.classList.contains('hidden')) {
-            changeColor(player);
+            // Check if the touch was on the play button
+            const playButton = document.getElementById('play-button');
+            const touchX = e.changedTouches[0].clientX;
+            const touchY = e.changedTouches[0].clientY;
+            const buttonRect = playButton.getBoundingClientRect();
+            
+            // Only change color if the touch was not on the play button
+            if (!(touchX >= buttonRect.left && 
+                  touchX <= buttonRect.right && 
+                  touchY >= buttonRect.top && 
+                  touchY <= buttonRect.bottom)) {
+                changeColor(player);
+            }
         }
     }
 });
