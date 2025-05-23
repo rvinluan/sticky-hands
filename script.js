@@ -14,6 +14,7 @@ const CARDS_PER_ROUND = 6; // Cards to add each round
 const INITIAL_DECK_SIZE = 10; // Starting deck size
 const WINNING_SCORE = 30; // Score needed to win the game
 const ROUNDS_TO_MAX_SPEED = 9; // Number of rounds until max speed is reached
+const INCORRECT_SLAP_PENALTY = 2; // Points deducted for incorrect slaps
 let drawInterval = 500 + ((ROUNDS_TO_MAX_SPEED - 1) * 100); // Start slower, get faster
 let currentDeckSize = 0; // Track current deck size
 let activeConditions = new Set(); // Track which conditions are active
@@ -534,15 +535,15 @@ async function handleSlap(event, player) {
         
         // Apply penalty to the player who slapped incorrectly
         if (player === 'player1') {
-            player1Score -= 5;
+            player1Score -= INCORRECT_SLAP_PENALTY;
             player1ScoreElement.textContent = player1Score;
         } else {
-            player2Score -= 5;
+            player2Score -= INCORRECT_SLAP_PENALTY;
             player2ScoreElement.textContent = player2Score;
         }
         
         // Show incorrect slap message with penalty
-        showToast('Incorrect Slap', 'error', 1000, player, -5);
+        showToast('Incorrect Slap', 'error', 1000, player, -INCORRECT_SLAP_PENALTY);
         
         // Wait for 0.5 seconds
         await new Promise(resolve => setTimeout(resolve, 500));
@@ -593,7 +594,10 @@ function updateRoundStartScreen() {
     roundNumberElement2.textContent = currentRound;
     
     // Update status text based on scores
-    if (player1Score > player2Score) {
+    if (currentRound === 1) {
+        player1StatusText.textContent = `First to ${WINNING_SCORE} points wins`;
+        player2StatusText.textContent = `First to ${WINNING_SCORE} points wins`;
+    } else if (player1Score > player2Score) {
         player1StatusText.textContent = "you're winning";
         player2StatusText.textContent = "you're losing";
     } else if (player2Score > player1Score) {
