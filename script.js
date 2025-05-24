@@ -251,9 +251,9 @@ function createCardElement(card, index) {
         
         // Set card color based on suit
         if (card.suit === '♥' || card.suit === '♦') {
-            cardElement.style.color = 'red';
+            cardElement.classList.add('red');
         } else {
-            cardElement.style.color = 'black';
+            cardElement.classList.add('black');
         }
     }
     

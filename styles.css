@@ -293,7 +293,7 @@ button:hover {
 }
 
 .card.red {
-    color: red;
+    color: var(--palette-raspberry);
 }
 
 .card.hidden {
