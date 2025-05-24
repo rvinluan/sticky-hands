@@ -10,6 +10,7 @@ let isGameActive = false;
 let isPaused = false;
 let isDebugPaused = false; // New debug pause state
 let currentRound = 1;
+let player_count = 2; // Default to 2 players
 const CARDS_PER_ROUND = 6; // Cards to add each round
 const INITIAL_DECK_SIZE = 10; // Starting deck size
 const WINNING_SCORE = 30; // Score needed to win the game
@@ -37,12 +38,15 @@ const SIMULTANEOUS_THRESHOLD = 150; // ms - threshold for considering slaps simu
 
 // DOM elements
 const welcomeScreen = document.getElementById('welcome-screen');
+const lobbyScreen = document.getElementById('lobby-screen');
 const gameplayScreen = document.getElementById('gameplay-screen');
 const roundStartScreen = document.getElementById('round-start-screen');
 const newConditionScreen = document.getElementById('new-condition-screen');
 const endScreen = document.getElementById('end-screen');
 const playButton = document.getElementById('play-button');
 const replayButton = document.getElementById('replay-button');
+const onePlayerButton = document.getElementById('one-player-button');
+const twoPlayerButton = document.getElementById('two-player-button');
 const cardPileElement = document.getElementById('card-pile');
 const finalScoreElement = document.getElementById('final-score');   
 const finalScoreElement2 = document.getElementById('final-score-2');
@@ -58,6 +62,7 @@ const conditionEmojiLarge = document.querySelector('.condition-emoji-large');
 const conditionName = document.querySelector('.condition-name');
 const conditionDescription = document.querySelector('.condition-description');
 const burstEffect = document.getElementById('burst-effect');
+const physicsCanvas = document.getElementById('physics-canvas');
 
 // Card suits and ranks
 const suits = ['♠', '♥', '♦', '♣'];
@@ -756,6 +761,7 @@ async function startGame() {
     
     // Hide all screens except initial conditions
     welcomeScreen.classList.add('hidden');
+    lobbyScreen.classList.add('hidden');
     gameplayScreen.classList.add('hidden');
     endScreen.classList.add('hidden');
     roundStartScreen.classList.add('hidden');
@@ -785,6 +791,7 @@ async function startGame() {
             animateCountdown(countdownBar).then(() => {
                 roundStartScreen.classList.add('hidden');
                 gameplayScreen.classList.remove('hidden');
+                physicsCanvas.style.display = 'block';
                 gameInterval = setInterval(drawCard, drawInterval);
             });
         }
@@ -826,11 +833,26 @@ function endGame() {
 }
 
 // Event listeners
+onePlayerButton.addEventListener('click', () => {
+    player_count = 1;
+    welcomeScreen.classList.add('hidden');
+    lobbyScreen.classList.remove('hidden');
+    physicsCanvas.style.display = 'block';
+});
+
+twoPlayerButton.addEventListener('click', () => {
+    player_count = 2;
+    welcomeScreen.classList.add('hidden');
+    lobbyScreen.classList.remove('hidden');
+    physicsCanvas.style.display = 'block';
+});
+
 playButton.addEventListener('click', (event) => {
     console.log('Play button clicked');
     event.stopPropagation();
     startGame();
 });
+
 replayButton.addEventListener('click', (event) => {
     event.stopPropagation();
     startGame();
@@ -927,7 +949,7 @@ document.addEventListener('touchend', function(e) {
         handleSlap(mockEvent, player);
     } else {
         // Handle color cycling on welcome screen
-        if (welcomeScreen && !welcomeScreen.classList.contains('hidden')) {
+        if (lobbyScreen && !lobbyScreen.classList.contains('hidden')) {
             // Check if the touch was on the play button
             const playButton = document.getElementById('play-button');
             const touchX = e.changedTouches[0].clientX;

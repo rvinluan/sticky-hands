@@ -41,9 +41,6 @@
 
     <!-- Welcome Screen -->
     <div id="welcome-screen" class="screen">
-        <div class="tutorial player1">
-            <img src="swipe-instruction.png" class="swipe-instruction" alt="Swipe up to slap">
-        </div>
         <h1>
             <span id="letter-s1">S</span>
             <span id="letter-t">T</span>
@@ -58,6 +55,17 @@
             <span id="letter-d">D</span>
             <span id="letter-s2">S</span>
         </h1>
+        <div class="player-selection">
+            <button id="one-player-button">1 Player</button>
+            <button id="two-player-button">2 Players</button>
+        </div>
+    </div>
+
+    <!-- Lobby Screen -->
+    <div id="lobby-screen" class="screen hidden">
+        <div class="tutorial player1">
+            <img src="swipe-instruction.png" class="swipe-instruction" alt="Swipe up to slap">
+        </div>
         <button id="play-button">Begin</button>
         <div class="tutorial player2">
             <img src="swipe-instruction.png" class="swipe-instruction" alt="Swipe up to slap">

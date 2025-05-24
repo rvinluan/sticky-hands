@@ -55,6 +55,8 @@ body {
     width: 100%;
     max-width: 800px;
     -webkit-tap-highlight-color: transparent;
+    display: flex;
+    flex-direction: column;
 }
 
 .screen.hidden {
@@ -504,6 +506,7 @@ button:hover {
     z-index: 5;
     background: transparent;
     pointer-events: none;
+    display: none; /* start off hidden */
 }
 
 .conditions-display {
@@ -840,4 +843,32 @@ button:hover {
 .swipe-instruction {
     margin: 0 auto;
     display: block;
+}
+
+.player-selection {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.player-selection button {
+    width: 200px;
+    margin: 0 auto;
+}
+
+#lobby-screen {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+#lobby-screen .tutorial {
+    margin: 2rem 0;
+}
+
+#lobby-screen #play-button {
+    margin: 2rem 0;
 }
