@@ -1006,6 +1006,11 @@ document.addEventListener('touchend', function(e) {
     const distance = Math.sqrt(xDelta * xDelta + yDelta * yDelta);
     const player = isPlayer1Area ? 'player1' : 'player2';
 
+    // In single player mode, ignore swipes on player 1's side
+    if (player_count === 1 && isPlayer1Area) {
+        return;
+    }
+
     if (distance > SWIPE_THRESHOLD) {                
         console.log(`${player} swipe detected`);
         
