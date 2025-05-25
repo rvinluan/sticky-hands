@@ -16,6 +16,8 @@ const INITIAL_DECK_SIZE = 10; // Starting deck size
 const WINNING_SCORE = 30; // Score needed to win the game
 const ROUNDS_TO_MAX_SPEED = 9; // Number of rounds until max speed is reached
 const INCORRECT_SLAP_PENALTY = 2; // Points deducted for incorrect slaps
+const COMPUTER_SLAP_CHANCE = 0.5; // Chance for computer to slap
+const COMPUTER_SLAP_DELAY = 600; // Delay before computer slaps in ms
 let drawInterval = 500 + ((ROUNDS_TO_MAX_SPEED - 1) * 100); // Start slower, get faster
 let currentDeckSize = 0; // Track current deck size
 let activeConditions = new Set(); // Track which conditions are active
@@ -569,6 +571,34 @@ async function handleSlap(event, player) {
     }
 }
 
+// Function to handle computer's slap decision
+async function handleComputerSlap() {
+    if (player_count !== 1) return; // Only run in single player mode
+    
+    // Only check conditions for fully animated cards
+    const animatedCards = cardPile.filter(card => card.fullyAnimated);
+    const conditionsMet = checkConditions(animatedCards);
+    
+    if (conditionsMet.length > 0) {
+        // 50% chance to slap
+        if (Math.random() < COMPUTER_SLAP_CHANCE) {
+            // Wait 0.6 seconds before slapping
+            await new Promise(resolve => setTimeout(resolve, COMPUTER_SLAP_DELAY));
+            
+            // Create mock event for handleSlap
+            const mockEvent = {
+                preventDefault: () => {}
+            };
+            
+            // Trigger fling animation
+            fling(true); // true for player 1
+            
+            // Handle the slap
+            handleSlap(mockEvent, 'player1');
+        }
+    }
+}
+
 // Draw card
 async function drawCard() {
     if (!isGameActive || isPaused || isDebugPaused) {
@@ -590,6 +620,19 @@ async function drawCard() {
     // Create and display the card
     const cardElement = createCardElement(card, cardPile.length - 1);
     cardPileElement.appendChild(cardElement);
+    
+    // Wait for card animation to complete before checking conditions
+    await new Promise(resolve => {
+        cardElement.addEventListener('animationend', () => {
+            card.fullyAnimated = true;
+            resolve();
+        }, { once: true });
+    });
+    
+    // Check for computer slap in single player mode
+    if (player_count === 1) {
+        handleComputerSlap();
+    }
 }
 
 // Update round start screen
@@ -809,6 +852,8 @@ function endGame() {
     const endScreen = document.getElementById('end-screen');
     const winnerScoreElement = document.getElementById('winner-score');
     const loserScoreElement = document.getElementById('loser-score');
+    const winnerTitle = endScreen.querySelector('h2');
+    const loserMessage = endScreen.querySelector('.loser-message');
     
     // Determine the winner
     const player1Won = player1Score > player2Score;
@@ -819,11 +864,27 @@ function endGame() {
         endScreen.classList.remove('player2-won');
         winnerScoreElement.textContent = player1Score;
         loserScoreElement.textContent = player2Score;
+        
+        if (player_count === 1) {
+            winnerTitle.textContent = 'Computer Wins!';
+            loserMessage.textContent = 'You lost. You scored ' + player2Score + ' points.';
+        } else {
+            winnerTitle.textContent = 'You Win!';
+            loserMessage.textContent = 'On the other hand, you lost. You scored ' + player2Score + ' points.';
+        }
     } else {
         endScreen.classList.add('player2-won');
         endScreen.classList.remove('player1-won');
         winnerScoreElement.textContent = player2Score;
         loserScoreElement.textContent = player1Score;
+        
+        if (player_count === 1) {
+            winnerTitle.textContent = 'You Win!';
+            loserMessage.textContent = 'Computer scored ' + player1Score + ' points.';
+        } else {
+            winnerTitle.textContent = 'You Win!';
+            loserMessage.textContent = 'On the other hand, you lost. You scored ' + player1Score + ' points.';
+        }
     }
     
     // Show end screen
@@ -838,6 +899,12 @@ onePlayerButton.addEventListener('click', () => {
     welcomeScreen.classList.add('hidden');
     lobbyScreen.classList.remove('hidden');
     physicsCanvas.style.display = 'block';
+    
+    // Hide player 1 tutorial in single player mode
+    const player1Tutorial = document.querySelector('.tutorial.player1');
+    if (player1Tutorial) {
+        player1Tutorial.style.display = 'none';
+    }
 });
 
 twoPlayerButton.addEventListener('click', () => {
@@ -845,6 +912,12 @@ twoPlayerButton.addEventListener('click', () => {
     welcomeScreen.classList.add('hidden');
     lobbyScreen.classList.remove('hidden');
     physicsCanvas.style.display = 'block';
+    
+    // Show both tutorials in two player mode
+    const player1Tutorial = document.querySelector('.tutorial.player1');
+    if (player1Tutorial) {
+        player1Tutorial.style.display = 'block';
+    }
 });
 
 playButton.addEventListener('click', (event) => {

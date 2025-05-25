@@ -18,7 +18,7 @@ const conditionsObject = {
             const secondLastCard = pile[pile.length - 2];
             return lastCard.rank === '9' && secondLastCard.rank === '6';
         },
-        points: 20,
+        points: 10,
         name: 'Nice',
         description: 'Slap when a 6 is followed by a 9',
         emoji: '😏'
@@ -31,7 +31,7 @@ const conditionsObject = {
             const firstCard = pile[pile.length - 3];
             return lastCard.rank === firstCard.rank && lastCard.rank !== middleCard.rank;
         },
-        points: 10,
+        points: 7,
         name: 'Sandwich',
         description: 'Slap when two of the same card sandwich another (e.g. 4, 7, 4)',
         emoji: '🥪'
@@ -45,7 +45,7 @@ const conditionsObject = {
             return lastCard.suit === secondLastCard.suit && 
                    lastCard.suit === thirdLastCard.suit;
         },
-        points: 12,
+        points: 9,
         name: 'Flush',
         description: 'Slap when 3 cards in a row are the same suit',
         emoji: '🚽'
@@ -57,7 +57,7 @@ const conditionsObject = {
             const secondLastCard = pile[pile.length - 2];
             return lastCard.rank === secondLastCard.rank;
         },
-        points: 8,
+        points: 5,
         name: 'Double',
         description: 'Slap when two cards are the same rank',
         emoji: '👯‍♀️'
@@ -70,7 +70,7 @@ const conditionsObject = {
             const sum = getCardValueFunction(lastCard.rank) + getCardValueFunction(secondLastCard.rank);
             return sum === 13;
         },
-        points: 8,
+        points: 7,
         name: 'Sum to 13',
         description: 'Slap when the last two cards sum to 13 (A=11, J/Q/K=10)',
         emoji: '🍀'
@@ -82,7 +82,7 @@ const conditionsObject = {
             const secondLastCard = pile[pile.length - 2];
             return areConsecutiveFunction(lastCard.rank, secondLastCard.rank);
         },
-        points: 5,
+        points: 3,
         name: 'Consecutive',
         description: 'Slap when two cards are consecutive (A can connect to K or 2)',
         emoji: '➡️'
@@ -93,7 +93,7 @@ const conditionsObject = {
             const lastCard = pile[pile.length - 1];
             return lastCard.rank === 'J' && (lastCard.suit === '♠' || lastCard.suit === '♣');
         },
-        points: 5,
+        points: 7,
         name: 'Blackjack',
         description: 'Slap when a black Jack appears',
         emoji: '⚫️'
@@ -105,7 +105,7 @@ const conditionsObject = {
             const secondLastCard = pile[pile.length - 2];
             return lastCard.rank === '4' && secondLastCard.rank === '10';
         },
-        points: 20,
+        points: 10,
         name: 'Radio',
         description: 'Slap when a 10 is followed by a 4',
         emoji: '📻'
@@ -118,7 +118,7 @@ const conditionsObject = {
             return (lastCard.rank === 'K' && secondLastCard.rank === 'Q') || 
                    (lastCard.rank === 'Q' && secondLastCard.rank === 'K');
         },
-        points: 12,
+        points: 9,
         name: 'Marriage',
         description: 'Slap when a king and a queen are adjacent',
         emoji: '💍'
@@ -130,7 +130,7 @@ const conditionsObject = {
             const secondLastCard = pile[pile.length - 2];
             return lastCard.suit === '♥' && secondLastCard.suit === '♥';
         },
-        points: 8,
+        points: 6,
         name: 'Lovers',
         description: 'Slap when two cards in a row are hearts',
         emoji: '💕'
@@ -142,7 +142,7 @@ const conditionsObject = {
             const secondLastCard = pile[pile.length - 2];
             return lastCard.suit === '♠' && secondLastCard.suit === '♠';
         },
-        points: 8,
+        points: 6,
         name: 'Dig It',
         description: 'Slap when two cards in a row are spades',
         emoji: '🪏'
@@ -154,7 +154,7 @@ const conditionsObject = {
             const secondLastCard = pile[pile.length - 2];
             return lastCard.suit === '♣' && secondLastCard.suit === '♣';
         },
-        points: 8,
+        points: 6,
         name: 'Party Night',
         description: 'Slap when two cards in a row are clubs',
         emoji: '🪩'
@@ -166,7 +166,7 @@ const conditionsObject = {
             const secondLastCard = pile[pile.length - 2];
             return lastCard.suit === '♦' && secondLastCard.suit === '♦';
         },
-        points: 8,
+        points: 6,
         name: 'Rich Vein',
         description: 'Slap when two cards in a row are diamonds',
         emoji: '💎'
@@ -177,7 +177,7 @@ const conditionsObject = {
             const lastCard = pile[pile.length - 1];
             return lastCard.rank === '7';
         },
-        points: 7,
+        points: 4,
         name: 'Lucky 7',
         description: 'Slap when a 7 appears',
         emoji: '🍀'
@@ -188,7 +188,7 @@ const conditionsObject = {
             const lastCard = pile[pile.length - 1];
             return lastCard.rank === '8';
         },
-        points: 8,
+        points: 4,
         name: 'Spiders!',
         description: 'Slap when an 8 appears',
         emoji: '🕷️'
@@ -199,13 +199,13 @@ const conditionsObject = {
             const lastCard = pile[pile.length - 1];
             const secondLastCard = pile[pile.length - 2];
             
-            // Check if all three are even (2, 4, 6, 8, 10)
+            // Check if both cards are even (2, 4, 6, 8, 10)
             const isEven = rank => ['2', '4', '6', '8', '10'].includes(rank);
             
             return isEven(lastCard.rank) && 
                    isEven(secondLastCard.rank);
         },
-        points: 6,
+        points: 5,
         name: 'Even Steven',
         description: 'Slap when 2 cards are both even',
         emoji: '✌️'
