@@ -257,6 +257,24 @@ function createCardElement(card, index) {
         } else {
             cardElement.classList.add('black');
         }
+
+        // Add background image based on suit and rank
+        const suitName = card.suit === '♠' ? 'Spades' :
+                        card.suit === '♥' ? 'Hearts' :
+                        card.suit === '♦' ? 'Diamonds' : 'Clubs';
+        
+        // Convert rank to match file naming convention
+        let rankName = card.rank;
+        if (card.rank === '10') rankName = '10';
+        if (card.rank === 'A') rankName = 'A';
+        if (card.rank === 'J') rankName = 'J';
+        if (card.rank === 'Q') rankName = 'Q';
+        if (card.rank === 'K') rankName = 'K';
+        
+        // Set the background image
+        cardElement.style.backgroundImage = `url('Card Images/${rankName}-${suitName}.png')`;
+        cardElement.style.backgroundSize = 'cover';
+        cardElement.style.backgroundPosition = 'center';
     }
     
     // Initialize animation state
