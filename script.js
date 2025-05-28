@@ -446,6 +446,9 @@ async function handleSlap(event, player) {
         justSlapped = false;
     }, 1000);
 
+    // Stop any new cards from being drawn
+    clearInterval(gameInterval);
+
     // Only check conditions for fully animated cards
     const animatedCards = cardPile.filter(card => card.fullyAnimated);
     const conditionsMet = checkConditions(animatedCards);
@@ -511,7 +514,6 @@ async function handleSlap(event, player) {
         // Pause game AFTER a small delay to allow fling animation to start
         setTimeout(() => {
             isPaused = true;
-            clearInterval(gameInterval);
             triggerPhysicsHitstop(player === 'player1');
         }, 100);
         
