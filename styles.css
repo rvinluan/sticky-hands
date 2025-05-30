@@ -843,6 +843,43 @@ button:hover {
 .swipe-instruction {
     margin: 0 auto;
     display: block;
+    width: 200px;
+}
+
+.swipe-instruction-container {
+    position: relative;
+    width: 200px;
+    margin: 0 auto;
+}
+
+.swipe-instruction-container::after {
+    content: '';
+    position: absolute;
+    width: 33px;
+    height: 33px;
+    background-color: black;
+    border-radius: 50%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    animation: swipeDot 1.3s cubic-bezier(0.83, 0, 0.17, 1) infinite;
+    z-index: 1;
+    pointer-events: none;
+}
+
+@keyframes swipeDot {
+    0% {
+        transform: translate(-50%, -50%);
+        opacity: 1;
+    }
+    50% {
+        transform: translate(-50%, -120px);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -120px);
+        opacity: 0;
+    }
 }
 
 .player-selection {
