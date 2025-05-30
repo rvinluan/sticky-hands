@@ -79,21 +79,25 @@ const areConsecutive = window.gameConditions.areConsecutiveFunction;
 let slapSound = null;
 let correctSound = null;
 let incorrectSound = null;
+let drawSound = null;
 
 // Preload sound effects
 function preloadSounds() {
     slapSound = new Audio('sounds/slap1.mp3');
     correctSound = new Audio('sounds/correct.mp3');
     incorrectSound = new Audio('sounds/incorrect.mp3');
+    drawSound = new Audio('sounds/draw.mp3');
     
     // Set volume for all sounds
     // slapSound.volume = 0.5;
     correctSound.volume = 0.1;
     incorrectSound.volume = 0.1;
+    drawSound.volume = 0.5;
     
     slapSound.load();
     correctSound.load();
     incorrectSound.load();
+    drawSound.load();
 }
 
 // Play a sound effect
@@ -677,6 +681,8 @@ async function drawCard() {
         endRound();
         return;
     }
+
+    playSound(drawSound);
     
     const card = deck.pop();
     discardPile.push(card); // Add to discard pile
