@@ -80,24 +80,27 @@ let slapSound = null;
 let correctSound = null;
 let incorrectSound = null;
 let drawSound = null;
-
+let pointSound = null;
 // Preload sound effects
 function preloadSounds() {
     slapSound = new Audio('sounds/slap1.mp3');
     correctSound = new Audio('sounds/correct.mp3');
     incorrectSound = new Audio('sounds/incorrect.mp3');
     drawSound = new Audio('sounds/draw.mp3');
-    
+    pointSound = new Audio('sounds/point.mp3');
+
     // Set volume for all sounds
     // slapSound.volume = 0.5;
     correctSound.volume = 0.1;
     incorrectSound.volume = 0.1;
     drawSound.volume = 0.5;
-    
+    pointSound.volume = 0.5;
+
     slapSound.load();
     correctSound.load();
     incorrectSound.load();
     drawSound.load();
+    pointSound.load();
 }
 
 // Play a sound effect
@@ -462,6 +465,11 @@ async function animateCardsFlyOff(player) {
             // Resolve after animation completes
             card.addEventListener('animationend', () => {
                 console.log('card animation resolution');
+                // Update score for the correct player
+                playSound(pointSound);
+                if (updatePlayerScore(player, 1)) {
+                    return;
+                }
                 resolve();
             }, { once: true });
         });
@@ -470,6 +478,28 @@ async function animateCardsFlyOff(player) {
     // Wait for all animations to complete
     await Promise.all(animations);
     console.log('cards are done flying off screen');
+}
+
+// Update player score, return true if player has won
+function updatePlayerScore(player, points) {
+    if (player === 'player1') {
+        player1Score += points;
+        player1ScoreElement.textContent = player1Score;
+        // Check if player 1 has won
+        if (player1Score >= WINNING_SCORE) {
+            endGame();
+            return true;
+        }
+    } else {
+        player2Score += points;
+        player2ScoreElement.textContent = player2Score;
+        // Check if player 2 has won
+        if (player2Score >= WINNING_SCORE) {
+            endGame();
+            return true;
+        }
+    }
+    return false;
 }
 
 // Handle slap
@@ -561,27 +591,8 @@ async function handleSlap(event, player) {
             playSound(correctSound); // Play correct sound
         }, 100);
         
-        // Update score for the correct player
-        if (player === 'player1') {
-            player1Score += conditionsMet[0].points;
-            player1ScoreElement.textContent = player1Score;
-            // Check if player 1 has won
-            if (player1Score >= WINNING_SCORE) {
-                endGame();
-                return;
-            }
-        } else {
-            player2Score += conditionsMet[0].points;
-            player2ScoreElement.textContent = player2Score;
-            // Check if player 2 has won
-            if (player2Score >= WINNING_SCORE) {
-                endGame();
-                return;
-            }
-        }
-        
-        // Show success message
-        showToast(conditionsMet[0].name, 'success', 1000, player, conditionsMet[0].points);
+        // Show success message with points
+        showToast(conditionsMet[0].name, 'success', 1000, player, cardPile.length);
         
         // Animate cards flying off screen
         await animateCardsFlyOff(player);
@@ -605,12 +616,8 @@ async function handleSlap(event, player) {
         });
         
         // Apply penalty to the player who slapped incorrectly
-        if (player === 'player1') {
-            player1Score -= INCORRECT_SLAP_PENALTY;
-            player1ScoreElement.textContent = player1Score;
-        } else {
-            player2Score -= INCORRECT_SLAP_PENALTY;
-            player2ScoreElement.textContent = player2Score;
+        if (updatePlayerScore(player, -INCORRECT_SLAP_PENALTY)) {
+            return;
         }
         
         // Show incorrect slap message with penalty
