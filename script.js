@@ -456,12 +456,16 @@ async function animateCardsFlyOff(player) {
             // debugger;
             
             // Resolve after animation completes
-            setTimeout(resolve, 500 + delay);
+            card.addEventListener('animationend', () => {
+                console.log('card animation resolution');
+                resolve();
+            }, { once: true });
         });
     });
     
     // Wait for all animations to complete
     await Promise.all(animations);
+    console.log('cards are done flying off screen');
 }
 
 // Handle slap
