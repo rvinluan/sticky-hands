@@ -47,8 +47,6 @@ const newConditionScreen = document.getElementById('new-condition-screen');
 const endScreen = document.getElementById('end-screen');
 const playButton = document.getElementById('play-button');
 const replayButton = document.getElementById('replay-button');
-const onePlayerButton = document.getElementById('one-player-button');
-const twoPlayerButton = document.getElementById('two-player-button');
 const cardPileElement = document.getElementById('card-pile');
 const finalScoreElement = document.getElementById('final-score');   
 const finalScoreElement2 = document.getElementById('final-score-2');
@@ -65,6 +63,8 @@ const conditionName = document.querySelector('.condition-name');
 const conditionDescription = document.querySelector('.condition-description');
 const burstEffect = document.getElementById('burst-effect');
 const physicsCanvas = document.getElementById('physics-canvas');
+const playerToggle = document.getElementById('player-toggle');
+const continueButton = document.getElementById('continue-button');
 
 // Card suits and ranks
 const suits = ['♠', '♥', '♦', '♣'];
@@ -970,29 +970,23 @@ function endGame() {
 }
 
 // Event listeners
-onePlayerButton.addEventListener('click', () => {
-    player_count = 1;
-    welcomeScreen.classList.add('hidden');
-    lobbyScreen.classList.remove('hidden');
-    physicsCanvas.style.display = 'block';
-    
-    // Hide player 1 tutorial in single player mode
-    const player1Tutorial = document.querySelector('.tutorial.player1');
-    if (player1Tutorial) {
-        player1Tutorial.style.display = 'none';
-    }
+playerToggle.addEventListener('change', () => {
+    console.log('player toggle changed');
+    player_count = playerToggle.checked ? 2 : 1;
 });
 
-twoPlayerButton.addEventListener('click', () => {
-    player_count = 2;
+continueButton.addEventListener('click', () => {
+    console.log('continue button clicked');
     welcomeScreen.classList.add('hidden');
     lobbyScreen.classList.remove('hidden');
     physicsCanvas.style.display = 'block';
     
-    // Show both tutorials in two player mode
-    const player1Tutorial = document.querySelector('.tutorial.player1');
-    if (player1Tutorial) {
-        player1Tutorial.style.display = 'block';
+    // Update lobby screen based on player count
+    const player2Tutorial = document.querySelector('.tutorial.player1');
+    if (player_count === 1) {
+        player2Tutorial.style.display = 'none';
+    } else {
+        player2Tutorial.style.display = 'block';
     }
 });
 
