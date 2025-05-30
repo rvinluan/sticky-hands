@@ -75,6 +75,37 @@ const conditions = window.gameConditions.conditionsObject;
 const getCardValue = window.gameConditions.getCardValueFunction;
 const areConsecutive = window.gameConditions.areConsecutiveFunction;
 
+// Sound effects
+let slapSound = null;
+let correctSound = null;
+let incorrectSound = null;
+
+// Preload sound effects
+function preloadSounds() {
+    slapSound = new Audio('sounds/slap1.mp3');
+    correctSound = new Audio('sounds/correct.mp3');
+    incorrectSound = new Audio('sounds/incorrect.mp3');
+    
+    // Set volume for all sounds
+    // slapSound.volume = 0.5;
+    correctSound.volume = 0.1;
+    incorrectSound.volume = 0.1;
+    
+    slapSound.load();
+    correctSound.load();
+    incorrectSound.load();
+}
+
+// Play a sound effect
+function playSound(sound) {
+    if (sound) {
+        sound.currentTime = 0; // Reset to start
+        sound.play().catch(error => {
+            console.log('Error playing sound:', error);
+        });
+    }
+}
+
 // Display game conditions
 function displayConditions() {
     const conditionsDisplay = document.getElementById('conditions-display');
@@ -451,6 +482,8 @@ async function handleSlap(event, player) {
     console.log('stopping game');
     clearInterval(gameInterval);
 
+    playSound(slapSound); // Play slap sound
+
     // Only check conditions for fully animated cards
     const animatedCards = cardPile.filter(card => card.fullyAnimated);
     const conditionsMet = checkConditions(animatedCards);
@@ -517,6 +550,7 @@ async function handleSlap(event, player) {
         setTimeout(() => {
             isPaused = true;
             triggerPhysicsHitstop(player === 'player1');
+            playSound(correctSound); // Play correct sound
         }, 100);
         
         // Update score for the correct player
@@ -546,7 +580,7 @@ async function handleSlap(event, player) {
         
         // Clear the card pile after animation
         cardPile = [];
-        // cardPileElement.innerHTML = '';
+        cardPileElement.innerHTML = '';
         
         // Resume the game
         isPaused = false;
@@ -573,6 +607,9 @@ async function handleSlap(event, player) {
         
         // Show incorrect slap message with penalty
         showToast('Incorrect Slap', 'error', 1000, player, -INCORRECT_SLAP_PENALTY);
+        
+        // Play incorrect sound
+        playSound(incorrectSound);
         
         // Wait for 0.5 seconds
         await new Promise(resolve => setTimeout(resolve, 500));
@@ -797,6 +834,9 @@ function animateCountdown(bar, duration = 3000) {
 
 // Start game
 async function startGame() {
+    // Preload sounds
+    preloadSounds();
+    
     // Clear any existing game interval
     if (gameInterval) {
         clearInterval(gameInterval);
