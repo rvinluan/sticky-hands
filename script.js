@@ -404,7 +404,7 @@ async function animateCardsFlyOff(player) {
     const animations = Array.from(cardElements).map((card, index) => {
         return new Promise(resolve => {
             // Add a slight delay based on card position for a cascading effect
-            const delay = index * 50;
+            const delay = (cardElements.length - index) * 100;
             
             // Preserve current transform in inline style
             const currentTransform = card.style.transform || '';
@@ -414,6 +414,7 @@ async function animateCardsFlyOff(player) {
             const currentPosition = matrix.m41;
             //set final position to current position
             card.style.setProperty('--final-position', `${currentPosition}px`);
+            card.style.animationDelay = `${delay}ms`;
             
             // Add fly-off animation
             if(player === 'player1') {
@@ -447,6 +448,7 @@ async function handleSlap(event, player) {
     }, 1000);
 
     // Stop any new cards from being drawn
+    console.log('stopping game');
     clearInterval(gameInterval);
 
     // Only check conditions for fully animated cards
@@ -548,11 +550,11 @@ async function handleSlap(event, player) {
         
         // Resume the game
         isPaused = false;
+        console.log('resuming game');
         gameInterval = setInterval(drawCard, drawInterval);
     } else if (animatedCards.length > 0) { // Only penalize if there are cards that have finished animating
         // Pause the game
         isPaused = true;
-        clearInterval(gameInterval);
         
         // Pause all card animations
         const cardElements = cardPileElement.querySelectorAll('.card');
@@ -586,6 +588,10 @@ async function handleSlap(event, player) {
         cardPileElement.innerHTML = '';
         
         // Resume the game
+        isPaused = false;
+        gameInterval = setInterval(drawCard, drawInterval);
+    } else {
+        //pile is empty, so just resume the game
         isPaused = false;
         gameInterval = setInterval(drawCard, drawInterval);
     }
