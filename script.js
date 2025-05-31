@@ -44,6 +44,7 @@ const lobbyScreen = document.getElementById('lobby-screen');
 const gameplayScreen = document.getElementById('gameplay-screen');
 const roundStartScreen = document.getElementById('round-start-screen');
 const newConditionScreen = document.getElementById('new-condition-screen');
+const initialConditionsScreen = document.getElementById('initial-conditions-screen');
 const endScreen = document.getElementById('end-screen');
 const playButton = document.getElementById('play-button');
 const replayButton = document.getElementById('replay-button');
@@ -81,13 +82,16 @@ let correctSound = null;
 let incorrectSound = null;
 let drawSound = null;
 let pointSound = null;
+let wooshSound = null;
+
 // Preload sound effects
 function preloadSounds() {
     slapSound = new Audio('sounds/slap1.mp3');
     correctSound = new Audio('sounds/correct.mp3');
     incorrectSound = new Audio('sounds/incorrect.mp3');
     drawSound = new Audio('sounds/draw.mp3');
-    pointSound = new Audio('sounds/point.mp3');
+    pointSound = new Audio('sounds/Point.mp3');
+    wooshSound = new Audio('sounds/woosh.mp3');
 
     // Set volume for all sounds
     // slapSound.volume = 0.5;
@@ -95,12 +99,14 @@ function preloadSounds() {
     incorrectSound.volume = 0.1;
     drawSound.volume = 0.5;
     pointSound.volume = 0.5;
+    wooshSound.volume = 1;
 
     slapSound.load();
     correctSound.load();
     incorrectSound.load();
     drawSound.load();
-    pointSound.load();
+    pointSound.load();  
+    wooshSound.load();
 }
 
 // Play a sound effect
@@ -669,6 +675,7 @@ async function handleComputerSlap() {
             };
             
             // Trigger fling animation
+            playSound(wooshSound);
             fling(true); // true for player 1
             
             // Handle the slap
@@ -850,10 +857,7 @@ function animateCountdown(bar, duration = 3000) {
 }
 
 // Start game
-async function startGame() {
-    // Preload sounds
-    preloadSounds();
-    
+async function startGame() {    
     // Clear any existing game interval
     if (gameInterval) {
         clearInterval(gameInterval);
@@ -893,7 +897,6 @@ async function startGame() {
     roundStartScreen.classList.add('hidden');
     
     // Show initial conditions screen
-    const initialConditionsScreen = document.getElementById('initial-conditions-screen');
     const tapText = document.querySelector('.tap-text');
     initialConditionsScreen.classList.remove('hidden');
     
@@ -1068,7 +1071,9 @@ document.addEventListener('touchend', function(e) {
     // Only process swipes when game is active
     if (isDebugPaused || 
         roundStartScreen.classList.contains('hidden') === false ||
+        initialConditionsScreen.classList.contains('hidden') === false ||
         newConditionScreen.classList.contains('hidden') === false) {
+            console.log('touchend ignored because game is paused or round start screen is visible');
         return;
     }
 
@@ -1098,6 +1103,8 @@ document.addEventListener('touchend', function(e) {
         };
         
         // Trigger fling animation
+        playSound(wooshSound);
+        console.log('woosh sound played');
         fling(isPlayer1Area);
         
         // Handle the slap
@@ -1121,3 +1128,6 @@ document.addEventListener('touchend', function(e) {
         }
     }
 });
+
+// Preload sounds
+preloadSounds();
