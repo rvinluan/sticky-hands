@@ -857,9 +857,10 @@ button:hover {
     position: absolute;
     width: 33px;
     height: 33px;
-    background-color: black;
-    border-radius: 50%;
-    left: 50%;
+    background-image: url('pointer.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    left: calc(50% + 16px);
     top: 50%;
     transform: translate(-50%, -50%);
     animation: swipeDot 1.3s cubic-bezier(0.83, 0, 0.17, 1) infinite;
