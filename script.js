@@ -83,6 +83,7 @@ let incorrectSound = null;
 let drawSound = null;
 let pointSound = null;
 let wooshSound = null;
+let changeSound = null;
 
 // Preload sound effects
 function preloadSounds() {
@@ -92,6 +93,7 @@ function preloadSounds() {
     drawSound = new Audio('sounds/draw.mp3');
     pointSound = new Audio('sounds/Point.mp3');
     wooshSound = new Audio('sounds/woosh.mp3');
+    changeSound = new Audio('sounds/change.mp3');
 
     // Set volume for all sounds
     // slapSound.volume = 0.5;
@@ -100,6 +102,7 @@ function preloadSounds() {
     drawSound.volume = 0.5;
     pointSound.volume = 0.5;
     wooshSound.volume = 1;
+    changeSound.volume = 0.5;
 
     slapSound.load();
     correctSound.load();
@@ -107,6 +110,7 @@ function preloadSounds() {
     drawSound.load();
     pointSound.load();  
     wooshSound.load();
+    changeSound.load();
 }
 
 // Play a sound effect
@@ -400,6 +404,7 @@ function checkConditions(pile) {
 }
 
 function changeColor(player) {
+    playSound(changeSound);
     if (player === 'player1') {
         player1ColorIndex = (player1ColorIndex + 1) % colors.length;
         // Update chain1 color
