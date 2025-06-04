@@ -66,6 +66,9 @@ const burstEffect = document.getElementById('burst-effect');
 const physicsCanvas = document.getElementById('physics-canvas');
 const playerToggle = document.getElementById('player-toggle');
 const continueButton = document.getElementById('continue-button');
+const aboutButton = document.getElementById('about-button');
+const aboutScreen = document.getElementById('about-screen');
+const closeAboutButton = document.getElementById('close-about-button');
 
 // Card suits and ranks
 const suits = ['♠', '♥', '♦', '♣'];
@@ -1132,6 +1135,17 @@ document.addEventListener('touchend', function(e) {
             }
         }
     }
+});
+
+// About screen functionality
+aboutButton.addEventListener('click', () => {
+    welcomeScreen.classList.add('hidden');
+    aboutScreen.classList.remove('hidden');
+});
+
+closeAboutButton.addEventListener('click', () => {
+    aboutScreen.classList.add('hidden');
+    welcomeScreen.classList.remove('hidden');
 });
 
 // Preload sounds
