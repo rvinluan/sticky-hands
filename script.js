@@ -1002,9 +1002,9 @@ continueButton.addEventListener('click', () => {
     // Update lobby screen based on player count
     const player2Tutorial = document.querySelector('.tutorial.player1');
     if (player_count === 1) {
-        player2Tutorial.style.display = 'none';
+        player2Tutorial.style.visibility = 'hidden';
     } else {
-        player2Tutorial.style.display = 'block';
+        player2Tutorial.style.visibility = 'visible';
     }
 });
 
