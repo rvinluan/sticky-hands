@@ -18,6 +18,19 @@ const ROUNDS_TO_MAX_SPEED = 9; // Number of rounds until max speed is reached
 const INCORRECT_SLAP_PENALTY = 2; // Points deducted for incorrect slaps
 const COMPUTER_SLAP_CHANCE = 0.5; // Chance for computer to slap
 const COMPUTER_SLAP_DELAY = 600; // Delay before computer slaps in ms
+
+// Array of hand pun loss messages
+const LOSS_MESSAGES = [
+    "Give your friend a hand. You scored ",
+    "You need some more hands-on experience! You scored ",
+    "You do in fact have to hand it to them. You scored ",
+    "Sometimes you're just dealt a bad hand! You scored ",
+    "Don't you know what they say about idle hands? You scored ",
+    "I'm going to hold your hand when I say this: You scored ",
+    "You played right into their hand. You scored ",
+    "Looks like it just wasn't in the cards for you. You scored "
+];
+
 let drawInterval = 500 + ((ROUNDS_TO_MAX_SPEED - 1) * 100); // Start slower, get faster
 let currentDeckSize = 0; // Track current deck size
 let activeConditions = new Set(); // Track which conditions are active
@@ -961,10 +974,14 @@ function endGame() {
         
         if (player_count === 1) {
             winnerTitle.textContent = 'Computer Wins!';
-            loserMessage.textContent = 'You lost. You scored ' + player2Score + ' points.';
+            // Get random loss message
+            const randomMessage = LOSS_MESSAGES[Math.floor(Math.random() * LOSS_MESSAGES.length)];
+            loserMessage.textContent = randomMessage + player2Score + ' points.';
         } else {
             winnerTitle.textContent = 'You Win!';
-            loserMessage.textContent = 'On the other hand, you lost. You scored ' + player2Score + ' points.';
+            // Get random loss message
+            const randomMessage = LOSS_MESSAGES[Math.floor(Math.random() * LOSS_MESSAGES.length)];
+            loserMessage.textContent = randomMessage + player2Score + ' points.';
         }
     } else {
         endScreen.classList.add('player2-won');
@@ -977,7 +994,9 @@ function endGame() {
             loserMessage.textContent = 'Computer scored ' + player1Score + ' points.';
         } else {
             winnerTitle.textContent = 'You Win!';
-            loserMessage.textContent = 'On the other hand, you lost. You scored ' + player1Score + ' points.';
+            // Get random loss message
+            const randomMessage = LOSS_MESSAGES[Math.floor(Math.random() * LOSS_MESSAGES.length)];
+            loserMessage.textContent = randomMessage + player1Score + ' points.';
         }
     }
     
