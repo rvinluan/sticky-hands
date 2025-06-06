@@ -116,7 +116,7 @@ function preloadSounds() {
     drawSound = new Audio('sounds/draw.mp3');
     pointSound = new Audio('sounds/bell.mp3');
     wooshSound = new Audio('sounds/woosh.mp3');
-    changeSound = new Audio('sounds/change.mp3');
+    changeSound = new Audio('sounds/pan.mp3');
     interactBigSound = new Audio('sounds/snap.mp3');
     interactSmallSound = new Audio('sounds/woodblock.mp3');
     t1Sound = new Audio('sounds/transition-1.mp3');
@@ -1196,11 +1196,13 @@ document.addEventListener('touchend', function(e) {
 
 // About screen functionality
 aboutButton.addEventListener('click', () => {
+    playSound(interactBigSound);
     welcomeScreen.classList.add('hidden');
     aboutScreen.classList.remove('hidden');
 });
 
 closeAboutButton.addEventListener('click', () => {
+    playSound(interactBigSound);
     aboutScreen.classList.add('hidden');
     welcomeScreen.classList.remove('hidden');
 });
