@@ -777,7 +777,9 @@ async function drawCard() {
 
 // Update round start screen
 function updateRoundStartScreen() {
-    playRandomTransitionSound();
+    setTimeout(() => {
+        playRandomTransitionSound();
+    }, 200);
     // Update round numbers for next round
     roundNumberElement.textContent = currentRound;
     roundNumberElement2.textContent = currentRound;
@@ -952,6 +954,7 @@ async function startGame() {
     
     // Show initial conditions screen
     const tapText = document.querySelector('.tap-text');
+    tapText.textContent = 'tap twice to advance';
     initialConditionsScreen.classList.remove('hidden');
     
     // Handle tap interactions
