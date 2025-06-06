@@ -100,25 +100,44 @@ let drawSound = null;
 let pointSound = null;
 let wooshSound = null;
 let changeSound = null;
+let interactBigSound = null;
+let interactSmallSound = null;
+let t1Sound = null;
+let t2Sound = null;
+let t3Sound = null;
+let t4Sound = null;
+let t5Sound = null;
 
 // Preload sound effects
 function preloadSounds() {
     slapSound = new Audio('sounds/slap1.mp3');
-    correctSound = new Audio('sounds/correct.mp3');
+    correctSound = new Audio('sounds/brass.mp3');
     incorrectSound = new Audio('sounds/incorrect.mp3');
     drawSound = new Audio('sounds/draw.mp3');
-    pointSound = new Audio('sounds/Point.mp3');
+    pointSound = new Audio('sounds/bell.mp3');
     wooshSound = new Audio('sounds/woosh.mp3');
     changeSound = new Audio('sounds/change.mp3');
+    interactBigSound = new Audio('sounds/snap.mp3');
+    interactSmallSound = new Audio('sounds/woodblock.mp3');
+    t1Sound = new Audio('sounds/transition-1.mp3');
+    t2Sound = new Audio('sounds/transition-2.mp3');
+    t3Sound = new Audio('sounds/transition-3.mp3');
+    t4Sound = new Audio('sounds/transition-4.mp3');
+    t5Sound = new Audio('sounds/transition-5.mp3');
 
     // Set volume for all sounds
     // slapSound.volume = 0.5;
-    correctSound.volume = 0.1;
+    correctSound.volume = 0.5;
     incorrectSound.volume = 0.1;
     drawSound.volume = 0.5;
     pointSound.volume = 0.5;
     wooshSound.volume = 1;
     changeSound.volume = 0.5;
+    t1Sound.volume = 0.5;
+    t2Sound.volume = 0.5;
+    t3Sound.volume = 0.5;
+    t4Sound.volume = 0.5;
+    t5Sound.volume = 0.5;
 
     slapSound.load();
     correctSound.load();
@@ -127,6 +146,13 @@ function preloadSounds() {
     pointSound.load();  
     wooshSound.load();
     changeSound.load();
+    interactBigSound.load();
+    interactSmallSound.load();
+    t1Sound.load();
+    t2Sound.load();
+    t3Sound.load();
+    t4Sound.load();
+    t5Sound.load();
 }
 
 // Play a sound effect
@@ -137,6 +163,12 @@ function playSound(sound) {
             console.log('Error playing sound:', error);
         });
     }
+}
+
+function playRandomTransitionSound() {
+    const transitionSounds = [t1Sound, t2Sound, t3Sound, t4Sound, t5Sound];
+    const randomSound = transitionSounds[Math.floor(Math.random() * transitionSounds.length)];
+    playSound(randomSound);
 }
 
 // Display game conditions
@@ -745,6 +777,7 @@ async function drawCard() {
 
 // Update round start screen
 function updateRoundStartScreen() {
+    playRandomTransitionSound();
     // Update round numbers for next round
     roundNumberElement.textContent = currentRound;
     roundNumberElement2.textContent = currentRound;
@@ -925,6 +958,7 @@ async function startGame() {
     let tapCount = 0;
     const handleTap = () => {
         tapCount++;
+        playSound(interactSmallSound);
         if (tapCount === 1) {
             tapText.textContent = 'tap once to advance';
         } else if (tapCount === 2) {
@@ -1008,12 +1042,12 @@ function endGame() {
 
 // Event listeners
 playerToggle.addEventListener('change', () => {
-    console.log('player toggle changed');
+    playSound(interactSmallSound);
     player_count = playerToggle.checked ? 2 : 1;
 });
 
 continueButton.addEventListener('click', () => {
-    console.log('continue button clicked');
+    playSound(interactBigSound);
     welcomeScreen.classList.add('hidden');
     lobbyScreen.classList.remove('hidden');
     physicsCanvas.style.display = 'block';
@@ -1028,12 +1062,13 @@ continueButton.addEventListener('click', () => {
 });
 
 playButton.addEventListener('click', (event) => {
-    console.log('Play button clicked');
+    playSound(interactBigSound);
     event.stopPropagation();
     startGame();
 });
 
 replayButton.addEventListener('click', (event) => {
+    playSound(interactBigSound);
     event.stopPropagation();
     startGame();
 });
