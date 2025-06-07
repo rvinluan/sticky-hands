@@ -216,10 +216,11 @@ function duckBackgroundMusicForSound(soundEffect, duckVolume = 0.1, duckDuration
     transitionVolume(backgroundMusic, duckVolume, duckDuration);
     
     // Play the sound effect
-    const sound = playSound(soundEffect);
+    const sound = soundEffect;
     
     // Listen for when the sound ends
     sound.addEventListener('ended', () => {
+        console.log('sound ended');
         // Raise volume back to original
         transitionVolume(backgroundMusic, originalVolume, duckDuration);
     }, { once: true });
@@ -976,9 +977,6 @@ async function startGame() {
         clearInterval(gameInterval);
     }
     
-    // Start playing background music
-    playBackgroundMusic();
-    
     // Reset game state
     player1Score = 0;
     player2Score = 0;
@@ -1036,6 +1034,7 @@ async function startGame() {
             
             // Animate countdown and then start game
             animateCountdown(countdownBar).then(() => {
+                playBackgroundMusic();
                 roundStartScreen.classList.add('hidden');
                 gameplayScreen.classList.remove('hidden');
                 physicsCanvas.style.display = 'block';
