@@ -995,7 +995,6 @@ function endGame() {
     
     const endScreen = document.getElementById('end-screen');
     const winnerScoreElement = document.getElementById('winner-score');
-    const loserScoreElement = document.getElementById('loser-score');
     const winnerTitle = endScreen.querySelector('h2');
     const loserMessage = endScreen.querySelector('.loser-message');
     
@@ -1007,7 +1006,7 @@ function endGame() {
         endScreen.classList.add('player1-won');
         endScreen.classList.remove('player2-won');
         winnerScoreElement.textContent = player1Score;
-        loserScoreElement.textContent = player2Score;
+        // loserScoreElement.textContent = player2Score;
         
         if (player_count === 1) {
             winnerTitle.textContent = 'Computer Wins!';
@@ -1024,7 +1023,7 @@ function endGame() {
         endScreen.classList.add('player2-won');
         endScreen.classList.remove('player1-won');
         winnerScoreElement.textContent = player2Score;
-        loserScoreElement.textContent = player1Score;
+        // loserScoreElement.textContent = player1Score;
         
         if (player_count === 1) {
             winnerTitle.textContent = 'You Win!';
