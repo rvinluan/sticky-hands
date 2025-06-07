@@ -209,7 +209,7 @@ function transitionVolume(audioElement, targetVolume, duration = 200) {
 }
 
 // Duck background music for a sound effect
-function duckBackgroundMusicForSound(soundEffect, duckVolume = 0.1, duckDuration = 200) {
+function duckBackgroundMusicForSound(soundEffect, duckVolume = 0.01, duckDuration = 200) {
     const originalVolume = backgroundMusic.volume;
     
     // Lower volume
@@ -847,14 +847,14 @@ function updateRoundStartScreen() {
         player1StatusText.textContent = `First to ${WINNING_SCORE} points wins`;
         player2StatusText.textContent = `First to ${WINNING_SCORE} points wins`;
     } else if (player1Score > player2Score) {
-        player1StatusText.textContent = "you're winning";
-        player2StatusText.textContent = "you're losing";
+        player1StatusText.textContent = "you’re winning";
+        player2StatusText.textContent = "you’re losing";
     } else if (player2Score > player1Score) {
-        player1StatusText.textContent = "you're losing";
-        player2StatusText.textContent = "you're winning";
+        player1StatusText.textContent = "you’re losing";
+        player2StatusText.textContent = "you’re winning";
     } else {
-        player1StatusText.textContent = "you're tied";
-        player2StatusText.textContent = "you're tied";
+        player1StatusText.textContent = "you’re tied";
+        player2StatusText.textContent = "you’re tied";
     }
 }
 
