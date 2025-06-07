@@ -107,6 +107,7 @@ let t2Sound = null;
 let t3Sound = null;
 let t4Sound = null;
 let t5Sound = null;
+let backgroundMusic = null;
 
 // Preload sound effects
 function preloadSounds() {
@@ -124,6 +125,7 @@ function preloadSounds() {
     t3Sound = new Audio('sounds/transition-3.mp3');
     t4Sound = new Audio('sounds/transition-4.mp3');
     t5Sound = new Audio('sounds/transition-5.mp3');
+    backgroundMusic = new Audio('sounds/Sticky Hands Music.mp3');
 
     // Set volume for all sounds
     // slapSound.volume = 0.5;
@@ -138,6 +140,7 @@ function preloadSounds() {
     t3Sound.volume = 0.5;
     t4Sound.volume = 0.5;
     t5Sound.volume = 0.5;
+    backgroundMusic.volume = 0.3;
 
     slapSound.load();
     correctSound.load();
@@ -153,6 +156,7 @@ function preloadSounds() {
     t3Sound.load();
     t4Sound.load();
     t5Sound.load();
+    backgroundMusic.load();
 }
 
 // Play a sound effect
@@ -169,6 +173,56 @@ function playRandomTransitionSound() {
     const transitionSounds = [t1Sound, t2Sound, t3Sound, t4Sound, t5Sound];
     const randomSound = transitionSounds[Math.floor(Math.random() * transitionSounds.length)];
     playSound(randomSound);
+    return randomSound;
+}
+
+// Play background music with looping
+function playBackgroundMusic() {
+    if (backgroundMusic) {
+        backgroundMusic.loop = true;
+        backgroundMusic.currentTime = 0;
+        backgroundMusic.play().catch(error => {
+            console.log('Error playing background music:', error);
+        });
+    }
+}
+
+// Smoothly transition audio volume
+function transitionVolume(audioElement, targetVolume, duration = 200) {
+    const startTime = performance.now();
+    const startVolume = audioElement.volume;
+    
+    function animateVolume(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Calculate new volume
+        const newVolume = startVolume + (targetVolume - startVolume) * progress;
+        audioElement.volume = newVolume;
+        
+        if (progress < 1) {
+            requestAnimationFrame(animateVolume);
+        }
+    }
+    
+    requestAnimationFrame(animateVolume);
+}
+
+// Duck background music for a sound effect
+function duckBackgroundMusicForSound(soundEffect, duckVolume = 0.1, duckDuration = 200) {
+    const originalVolume = backgroundMusic.volume;
+    
+    // Lower volume
+    transitionVolume(backgroundMusic, duckVolume, duckDuration);
+    
+    // Play the sound effect
+    const sound = playSound(soundEffect);
+    
+    // Listen for when the sound ends
+    sound.addEventListener('ended', () => {
+        // Raise volume back to original
+        transitionVolume(backgroundMusic, originalVolume, duckDuration);
+    }, { once: true });
 }
 
 // Display game conditions
@@ -777,9 +831,12 @@ async function drawCard() {
 
 // Update round start screen
 function updateRoundStartScreen() {
+    // Duck background music for transition sound
     setTimeout(() => {
-        playRandomTransitionSound();
+        const transitionSound = playRandomTransitionSound();
+        duckBackgroundMusicForSound(transitionSound);
     }, 200);
+    
     // Update round numbers for next round
     roundNumberElement.textContent = currentRound;
     roundNumberElement2.textContent = currentRound;
@@ -918,6 +975,9 @@ async function startGame() {
     if (gameInterval) {
         clearInterval(gameInterval);
     }
+    
+    // Start playing background music
+    playBackgroundMusic();
     
     // Reset game state
     player1Score = 0;
