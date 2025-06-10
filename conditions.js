@@ -44,6 +44,39 @@ const conditionsObject = {
         emoji: '🕷️',
         simplicity: 1
     },
+    six: {
+        check: (pile) => {
+            if (pile.length < 1) return false;
+            const lastCard = pile[pile.length - 1];
+            return lastCard.rank === '6';
+        },
+        name: 'Six!',
+        description: 'Slap when a 6 appears',
+        emoji: '🎲',
+        simplicity: 1
+    },
+    highFive: {
+        check: (pile) => {
+            if (pile.length < 1) return false;
+            const lastCard = pile[pile.length - 1];
+            return lastCard.rank === '5';
+        },
+        name: 'High Five',
+        description: 'Slap when a 5 appears',
+        emoji: '✋',
+        simplicity: 1
+    },
+    redQueen: {
+        check: (pile) => {
+            if (pile.length < 1) return false;
+            const lastCard = pile[pile.length - 1];
+            return lastCard.rank === 'Q' && (lastCard.suit === '♥' || lastCard.suit === '♦');
+        },
+        name: 'Red Queen',
+        description: 'Slap when a red Queen appears',
+        emoji: '👑',
+        simplicity: 1
+    },
     nice: {
         check: (pile) => {
             if (pile.length < 2) return false;
@@ -68,17 +101,22 @@ const conditionsObject = {
         emoji: '👯‍♀️',
         simplicity: 2
     },
-    sumTo13: {
+    sumTo12: {
         check: (pile) => {
             if (pile.length < 2) return false;
             const lastCard = pile[pile.length - 1];
             const secondLastCard = pile[pile.length - 2];
+            // Return false if either card is a face card (J, Q, K, A)
+            if (['J', 'Q', 'K', 'A'].includes(lastCard.rank) || 
+                ['J', 'Q', 'K', 'A'].includes(secondLastCard.rank)) {
+                return false;
+            }
             const sum = getCardValueFunction(lastCard.rank) + getCardValueFunction(secondLastCard.rank);
-            return sum === 13;
+            return sum === 12;
         },
-        name: 'Sum to 13',
-        description: 'Slap when the last two cards sum to 13 (A=11, J/Q/K=10)',
-        emoji: '🍀',
+        name: 'Sum to 12',
+        description: 'Slap when 2 number cards sum to 12',
+        emoji: '🕛',
         simplicity: 2
     },
     consecutive: {
@@ -89,7 +127,7 @@ const conditionsObject = {
             return areConsecutiveFunction(lastCard.rank, secondLastCard.rank);
         },
         name: 'Consecutive',
-        description: 'Slap when two cards are consecutive (A can connect to K or 2)',
+        description: 'Slap consecutive cards (e.g. 4, 5 or J, 10)',
         emoji: '➡️',
         simplicity: 2
     },
@@ -180,7 +218,56 @@ const conditionsObject = {
         },
         name: 'Even Steven',
         description: 'Slap when 2 cards are both even',
-        emoji: '✌️',
+        emoji: '👱‍♂️',
+        simplicity: 2
+    },
+    oddTodd: {
+        check: (pile) => {
+            if (pile.length < 2) return false;
+            const lastCard = pile[pile.length - 1];
+            const secondLastCard = pile[pile.length - 2];
+            
+            // Check if both cards are odd (3, 5, 7, 9)
+            const isOdd = rank => ['3', '5', '7', '9'].includes(rank);
+            
+            return isOdd(lastCard.rank) && 
+                   isOdd(secondLastCard.rank);
+        },
+        name: 'Odd Todd',
+        description: 'Slap when 2 cards are both odd',
+        emoji: '👨‍🦰',
+        simplicity: 2
+    },
+    paperSizes: {
+        check: (pile) => {
+            if (pile.length < 2) return false;
+            const lastCard = pile[pile.length - 1];
+            const secondLastCard = pile[pile.length - 2];
+            
+            // Check if first card is Ace and second card is a number
+            const isNumber = rank => ['2', '3', '4', '5', '6', '7', '8', '9', '10'].includes(rank);
+            
+            return secondLastCard.rank === 'A' && isNumber(lastCard.rank);
+        },
+        name: 'Paper Sizes',
+        description: 'Slap when an Ace is followed by any number',
+        emoji: '📄',
+        simplicity: 2
+    },
+    bestDecade: {
+        check: (pile) => {
+            if (pile.length < 2) return false;
+            const lastCard = pile[pile.length - 1];
+            const secondLastCard = pile[pile.length - 2];
+            
+            // Check if first card is 9 and second card is a number
+            const isNumber = rank => ['2', '3', '4', '5', '6', '7', '8', '9', '10'].includes(rank);
+            
+            return secondLastCard.rank === '9' && isNumber(lastCard.rank);
+        },
+        name: 'Best Decade',
+        description: 'Slap when a 9 is followed by any number',
+        emoji: '🎵',
         simplicity: 2
     },
     sandwich: {
@@ -209,7 +296,25 @@ const conditionsObject = {
         description: 'Slap when 3 cards in a row are the same suit',
         emoji: '🚽',
         simplicity: 3
-    }
+    },
+    deserted: {
+        check: (pile) => {
+            if (pile.length < 4) return false;
+            const lastCard = pile[pile.length - 1];
+            const secondLastCard = pile[pile.length - 2];
+            const thirdLastCard = pile[pile.length - 3];
+            const fourthLastCard = pile[pile.length - 4];
+
+            // Check that none are face cards (J, Q, K, A)
+            const faceCards = ['J', 'Q', 'K', 'A'];
+            return ![lastCard, secondLastCard, thirdLastCard, fourthLastCard]
+                .some(card => faceCards.includes(card.rank));
+        },
+        name: 'Deserted',
+        description: 'Slap when 4 cards in a row are not face cards',
+        emoji: '🌵',
+        simplicity: 4
+    },
 };
 
 // Helper functions needed by the conditions
