@@ -143,19 +143,6 @@ const conditionsObject = {
         emoji: '📻',
         simplicity: 2
     },
-    marriage: {
-        check: (pile) => {
-            if (pile.length < 2) return false;
-            const lastCard = pile[pile.length - 1];
-            const secondLastCard = pile[pile.length - 2];
-            return (lastCard.rank === 'K' && secondLastCard.rank === 'Q') || 
-                   (lastCard.rank === 'Q' && secondLastCard.rank === 'K');
-        },
-        name: 'Marriage',
-        description: 'Slap when a king and a queen are adjacent',
-        emoji: '💍',
-        simplicity: 2
-    },
     lovers: {
         check: (pile) => {
             if (pile.length < 2) return false;

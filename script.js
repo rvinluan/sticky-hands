@@ -847,14 +847,14 @@ function updateRoundStartScreen() {
         player1StatusText.textContent = `First to ${WINNING_SCORE} points wins`;
         player2StatusText.textContent = `First to ${WINNING_SCORE} points wins`;
     } else if (player1Score > player2Score) {
-        player1StatusText.textContent = "you’re winning";
-        player2StatusText.textContent = "you’re losing";
+        player1StatusText.textContent = "you're winning";
+        player2StatusText.textContent = "you're losing";
     } else if (player2Score > player1Score) {
-        player1StatusText.textContent = "you’re losing";
-        player2StatusText.textContent = "you’re winning";
+        player1StatusText.textContent = "you're losing";
+        player2StatusText.textContent = "you're winning";
     } else {
-        player1StatusText.textContent = "you’re tied";
-        player2StatusText.textContent = "you’re tied";
+        player1StatusText.textContent = "you're tied";
+        player2StatusText.textContent = "you're tied";
     }
 }
 
@@ -970,6 +970,43 @@ function animateCountdown(bar, duration = 3000) {
     });
 }
 
+// Update initial conditions screen
+function updateInitialConditionsScreen() {
+    // Get both player's condition lists
+    const player1ConditionsList = document.querySelector('.player1 .initial-conditions-list');
+    const player2ConditionsList = document.querySelector('.player2 .initial-conditions-list');
+    
+    // Clear existing conditions
+    player1ConditionsList.innerHTML = '';
+    player2ConditionsList.innerHTML = '';
+    
+    // Add each active condition to both players' lists
+    for (const conditionKey of activeConditions) {
+        const condition = conditions[conditionKey];
+        
+        // Create condition element
+        const conditionElement = document.createElement('div');
+        conditionElement.className = 'initial-condition';
+        
+        // Create emoji span
+        const emojiSpan = document.createElement('span');
+        emojiSpan.className = 'condition-emoji';
+        emojiSpan.textContent = condition.emoji;
+        
+        // Create description paragraph
+        const descriptionP = document.createElement('p');
+        descriptionP.textContent = condition.description;
+        
+        // Add elements to condition element
+        conditionElement.appendChild(emojiSpan);
+        conditionElement.appendChild(descriptionP);
+        
+        // Add condition element to both players' lists
+        player1ConditionsList.appendChild(conditionElement.cloneNode(true));
+        player2ConditionsList.appendChild(conditionElement.cloneNode(true));
+    }
+}
+
 // Start game
 async function startGame() {    
     // Clear any existing game interval
@@ -987,11 +1024,36 @@ async function startGame() {
     currentRound = 1;
     drawInterval = 500 + ((ROUNDS_TO_MAX_SPEED - 1) * 100);
     
-    // Reset active conditions and add initial conditions
-    activeConditions.clear();
-    activeConditions.add('joker');
-    activeConditions.add('consecutive');
-    activeConditions.add('double');
+    // Get all conditions of simplicity 1
+    const simplicity1Conditions = Object.entries(conditionsObject)
+        .filter(([_, condition]) => condition.simplicity === 1);
+    
+    // Get all conditions of simplicity 2
+    const simplicity2Conditions = Object.entries(conditionsObject)
+        .filter(([_, condition]) => condition.simplicity === 2);
+    
+    // Randomly select 1 condition of simplicity 1
+    const randomSimplicity1 = simplicity1Conditions[Math.floor(Math.random() * simplicity1Conditions.length)];
+    
+    // Randomly select 2 conditions of simplicity 2
+    const randomSimplicity2 = shuffleArray(simplicity2Conditions).slice(0, 2);
+    
+    // Helper function to shuffle array
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // Add the selected conditions to activeConditions
+    activeConditions.add(randomSimplicity1[0]);
+    activeConditions.add(randomSimplicity2[0][0]);
+    activeConditions.add(randomSimplicity2[1][0]);
+    
+    // Update initial conditions screen with selected conditions
+    updateInitialConditionsScreen();
     
     // Initialize deck and UI
     initializeDeck();
