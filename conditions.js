@@ -6,10 +6,43 @@ const conditionsObject = {
             const lastCard = pile[pile.length - 1];
             return lastCard.rank === 'joker';
         },
-        points: 2,
         name: 'Joker',
         description: 'Slap when a joker appears',
-        emoji: '🤡'
+        emoji: '🤡',
+        simplicity: 1
+    },
+    blackjack: {
+        check: (pile) => {
+            if (pile.length < 1) return false;
+            const lastCard = pile[pile.length - 1];
+            return lastCard.rank === 'J' && (lastCard.suit === '♠' || lastCard.suit === '♣');
+        },
+        name: 'Blackjack',
+        description: 'Slap when a black Jack appears',
+        emoji: '⚫️',
+        simplicity: 1
+    },
+    lucky7: {
+        check: (pile) => {
+            if (pile.length < 1) return false;
+            const lastCard = pile[pile.length - 1];
+            return lastCard.rank === '7';
+        },
+        name: 'Lucky 7',
+        description: 'Slap when a 7 appears',
+        emoji: '🍀',
+        simplicity: 1
+    },
+    spiders: {
+        check: (pile) => {
+            if (pile.length < 1) return false;
+            const lastCard = pile[pile.length - 1];
+            return lastCard.rank === '8';
+        },
+        name: 'Spiders!',
+        description: 'Slap when an 8 appears',
+        emoji: '🕷️',
+        simplicity: 1
     },
     nice: {
         check: (pile) => {
@@ -18,37 +51,10 @@ const conditionsObject = {
             const secondLastCard = pile[pile.length - 2];
             return lastCard.rank === '9' && secondLastCard.rank === '6';
         },
-        points: 10,
         name: 'Nice',
         description: 'Slap when a 6 is followed by a 9',
-        emoji: '😏'
-    },
-    sandwich: {
-        check: (pile) => {
-            if (pile.length < 3) return false;
-            const lastCard = pile[pile.length - 1];
-            const middleCard = pile[pile.length - 2];
-            const firstCard = pile[pile.length - 3];
-            return lastCard.rank === firstCard.rank && lastCard.rank !== middleCard.rank;
-        },
-        points: 7,
-        name: 'Sandwich',
-        description: 'Slap when two of the same card sandwich another (e.g. 4, 7, 4)',
-        emoji: '🥪'
-    },
-    flush: {
-        check: (pile) => {
-            if (pile.length < 3) return false;
-            const lastCard = pile[pile.length - 1];
-            const secondLastCard = pile[pile.length - 2];
-            const thirdLastCard = pile[pile.length - 3];
-            return lastCard.suit === secondLastCard.suit && 
-                   lastCard.suit === thirdLastCard.suit;
-        },
-        points: 9,
-        name: 'Flush',
-        description: 'Slap when 3 cards in a row are the same suit',
-        emoji: '🚽'
+        emoji: '😏',
+        simplicity: 2
     },
     double: {
         check: (pile) => {
@@ -57,10 +63,10 @@ const conditionsObject = {
             const secondLastCard = pile[pile.length - 2];
             return lastCard.rank === secondLastCard.rank;
         },
-        points: 5,
         name: 'Double',
         description: 'Slap when two cards are the same rank',
-        emoji: '👯‍♀️'
+        emoji: '👯‍♀️',
+        simplicity: 2
     },
     sumTo13: {
         check: (pile) => {
@@ -70,10 +76,10 @@ const conditionsObject = {
             const sum = getCardValueFunction(lastCard.rank) + getCardValueFunction(secondLastCard.rank);
             return sum === 13;
         },
-        points: 7,
         name: 'Sum to 13',
         description: 'Slap when the last two cards sum to 13 (A=11, J/Q/K=10)',
-        emoji: '🍀'
+        emoji: '🍀',
+        simplicity: 2
     },
     consecutive: {
         check: (pile) => {
@@ -82,21 +88,10 @@ const conditionsObject = {
             const secondLastCard = pile[pile.length - 2];
             return areConsecutiveFunction(lastCard.rank, secondLastCard.rank);
         },
-        points: 3,
         name: 'Consecutive',
         description: 'Slap when two cards are consecutive (A can connect to K or 2)',
-        emoji: '➡️'
-    },
-    blackjack: {
-        check: (pile) => {
-            if (pile.length < 1) return false;
-            const lastCard = pile[pile.length - 1];
-            return lastCard.rank === 'J' && (lastCard.suit === '♠' || lastCard.suit === '♣');
-        },
-        points: 7,
-        name: 'Blackjack',
-        description: 'Slap when a black Jack appears',
-        emoji: '⚫️'
+        emoji: '➡️',
+        simplicity: 2
     },
     radio: {
         check: (pile) => {
@@ -105,10 +100,10 @@ const conditionsObject = {
             const secondLastCard = pile[pile.length - 2];
             return lastCard.rank === '4' && secondLastCard.rank === '10';
         },
-        points: 10,
         name: 'Radio',
         description: 'Slap when a 10 is followed by a 4',
-        emoji: '📻'
+        emoji: '📻',
+        simplicity: 2
     },
     marriage: {
         check: (pile) => {
@@ -118,10 +113,10 @@ const conditionsObject = {
             return (lastCard.rank === 'K' && secondLastCard.rank === 'Q') || 
                    (lastCard.rank === 'Q' && secondLastCard.rank === 'K');
         },
-        points: 9,
         name: 'Marriage',
         description: 'Slap when a king and a queen are adjacent',
-        emoji: '💍'
+        emoji: '💍',
+        simplicity: 2
     },
     lovers: {
         check: (pile) => {
@@ -130,10 +125,10 @@ const conditionsObject = {
             const secondLastCard = pile[pile.length - 2];
             return lastCard.suit === '♥' && secondLastCard.suit === '♥';
         },
-        points: 6,
         name: 'Lovers',
         description: 'Slap when two cards in a row are hearts',
-        emoji: '💕'
+        emoji: '💕',
+        simplicity: 2
     },
     spades: {
         check: (pile) => {
@@ -142,10 +137,10 @@ const conditionsObject = {
             const secondLastCard = pile[pile.length - 2];
             return lastCard.suit === '♠' && secondLastCard.suit === '♠';
         },
-        points: 6,
         name: 'Dig It',
         description: 'Slap when two cards in a row are spades',
-        emoji: '🪏'
+        emoji: '🪏',
+        simplicity: 2
     },
     clubs: {
         check: (pile) => {
@@ -154,10 +149,10 @@ const conditionsObject = {
             const secondLastCard = pile[pile.length - 2];
             return lastCard.suit === '♣' && secondLastCard.suit === '♣';
         },
-        points: 6,
         name: 'Party Night',
         description: 'Slap when two cards in a row are clubs',
-        emoji: '🪩'
+        emoji: '🪩',
+        simplicity: 2
     },
     diamonds: {
         check: (pile) => {
@@ -166,32 +161,10 @@ const conditionsObject = {
             const secondLastCard = pile[pile.length - 2];
             return lastCard.suit === '♦' && secondLastCard.suit === '♦';
         },
-        points: 6,
         name: 'Rich Vein',
         description: 'Slap when two cards in a row are diamonds',
-        emoji: '💎'
-    },
-    lucky7: {
-        check: (pile) => {
-            if (pile.length < 1) return false;
-            const lastCard = pile[pile.length - 1];
-            return lastCard.rank === '7';
-        },
-        points: 4,
-        name: 'Lucky 7',
-        description: 'Slap when a 7 appears',
-        emoji: '🍀'
-    },
-    spiders: {
-        check: (pile) => {
-            if (pile.length < 1) return false;
-            const lastCard = pile[pile.length - 1];
-            return lastCard.rank === '8';
-        },
-        points: 4,
-        name: 'Spiders!',
-        description: 'Slap when an 8 appears',
-        emoji: '🕷️'
+        emoji: '💎',
+        simplicity: 2
     },
     evenSteven: {
         check: (pile) => {
@@ -205,10 +178,37 @@ const conditionsObject = {
             return isEven(lastCard.rank) && 
                    isEven(secondLastCard.rank);
         },
-        points: 5,
         name: 'Even Steven',
         description: 'Slap when 2 cards are both even',
-        emoji: '✌️'
+        emoji: '✌️',
+        simplicity: 2
+    },
+    sandwich: {
+        check: (pile) => {
+            if (pile.length < 3) return false;
+            const lastCard = pile[pile.length - 1];
+            const middleCard = pile[pile.length - 2];
+            const firstCard = pile[pile.length - 3];
+            return lastCard.rank === firstCard.rank && lastCard.rank !== middleCard.rank;
+        },
+        name: 'Sandwich',
+        description: 'Slap when two of the same card sandwich another (e.g. 4, 7, 4)',
+        emoji: '🥪',
+        simplicity: 3
+    },
+    flush: {
+        check: (pile) => {
+            if (pile.length < 3) return false;
+            const lastCard = pile[pile.length - 1];
+            const secondLastCard = pile[pile.length - 2];
+            const thirdLastCard = pile[pile.length - 3];
+            return lastCard.suit === secondLastCard.suit && 
+                   lastCard.suit === thirdLastCard.suit;
+        },
+        name: 'Flush',
+        description: 'Slap when 3 cards in a row are the same suit',
+        emoji: '🚽',
+        simplicity: 3
     }
 };
 
