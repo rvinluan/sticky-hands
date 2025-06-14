@@ -9,7 +9,8 @@ const conditionsObject = {
         name: 'Joker',
         description: 'Slap when a joker appears',
         emoji: '🤡',
-        simplicity: 1
+        simplicity: 1,
+        startingConditionEligible: true
     },
     blackjack: {
         check: (pile) => {
@@ -20,7 +21,8 @@ const conditionsObject = {
         name: 'Blackjack',
         description: 'Slap when a black Jack appears',
         emoji: '⚫️',
-        simplicity: 1
+        simplicity: 1,
+        startingConditionEligible: true
     },
     lucky7: {
         check: (pile) => {
@@ -31,7 +33,8 @@ const conditionsObject = {
         name: 'Lucky 7',
         description: 'Slap when a 7 appears',
         emoji: '🍀',
-        simplicity: 1
+        simplicity: 1,
+        startingConditionEligible: true
     },
     spiders: {
         check: (pile) => {
@@ -42,7 +45,8 @@ const conditionsObject = {
         name: 'Spiders!',
         description: 'Slap when an 8 appears',
         emoji: '🕷️',
-        simplicity: 1
+        simplicity: 1,
+        startingConditionEligible: true
     },
     six: {
         check: (pile) => {
@@ -53,7 +57,8 @@ const conditionsObject = {
         name: 'Six!',
         description: 'Slap when a 6 appears',
         emoji: '🎲',
-        simplicity: 1
+        simplicity: 1,
+        startingConditionEligible: true
     },
     highFive: {
         check: (pile) => {
@@ -64,7 +69,8 @@ const conditionsObject = {
         name: 'High Five',
         description: 'Slap when a 5 appears',
         emoji: '✋',
-        simplicity: 1
+        simplicity: 1,
+        startingConditionEligible: true
     },
     redQueen: {
         check: (pile) => {
@@ -75,7 +81,8 @@ const conditionsObject = {
         name: 'Red Queen',
         description: 'Slap when a red Queen appears',
         emoji: '👑',
-        simplicity: 1
+        simplicity: 1,
+        startingConditionEligible: true
     },
     nice: {
         check: (pile) => {
@@ -87,7 +94,8 @@ const conditionsObject = {
         name: 'Nice',
         description: 'Slap when a 6 is followed by a 9',
         emoji: '😏',
-        simplicity: 2
+        simplicity: 2,
+        startingConditionEligible: false
     },
     double: {
         check: (pile) => {
@@ -99,7 +107,8 @@ const conditionsObject = {
         name: 'Double',
         description: 'Slap when two cards are the same rank',
         emoji: '👯‍♀️',
-        simplicity: 2
+        simplicity: 2,
+        startingConditionEligible: true
     },
     sumTo12: {
         check: (pile) => {
@@ -117,7 +126,8 @@ const conditionsObject = {
         name: 'Sum to 12',
         description: 'Slap when 2 number cards sum to 12',
         emoji: '🕛',
-        simplicity: 2
+        simplicity: 2,
+        startingConditionEligible: false
     },
     consecutive: {
         check: (pile) => {
@@ -129,7 +139,8 @@ const conditionsObject = {
         name: 'Consecutive',
         description: 'Slap consecutive cards (e.g. 4, 5 or J, 10)',
         emoji: '➡️',
-        simplicity: 2
+        simplicity: 2,
+        startingConditionEligible: false
     },
     radio: {
         check: (pile) => {
@@ -141,7 +152,8 @@ const conditionsObject = {
         name: 'Radio',
         description: 'Slap when a 10 is followed by a 4',
         emoji: '📻',
-        simplicity: 2
+        simplicity: 2,
+        startingConditionEligible: false
     },
     lovers: {
         check: (pile) => {
@@ -153,7 +165,8 @@ const conditionsObject = {
         name: 'Lovers',
         description: 'Slap when two cards in a row are hearts',
         emoji: '💕',
-        simplicity: 2
+        simplicity: 2,
+        startingConditionEligible: true
     },
     spades: {
         check: (pile) => {
@@ -165,7 +178,8 @@ const conditionsObject = {
         name: 'Dig It',
         description: 'Slap when two cards in a row are spades',
         emoji: '🪏',
-        simplicity: 2
+        simplicity: 2,
+        startingConditionEligible: true
     },
     clubs: {
         check: (pile) => {
@@ -177,7 +191,8 @@ const conditionsObject = {
         name: 'Party Night',
         description: 'Slap when two cards in a row are clubs',
         emoji: '🪩',
-        simplicity: 2
+        simplicity: 2,
+        startingConditionEligible: true
     },
     diamonds: {
         check: (pile) => {
@@ -189,7 +204,8 @@ const conditionsObject = {
         name: 'Rich Vein',
         description: 'Slap when two cards in a row are diamonds',
         emoji: '💎',
-        simplicity: 2
+        simplicity: 2,
+        startingConditionEligible: true
     },
     evenSteven: {
         check: (pile) => {
@@ -206,7 +222,8 @@ const conditionsObject = {
         name: 'Even Steven',
         description: 'Slap when 2 cards are both even',
         emoji: '👱‍♂️',
-        simplicity: 2
+        simplicity: 2,
+        startingConditionEligible: false
     },
     oddTodd: {
         check: (pile) => {
@@ -223,7 +240,8 @@ const conditionsObject = {
         name: 'Odd Todd',
         description: 'Slap when 2 cards are both odd',
         emoji: '👨‍🦰',
-        simplicity: 2
+        simplicity: 2,
+        startingConditionEligible: false
     },
     paperSizes: {
         check: (pile) => {
@@ -239,7 +257,8 @@ const conditionsObject = {
         name: 'Paper Sizes',
         description: 'Slap when an Ace is followed by any number',
         emoji: '📄',
-        simplicity: 2
+        simplicity: 2,
+        startingConditionEligible: false
     },
     bestDecade: {
         check: (pile) => {
@@ -255,7 +274,8 @@ const conditionsObject = {
         name: 'Best Decade',
         description: 'Slap when a 9 is followed by any number',
         emoji: '🎵',
-        simplicity: 2
+        simplicity: 2,
+        startingConditionEligible: false
     },
     sandwich: {
         check: (pile) => {
@@ -268,7 +288,8 @@ const conditionsObject = {
         name: 'Sandwich',
         description: 'Slap when two of the same card sandwich another (e.g. 4, 7, 4)',
         emoji: '🥪',
-        simplicity: 3
+        simplicity: 3,
+        startingConditionEligible: false
     },
     flush: {
         check: (pile) => {
@@ -282,7 +303,8 @@ const conditionsObject = {
         name: 'Flush',
         description: 'Slap when 3 cards in a row are the same suit',
         emoji: '🚽',
-        simplicity: 3
+        simplicity: 3,
+        startingConditionEligible: true
     },
     deserted: {
         check: (pile) => {
@@ -300,7 +322,8 @@ const conditionsObject = {
         name: 'Deserted',
         description: 'Slap when 4 cards in a row are not face cards',
         emoji: '🌵',
-        simplicity: 4
+        simplicity: 4,
+        startingConditionEligible: false
     },
 };
 

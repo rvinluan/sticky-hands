@@ -1024,13 +1024,13 @@ async function startGame() {
     currentRound = 1;
     drawInterval = 500 + ((ROUNDS_TO_MAX_SPEED - 1) * 100);
     
-    // Get all conditions of simplicity 1
+    // Get all conditions of simplicity 1 that are eligible for starting conditions
     const simplicity1Conditions = Object.entries(conditionsObject)
-        .filter(([_, condition]) => condition.simplicity === 1);
+        .filter(([_, condition]) => condition.simplicity === 1 && condition.startingConditionEligible);
     
-    // Get all conditions of simplicity 2
+    // Get all conditions of simplicity 2 that are eligible for starting conditions
     const simplicity2Conditions = Object.entries(conditionsObject)
-        .filter(([_, condition]) => condition.simplicity === 2);
+        .filter(([_, condition]) => condition.simplicity === 2 && condition.startingConditionEligible);
     
     // Randomly select 1 condition of simplicity 1
     const randomSimplicity1 = simplicity1Conditions[Math.floor(Math.random() * simplicity1Conditions.length)];
