@@ -264,14 +264,12 @@ function pauseGame() {
     clearInterval(gameInterval);
     
     // Update pause screen with current conditions
-    const player1ConditionsList = pauseScreen.querySelector('.player1 .initial-conditions-list');
-    const player2ConditionsList = pauseScreen.querySelector('.player2 .initial-conditions-list');
+    const conditionsList = pauseScreen.querySelector('.initial-conditions-list');
     
     // Clear existing conditions
-    player1ConditionsList.innerHTML = '';
-    player2ConditionsList.innerHTML = '';
+    conditionsList.innerHTML = '';
     
-    // Add each active condition to both players' lists
+    // Add each active condition to the list
     for (const conditionKey of activeConditions) {
         const condition = conditions[conditionKey];
         
@@ -284,17 +282,29 @@ function pauseGame() {
         emojiSpan.className = 'condition-emoji';
         emojiSpan.textContent = condition.emoji;
         
+        // Create content container
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'condition-content';
+        
+        // Create title span
+        const titleSpan = document.createElement('span');
+        titleSpan.className = 'condition-title';
+        titleSpan.textContent = condition.name;
+        
         // Create description paragraph
         const descriptionP = document.createElement('p');
         descriptionP.textContent = condition.description;
         
+        // Add title and description to content container
+        contentDiv.appendChild(titleSpan);
+        contentDiv.appendChild(descriptionP);
+        
         // Add elements to condition element
         conditionElement.appendChild(emojiSpan);
-        conditionElement.appendChild(descriptionP);
+        conditionElement.appendChild(contentDiv);
         
-        // Add condition element to both players' lists
-        player1ConditionsList.appendChild(conditionElement.cloneNode(true));
-        player2ConditionsList.appendChild(conditionElement.cloneNode(true));
+        // Add condition element to the list
+        conditionsList.appendChild(conditionElement);
     }
     
     // Show pause screen
