@@ -59,8 +59,10 @@ const roundStartScreen = document.getElementById('round-start-screen');
 const newConditionScreen = document.getElementById('new-condition-screen');
 const initialConditionsScreen = document.getElementById('initial-conditions-screen');
 const endScreen = document.getElementById('end-screen');
+const pauseScreen = document.getElementById('pause-screen');
 const playButton = document.getElementById('play-button');
 const replayButton = document.getElementById('replay-button');
+const resumeButton = document.getElementById('resume-button');
 const cardPileElement = document.getElementById('card-pile');
 const finalScoreElement = document.getElementById('final-score');   
 const finalScoreElement2 = document.getElementById('final-score-2');
@@ -245,9 +247,74 @@ function displayConditions() {
             
             conditionItem.appendChild(emojiSpan);
             conditionsDisplay.appendChild(conditionItem);
+
+            // Add click handler to pause game
+            conditionItem.addEventListener('click', () => {
+                if (isGameActive && !isPaused) {
+                    pauseGame();
+                }
+            });
         }
     });
 }
+
+// Pause game
+function pauseGame() {
+    isPaused = true;
+    clearInterval(gameInterval);
+    
+    // Update pause screen with current conditions
+    const player1ConditionsList = pauseScreen.querySelector('.player1 .initial-conditions-list');
+    const player2ConditionsList = pauseScreen.querySelector('.player2 .initial-conditions-list');
+    
+    // Clear existing conditions
+    player1ConditionsList.innerHTML = '';
+    player2ConditionsList.innerHTML = '';
+    
+    // Add each active condition to both players' lists
+    for (const conditionKey of activeConditions) {
+        const condition = conditions[conditionKey];
+        
+        // Create condition element
+        const conditionElement = document.createElement('div');
+        conditionElement.className = 'initial-condition';
+        
+        // Create emoji span
+        const emojiSpan = document.createElement('span');
+        emojiSpan.className = 'condition-emoji';
+        emojiSpan.textContent = condition.emoji;
+        
+        // Create description paragraph
+        const descriptionP = document.createElement('p');
+        descriptionP.textContent = condition.description;
+        
+        // Add elements to condition element
+        conditionElement.appendChild(emojiSpan);
+        conditionElement.appendChild(descriptionP);
+        
+        // Add condition element to both players' lists
+        player1ConditionsList.appendChild(conditionElement.cloneNode(true));
+        player2ConditionsList.appendChild(conditionElement.cloneNode(true));
+    }
+    
+    // Show pause screen
+    gameplayScreen.classList.add('hidden');
+    pauseScreen.classList.remove('hidden');
+}
+
+// Resume game
+function resumeGame() {
+    isPaused = false;
+    pauseScreen.classList.add('hidden');
+    gameplayScreen.classList.remove('hidden');
+    gameInterval = setInterval(drawCard, drawInterval);
+}
+
+// Add event listener for resume button
+resumeButton.addEventListener('click', () => {
+    playSound(interactBigSound);
+    resumeGame();
+});
 
 // Initialize deck
 function initializeDeck() {
@@ -620,7 +687,7 @@ function updatePlayerScore(player, points) {
 
 // Handle slap
 async function handleSlap(event, player) {    
-    if (!isGameActive || isDebugPaused || justSlapped) {
+    if (!isGameActive || isDebugPaused || justSlapped || isPaused) {
         console.log('Game not active or paused or just slapped');
         return;
     } else {
@@ -1272,8 +1339,9 @@ document.addEventListener('touchend', function(e) {
     if (isDebugPaused || 
         roundStartScreen.classList.contains('hidden') === false ||
         initialConditionsScreen.classList.contains('hidden') === false ||
-        newConditionScreen.classList.contains('hidden') === false) {
-            console.log('touchend ignored because game is paused or round start screen is visible');
+        newConditionScreen.classList.contains('hidden') === false ||
+        pauseScreen.classList.contains('hidden') === false) {
+            console.log('touchend ignored because game is paused or a screen other than the gameplay screen is visible');
         return;
     }
 

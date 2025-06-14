@@ -524,6 +524,16 @@ button:hover {
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.condition-item:hover {
+    transform: scale(1.1);
+}
+
+.condition-item:active {
+    transform: scale(0.95);
 }
 
 .condition-emoji {
@@ -780,6 +790,8 @@ button:hover {
     display: flex;
     flex-direction: column;
     margin-top: 1rem;
+    overflow: scroll;
+    max-height: 30vh;
 }
 
 .initial-condition {
@@ -1026,4 +1038,27 @@ input:checked + .slider:before {
 
 #close-about-button {
     margin-top: 1rem;
+}
+
+#pause-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--palette-grey1);
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    padding: 2rem;
+}
+
+#pause-screen:not(.hidden) {
+    opacity: 1;
+    pointer-events: auto;
 }
