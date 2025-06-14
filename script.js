@@ -626,9 +626,6 @@ async function handleSlap(event, player) {
     }
 
     justSlapped = true;
-    setTimeout(() => {
-        justSlapped = false;
-    }, 1000);
 
     // Stop any new cards from being drawn
     console.log('stopping game');
@@ -719,6 +716,9 @@ async function handleSlap(event, player) {
         isPaused = false;
         console.log('resuming game');
         gameInterval = setInterval(drawCard, drawInterval);
+        
+        // Reset justSlapped after all animations are complete
+        justSlapped = false;
     } else if (animatedCards.length > 0) { // Only penalize if there are cards that have finished animating
         // Pause the game
         isPaused = true;
@@ -756,10 +756,16 @@ async function handleSlap(event, player) {
         // Resume the game
         isPaused = false;
         gameInterval = setInterval(drawCard, drawInterval);
+        
+        // Reset justSlapped after all animations are complete
+        justSlapped = false;
     } else {
         //pile is empty, so just resume the game
         isPaused = false;
         gameInterval = setInterval(drawCard, drawInterval);
+        
+        // Reset justSlapped immediately since there are no animations
+        justSlapped = false;
     }
 }
 
