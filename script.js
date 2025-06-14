@@ -107,6 +107,7 @@ let t2Sound = null;
 let t3Sound = null;
 let t4Sound = null;
 let t5Sound = null;
+let winSound = null;
 let backgroundMusic = null;
 
 // Preload sound effects
@@ -125,6 +126,7 @@ function preloadSounds() {
     t3Sound = new Audio('sounds/transition-3.mp3');
     t4Sound = new Audio('sounds/transition-4.mp3');
     t5Sound = new Audio('sounds/transition-5.mp3');
+    winSound = new Audio('sounds/win.mp3');
     backgroundMusic = new Audio('sounds/Sticky Hands Music.mp3');
 
     // Set volume for all sounds
@@ -140,6 +142,7 @@ function preloadSounds() {
     t3Sound.volume = 0.5;
     t4Sound.volume = 0.5;
     t5Sound.volume = 0.5;
+    winSound.volume = 0.5;
     backgroundMusic.volume = 0.3;
 
     slapSound.load();
@@ -156,6 +159,7 @@ function preloadSounds() {
     t3Sound.load();
     t4Sound.load();
     t5Sound.load();
+    winSound.load();
     backgroundMusic.load();
 }
 
@@ -215,9 +219,7 @@ function duckBackgroundMusicForSound(soundEffect, duckVolume = 0.01, duckDuratio
     // Lower volume
     transitionVolume(backgroundMusic, duckVolume, duckDuration);
     
-    // Play the sound effect
     const sound = soundEffect;
-    
     // Listen for when the sound ends
     sound.addEventListener('ended', () => {
         console.log('sound ended');
@@ -1030,6 +1032,9 @@ async function startGame() {
     currentRound = 1;
     drawInterval = 500 + ((ROUNDS_TO_MAX_SPEED - 1) * 100);
     
+    // Clear active conditions from previous game
+    activeConditions.clear();
+    
     // Get all conditions of simplicity 1 that are eligible for starting conditions
     const simplicity1Conditions = Object.entries(conditionsObject)
         .filter(([_, condition]) => condition.simplicity === 1 && condition.startingConditionEligible);
@@ -1127,6 +1132,10 @@ function endGame() {
     
     // Determine the winner
     const player1Won = player1Score > player2Score;
+    
+    // Play win sound and duck background music
+    duckBackgroundMusicForSound(winSound);
+    playSound(winSound);
     
     // Set appropriate class for positioning
     if (player1Won) {
