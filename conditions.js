@@ -140,7 +140,7 @@ const conditionsObject = {
         description: 'Slap consecutive cards (e.g. 4, 5 or J, 10)',
         emoji: '➡️',
         simplicity: 2,
-        startingConditionEligible: false
+        startingConditionEligible: true
     },
     radio: {
         check: (pile) => {
@@ -223,7 +223,7 @@ const conditionsObject = {
         description: 'Slap when 2 cards are both even',
         emoji: '👱‍♂️',
         simplicity: 2,
-        startingConditionEligible: false
+        startingConditionEligible: true
     },
     oddTodd: {
         check: (pile) => {
