@@ -63,6 +63,7 @@ const pauseScreen = document.getElementById('pause-screen');
 const playButton = document.getElementById('play-button');
 const replayButton = document.getElementById('replay-button');
 const resumeButton = document.getElementById('resume-button');
+const rotateButton = document.getElementById('rotate-button');
 const cardPileElement = document.getElementById('card-pile');
 const finalScoreElement = document.getElementById('final-score');   
 const finalScoreElement2 = document.getElementById('final-score-2');
@@ -1418,6 +1419,12 @@ closeAboutButton.addEventListener('click', () => {
     playSound(interactBigSound);
     aboutScreen.classList.add('hidden');
     welcomeScreen.classList.remove('hidden');
+});
+
+// Add event listener for rotate button
+rotateButton.addEventListener('click', () => {
+    playSound(interactSmallSound);
+    pauseScreen.classList.toggle('rotated');
 });
 
 // Preload sounds

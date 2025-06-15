@@ -1054,11 +1054,44 @@ input:checked + .slider:before {
     pointer-events: none;
     transition: opacity 0.3s ease;
     padding: 3rem;
+    padding-top: calc(3rem + 20px);
+    transition: transform 0.3s ease;
 }
 
 #pause-screen:not(.hidden) {
     opacity: 1;
     pointer-events: auto;
+}
+
+#pause-screen.rotated {
+    transform: rotate(180deg);
+}
+
+.rotate-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 1.5rem;
+    line-height: 0;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+}
+
+.rotate-button:hover {
+    transform: scale(1.1);
+}
+
+.rotate-button:active {
+    transform: scale(0.95);
 }
 
 #pause-screen .condition-info {
