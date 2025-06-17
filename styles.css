@@ -225,7 +225,6 @@ button:hover {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    overflow: hidden;
     pointer-events: auto;
     touch-action: manipulation;
 }
@@ -647,7 +646,9 @@ button:hover {
     left: 50%;
     transform: translate(-50%, -50%);
     width: 100vw;
+    max-width: 1000px;
     height: 100vw;
+    max-height: 1000px;
     opacity: 0;
     transition: opacity 0.1s ease;
     pointer-events: none;
