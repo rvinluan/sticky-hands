@@ -1335,17 +1335,25 @@ document.addEventListener('keydown', (event) => {
 });
 
 var originalTouches = [];
+var originalMousePosition = null;
 
-document.addEventListener('touchstart', function(e) {
-    let index = e.changedTouches[0].identifier;
-    originalTouches[index] = {
-        x: e.changedTouches[0].clientX,
-        y: e.changedTouches[0].clientY
+// Handle both touch and mouse start events
+function handleStartEvent(e) {
+    const position = {
+        x: e.clientX || e.touches[0].clientX,
+        y: e.clientY || e.touches[0].clientY
     };
-}, { passive: false });
 
-// Detect swipes for slapping
-document.addEventListener('touchend', function(e) {
+    if (e.type === 'touchstart') {
+        let index = e.changedTouches[0].identifier;
+        originalTouches[index] = position;
+    } else {
+        originalMousePosition = position;
+    }
+}
+
+// Handle both touch and mouse end events
+function handleEndEvent(e) {
     // Only process swipes when game is active
     if (isDebugPaused || 
         roundStartScreen.classList.contains('hidden') === false ||
@@ -1353,18 +1361,34 @@ document.addEventListener('touchend', function(e) {
         newConditionScreen.classList.contains('hidden') === false ||
         pauseScreen.classList.contains('hidden') === false ||
         aboutScreen.classList.contains('hidden') === false) {
-            console.log('touchend ignored because game is paused or a screen other than the gameplay screen is visible');
+            console.log('end event ignored because game is paused or a screen other than the gameplay screen is visible');
         return;
     }
 
     const viewportHeight = window.innerHeight;
     
-    // Determine which player based on the touch identifier
-    const index = e.changedTouches[0].identifier;
-    const touchStartedOriginal = originalTouches[index].y;
-    const isPlayer1Area = touchStartedOriginal < viewportHeight / 2;
-    const yDelta = e.changedTouches[0].clientY - originalTouches[index].y;
-    const xDelta = e.changedTouches[0].clientX - originalTouches[index].x;
+    // Get start and end positions
+    let startPos, endPos;
+    if (e.type === 'touchend') {
+        const index = e.changedTouches[0].identifier;
+        startPos = originalTouches[index];
+        endPos = {
+            x: e.changedTouches[0].clientX,
+            y: e.changedTouches[0].clientY
+        };
+    } else {
+        startPos = originalMousePosition;
+        endPos = {
+            x: e.clientX,
+            y: e.clientY
+        };
+    }
+
+    if (!startPos) return;
+
+    const isPlayer1Area = startPos.y < viewportHeight / 2;
+    const yDelta = endPos.y - startPos.y;
+    const xDelta = endPos.x - startPos.x;
     const distance = Math.sqrt(xDelta * xDelta + yDelta * yDelta);
     const player = isPlayer1Area ? 'player1' : 'player2';
 
@@ -1392,22 +1416,28 @@ document.addEventListener('touchend', function(e) {
     } else {
         // Handle color cycling on welcome screen
         if (lobbyScreen && !lobbyScreen.classList.contains('hidden')) {
-            // Check if the touch was on the play button
+            // Check if the click/touch was on the play button
             const playButton = document.getElementById('play-button');
-            const touchX = e.changedTouches[0].clientX;
-            const touchY = e.changedTouches[0].clientY;
+            const clickX = endPos.x;
+            const clickY = endPos.y;
             const buttonRect = playButton.getBoundingClientRect();
             
-            // Only change color if the touch was not on the play button
-            if (!(touchX >= buttonRect.left && 
-                  touchX <= buttonRect.right && 
-                  touchY >= buttonRect.top && 
-                  touchY <= buttonRect.bottom)) {
+            // Only change color if the click/touch was not on the play button
+            if (!(clickX >= buttonRect.left && 
+                  clickX <= buttonRect.right && 
+                  clickY >= buttonRect.top && 
+                  clickY <= buttonRect.bottom)) {
                 changeColor(player);
             }
         }
     }
-});
+}
+
+// Add event listeners for both touch and mouse events
+document.addEventListener('touchstart', handleStartEvent, { passive: false });
+document.addEventListener('mousedown', handleStartEvent);
+document.addEventListener('touchend', handleEndEvent);
+document.addEventListener('mouseup', handleEndEvent);
 
 // About screen functionality
 aboutButton.addEventListener('click', () => {

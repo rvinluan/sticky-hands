@@ -851,6 +851,7 @@ button:hover {
     margin: 0 auto;
     display: block;
     width: 200px;
+    pointer-events: none;
 }
 
 .swipe-instruction-container {
