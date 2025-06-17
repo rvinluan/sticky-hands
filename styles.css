@@ -57,6 +57,7 @@ body {
     -webkit-tap-highlight-color: transparent;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 .screen.hidden {
@@ -81,6 +82,11 @@ h1 span {
     0% { transform: translateY(0); }
     50% { transform: translateY(-10px); }
     100% { transform: translateY(0); }
+}
+
+#welcome-screen {
+    height: 100%;
+    justify-content: center;
 }
 
 #welcome-screen h1 span {
@@ -188,7 +194,7 @@ button:hover {
 
 .scores {
     height: 100%;
-    width: 100vw;
+    width: 100%;
     position: absolute;
     top: 0;
 }
@@ -324,6 +330,7 @@ button:hover {
     opacity: 0;
     font-family: 'Departure Mono';
     width: 90vw;
+    max-width: 400px;
     background-color: var(--palette-green);
     text-transform: uppercase;
     display: flex;
@@ -582,12 +589,8 @@ button:hover {
 }
 
 #new-condition-screen {
-    position: absolute;
-    top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
-    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -762,12 +765,8 @@ button:hover {
 }
 
 #initial-conditions-screen {
-    position: absolute;
-    top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
-    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -1038,12 +1037,8 @@ input:checked + .slider:before {
 }
 
 #pause-screen {
-    position: absolute;
-    top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
-    display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
