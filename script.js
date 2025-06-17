@@ -1351,7 +1351,8 @@ document.addEventListener('touchend', function(e) {
         roundStartScreen.classList.contains('hidden') === false ||
         initialConditionsScreen.classList.contains('hidden') === false ||
         newConditionScreen.classList.contains('hidden') === false ||
-        pauseScreen.classList.contains('hidden') === false) {
+        pauseScreen.classList.contains('hidden') === false ||
+        aboutScreen.classList.contains('hidden') === false) {
             console.log('touchend ignored because game is paused or a screen other than the gameplay screen is visible');
         return;
     }

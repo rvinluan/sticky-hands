@@ -622,12 +622,10 @@ button:hover {
 
 .condition-info {
     text-align: center;
-    margin: 1rem 0;
 }
 
 .condition-info h3 {
     font-size: 2rem;
-    margin-bottom: 1rem;
     color: black;
     font-family: 'Gooper';
 }
@@ -789,14 +787,13 @@ button:hover {
 .initial-conditions-list {
     display: flex;
     flex-direction: column;
-    margin-top: 1rem;
 }
 
 .initial-condition {
     display: flex;
     align-items: center;
     gap: 1rem;
-    padding: 1rem 0;
+    padding: 1rem 0 0 0;
     width: 100%;
 }
 
@@ -998,12 +995,13 @@ input:checked + .slider:before {
     max-width: 600px;
     margin: 0 auto;
     height: 100vh;
+    overflow: scroll;
 }
 
 #about-screen h2 {
     color: black;
     font-family: 'Gooper';
-    font-size: 5rem;
+    font-size: 3rem;
     text-align: left;
 }
 
