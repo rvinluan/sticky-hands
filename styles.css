@@ -984,7 +984,7 @@ input:checked + .slider:before {
     font-size: 1rem;
     color: white;
     cursor: pointer;
-    padding: 1rem;
+    padding: 1rem 1.2rem;
 }
 
 #about-screen {
@@ -1092,21 +1092,19 @@ input:checked + .slider:before {
 .settings-content {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 0;
 }
 
 .setting-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem;
-    background-color: rgba(0, 0, 0, 0.05);
-    border-radius: 8px;
-    border: 1px solid rgba(192, 255, 82, 0.3);
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 .setting-label {
-    font-family: 'Departure Mono', monospace;
+    font-family: 'Fragment Mono', monospace;
     font-size: 1.1rem;
     color: black;
 }
