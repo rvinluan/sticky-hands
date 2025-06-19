@@ -113,6 +113,32 @@ let t5Sound = null;
 let winSound = null;
 let backgroundMusic = null;
 
+// Settings state
+let soundEffectsEnabled = true;
+let backgroundMusicEnabled = true;
+
+// Initialize settings from localStorage
+function initializeSettings() {
+    const savedSoundEffects = localStorage.getItem('soundEffectsEnabled');
+    const savedBackgroundMusic = localStorage.getItem('backgroundMusicEnabled');
+    
+    if (savedSoundEffects !== null) {
+        soundEffectsEnabled = savedSoundEffects === 'true';
+        document.getElementById('sound-effects-toggle').checked = soundEffectsEnabled;
+    }
+    
+    if (savedBackgroundMusic !== null) {
+        backgroundMusicEnabled = savedBackgroundMusic === 'true';
+        document.getElementById('background-music-toggle').checked = backgroundMusicEnabled;
+    }
+}
+
+// Save settings to localStorage
+function saveSettings() {
+    localStorage.setItem('soundEffectsEnabled', soundEffectsEnabled.toString());
+    localStorage.setItem('backgroundMusicEnabled', backgroundMusicEnabled.toString());
+}
+
 // Preload sound effects
 function preloadSounds() {
     slapSound = new Audio('sounds/slap1.mp3');
@@ -168,7 +194,7 @@ function preloadSounds() {
 
 // Play a sound effect
 function playSound(sound) {
-    if (sound) {
+    if (sound && soundEffectsEnabled) {
         sound.currentTime = 0; // Reset to start
         sound.play().catch(error => {
             console.log('Error playing sound:', error);
@@ -177,15 +203,21 @@ function playSound(sound) {
 }
 
 function playRandomTransitionSound() {
+    if (!backgroundMusicEnabled) return null;
+    
     const transitionSounds = [t1Sound, t2Sound, t3Sound, t4Sound, t5Sound];
     const randomSound = transitionSounds[Math.floor(Math.random() * transitionSounds.length)];
-    playSound(randomSound);
+    //bypass the playSound function because this isn't a sound effect
+    randomSound.currentTime = 0; // Reset to start
+    randomSound.play().catch(error => {
+        console.log('Error playing sound:', error);
+    });
     return randomSound;
 }
 
 // Play background music with looping
 function playBackgroundMusic() {
-    if (backgroundMusic) {
+    if (backgroundMusic && backgroundMusicEnabled) {
         backgroundMusic.loop = true;
         backgroundMusic.currentTime = 0;
         backgroundMusic.play().catch(error => {
@@ -196,6 +228,8 @@ function playBackgroundMusic() {
 
 // Smoothly transition audio volume
 function transitionVolume(audioElement, targetVolume, duration = 200) {
+    if (!backgroundMusicEnabled) return;
+    
     const startTime = performance.now();
     const startVolume = audioElement.volume;
     
@@ -216,7 +250,7 @@ function transitionVolume(audioElement, targetVolume, duration = 200) {
 }
 
 // Duck background music for a sound effect
-function duckBackgroundMusicForSound(soundEffect, duckVolume = 0.01, duckDuration = 200) {
+function duckBackgroundMusicForSound(soundEffect, duckVolume = 0.01, duckDuration = 200) {    
     const originalVolume = backgroundMusic.volume;
     
     // Lower volume
@@ -1531,8 +1565,34 @@ rotateButton.addEventListener('click', () => {
     pauseScreen.classList.toggle('rotated');
 });
 
+// Settings toggle event listeners
+document.getElementById('sound-effects-toggle').addEventListener('change', (event) => {
+    soundEffectsEnabled = event.target.checked;
+    saveSettings();
+    playSound(interactSmallSound); // Play a sound to confirm the setting works
+});
+
+document.getElementById('background-music-toggle').addEventListener('change', (event) => {
+    backgroundMusicEnabled = event.target.checked;
+    saveSettings();
+    
+    if (!backgroundMusicEnabled && backgroundMusic) {
+        // Stop background music if disabled
+        backgroundMusic.pause();
+        backgroundMusic.currentTime = 0;
+    } else if (backgroundMusicEnabled && isGameActive && backgroundMusic) {
+        // Resume background music if enabled and game is active
+        playBackgroundMusic();
+    }
+    
+    playSound(interactSmallSound); // Play a sound to confirm the setting works
+});
+
 // Preload sounds
 preloadSounds();
+
+// Initialize settings
+initializeSettings();
 
 // Initialize tabs
 initializeTabs();
