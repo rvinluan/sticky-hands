@@ -1444,6 +1444,7 @@ aboutButton.addEventListener('click', () => {
     playSound(interactBigSound);
     welcomeScreen.classList.add('hidden');
     aboutScreen.classList.remove('hidden');
+    populateRulesTab();
 });
 
 closeAboutButton.addEventListener('click', () => {
@@ -1451,6 +1452,78 @@ closeAboutButton.addEventListener('click', () => {
     aboutScreen.classList.add('hidden');
     welcomeScreen.classList.remove('hidden');
 });
+
+// Tab switching functionality
+function initializeTabs() {
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabPanels = document.querySelectorAll('.tab-panel');
+    
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const targetTab = button.getAttribute('data-tab');
+            
+            // Remove active class from all buttons and panels
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            tabPanels.forEach(panel => panel.classList.remove('active'));
+            
+            // Add active class to clicked button and corresponding panel
+            button.classList.add('active');
+            document.getElementById(`${targetTab}-tab`).classList.add('active');
+            
+            // Play sound effect
+            playSound(interactSmallSound);
+        });
+    });
+}
+
+// Populate rules tab with all conditions
+function populateRulesTab() {
+    const allRulesContainer = document.getElementById('all-rules');
+    
+    // Clear existing content
+    allRulesContainer.innerHTML = '';
+    
+    // Get all conditions from the conditions object
+    const allConditions = Object.entries(window.gameConditions.conditionsObject);
+    
+    // Sort conditions by simplicity for better organization
+    allConditions.sort(([_, a], [__, b]) => a.simplicity - b.simplicity);
+    
+    // Populate all rules in one list
+    allConditions.forEach(([key, condition]) => {
+        const ruleItem = createRuleItem(condition);
+        allRulesContainer.appendChild(ruleItem);
+    });
+}
+
+// Create a rule item element
+function createRuleItem(condition) {
+    const ruleItem = document.createElement('div');
+    ruleItem.className = 'rule-item';
+    
+    const ruleHeader = document.createElement('div');
+    ruleHeader.className = 'rule-header';
+    
+    const ruleEmoji = document.createElement('span');
+    ruleEmoji.className = 'rule-emoji';
+    ruleEmoji.textContent = condition.emoji;
+    
+    const ruleName = document.createElement('span');
+    ruleName.className = 'rule-name';
+    ruleName.textContent = condition.name;
+    
+    ruleHeader.appendChild(ruleEmoji);
+    ruleHeader.appendChild(ruleName);
+    
+    const ruleDescription = document.createElement('div');
+    ruleDescription.className = 'rule-description';
+    ruleDescription.textContent = condition.description;
+    
+    ruleItem.appendChild(ruleHeader);
+    ruleItem.appendChild(ruleDescription);
+    
+    return ruleItem;
+}
 
 // Add event listener for rotate button
 rotateButton.addEventListener('click', () => {
@@ -1460,3 +1533,6 @@ rotateButton.addEventListener('click', () => {
 
 // Preload sounds
 preloadSounds();
+
+// Initialize tabs
+initializeTabs();
