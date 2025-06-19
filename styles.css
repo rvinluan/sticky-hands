@@ -130,10 +130,6 @@ button {
     transition: transform 0.2s;
 }
 
-button:hover {
-    transform: scale(1.05);
-}
-
 .game-header {
     display: flex;
     justify-content: space-between;
@@ -1039,10 +1035,6 @@ input:checked + .slider:before {
     background-color: var(--palette-raspberry);
 }
 
-.close-button:hover {
-    transform: scale(1.1);
-}
-
 .close-button:active {
     transform: scale(0.95);
 }
@@ -1234,14 +1226,6 @@ input:checked + .slider:before {
     align-items: center;
     justify-content: center;
     transition: transform 0.3s ease;
-}
-
-.rotate-button:hover {
-    transform: scale(1.1);
-}
-
-.rotate-button:active {
-    transform: scale(0.95);
 }
 
 #pause-screen .condition-info {
