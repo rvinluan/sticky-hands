@@ -139,15 +139,27 @@
 
     <!-- Lobby Screen -->
     <div id="lobby-screen" class="screen hidden">
+        <div class="swipe-area-indicator">
+            <div class="swipe-area-p1">
+                <div class="swipe-area-p1-inner"></div>
+            </div>
+            <div class="swipe-area-p2">
+                <div class="swipe-area-p2-inner"></div>
+            </div>
+        </div>
         <div class="tutorial player1">
             <div class="swipe-instruction-container">
-                <img src="swipe-instruction-big.png" class="swipe-instruction" alt="Swipe up to slap">
+                <p>Swipe within this area to slap</p>
+                <!-- <p>Tap to change colors</p> -->
+                 <!-- <p>Press the button when you're both ready</p> -->
             </div>
         </div>
         <button id="play-button">Begin</button>
         <div class="tutorial player2">
             <div class="swipe-instruction-container">
-                <img src="swipe-instruction-big.png" class="swipe-instruction" alt="Swipe up to slap">
+                <p>Swipe within this area to slap</p>
+                <!-- <p>Tap to change colors</p> -->
+                <!-- <p>Press the button when you're both ready</p> -->
             </div>
         </div>
     </div>
@@ -204,6 +216,14 @@
             <p id="player2-score">0</p>
         </div>
         <div class="game-area">
+            <div class="swipe-area-indicator">
+                <div class="swipe-area-p1">
+                    <div class="swipe-area-p1-inner"></div>
+                </div>
+                <div class="swipe-area-p2">
+                    <div class="swipe-area-p2-inner"></div>
+                </div>
+            </div>
             <img src="burst.svg" id="burst-effect" class="burst-effect hidden">
             <div id="conditions-display" class="conditions-display"></div>
             <div id="card-pile" class="card-pile">

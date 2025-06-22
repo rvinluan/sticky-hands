@@ -193,6 +193,7 @@ button {
     width: 100%;
     position: absolute;
     top: 0;
+    z-index: 10;
 }
 
 #player1-score, #player2-score {
@@ -223,6 +224,40 @@ button {
     cursor: pointer;
     pointer-events: auto;
     touch-action: manipulation;
+}
+
+.swipe-area-indicator {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.swipe-area-p1,
+.swipe-area-p2 {
+    width: 100%;
+    height: 50%;
+    padding: 50px;
+}
+
+.swipe-area-p1 {
+   padding-bottom: 20px;
+   padding-top: 100px;
+}
+
+.swipe-area-p2 {
+    padding-top: 20px;
+    padding-bottom: 100px;
+}
+
+.swipe-area-p1-inner,
+.swipe-area-p2-inner {
+    width: 100%;
+    height: 100%;
+    background-color: #adadad;
+    /* border: 1px dashed rgba(0, 0, 0, 0.5); */
+    border-radius: 25px;
 }
 
 .card-pile {
@@ -734,7 +769,7 @@ button {
     text-align: center;
     margin: 4rem 0;
     font-family: 'Fragment Mono', monospace;
-    color: rgba(0,0,0,0.3);
+    color: black;
 }
 
 .tutorial p {
@@ -852,7 +887,7 @@ button {
 
 .swipe-instruction-container {
     position: relative;
-    width: 200px;
+    width: 250px;
     margin: 0 auto;
 }
 
@@ -971,10 +1006,18 @@ input:checked + .slider:before {
 
 #lobby-screen .tutorial {
     margin: 2rem 0;
+    height: 20vh;
+    display: flex;
+    align-items: center;
 }
 
 #lobby-screen #play-button {
     margin: 2rem 0;
+    z-index: 10;
+    padding: 0;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
 }
 
 .about-button {
