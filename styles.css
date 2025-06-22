@@ -193,7 +193,7 @@ button {
     width: 100%;
     position: absolute;
     top: 0;
-    z-index: 10;
+    z-index: 2;
 }
 
 #player1-score, #player2-score {
