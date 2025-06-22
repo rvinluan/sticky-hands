@@ -14,6 +14,7 @@ let player_count = 1; // Default to 1 player
 const CARDS_PER_ROUND = 6; // Cards to add each round
 const INITIAL_DECK_SIZE = 10; // Starting deck size
 const WINNING_SCORE = 30; // Score needed to win the game
+const SINGLE_PLAYER_TOTAL_ROUNDS = 8; // Total rounds for single player mode
 const ROUNDS_TO_MAX_SPEED = 9; // Number of rounds until max speed is reached
 const INCORRECT_SLAP_PENALTY = 2; // Points deducted for incorrect slaps
 const COMPUTER_SLAP_CHANCE = 0.5; // Chance for computer to slap
@@ -713,16 +714,16 @@ function updatePlayerScore(player, points) {
     if (player === 'player1') {
         player1Score += points;
         player1ScoreElement.textContent = player1Score;
-        // Check if player 1 has won
-        if (player1Score >= WINNING_SCORE) {
+        // Check if player 1 has won (only in 2-player mode)
+        if (player_count === 2 && player1Score >= WINNING_SCORE) {
             endGame();
             return true;
         }
     } else {
         player2Score += points;
         player2ScoreElement.textContent = player2Score;
-        // Check if player 2 has won
-        if (player2Score >= WINNING_SCORE) {
+        // Check if player 2 has won (only in 2-player mode)
+        if (player_count === 2 && player2Score >= WINNING_SCORE) {
             endGame();
             return true;
         }
@@ -962,19 +963,36 @@ function updateRoundStartScreen() {
     roundNumberElement.textContent = currentRound;
     roundNumberElement2.textContent = currentRound;
     
-    // Update status text based on scores
-    if (currentRound === 1) {
-        player1StatusText.textContent = `First to ${WINNING_SCORE} points wins`;
-        player2StatusText.textContent = `First to ${WINNING_SCORE} points wins`;
-    } else if (player1Score > player2Score) {
-        player1StatusText.textContent = "you're winning";
-        player2StatusText.textContent = "you're losing";
-    } else if (player2Score > player1Score) {
-        player1StatusText.textContent = "you're losing";
-        player2StatusText.textContent = "you're winning";
+    // Update status text based on game mode
+    if (player_count === 1) {
+        // Single player mode: show rounds left
+        const roundsLeft = SINGLE_PLAYER_TOTAL_ROUNDS - currentRound + 1;
+        if (roundsLeft === 1) {
+            player2StatusText.textContent = "Final round!";
+        } else {
+            if(currentRound === 1) {
+                player2StatusText.textContent = `Earn as many points as you can in ${SINGLE_PLAYER_TOTAL_ROUNDS} rounds!`;
+            } else {
+                player2StatusText.textContent = `${roundsLeft} rounds left`;
+            }
+        }
+        // Hide player 1 status text in single player mode
+        player1StatusText.textContent = "";
     } else {
-        player1StatusText.textContent = "you're tied";
-        player2StatusText.textContent = "you're tied";
+        // Two player mode: show score status
+        if (currentRound === 1) {
+            player1StatusText.textContent = `First to ${WINNING_SCORE} points wins`;
+            player2StatusText.textContent = `First to ${WINNING_SCORE} points wins`;
+        } else if (player1Score > player2Score) {
+            player1StatusText.textContent = "you're winning";
+            player2StatusText.textContent = "you're losing";
+        } else if (player2Score > player1Score) {
+            player1StatusText.textContent = "you're losing";
+            player2StatusText.textContent = "you're winning";
+        } else {
+            player1StatusText.textContent = "you're tied";
+            player2StatusText.textContent = "you're tied";
+        }
     }
 }
 
@@ -982,6 +1000,12 @@ function updateRoundStartScreen() {
 function endRound() {
     isGameActive = false;
     clearInterval(gameInterval);
+    
+    // Check if game should end (single player mode: after 8 rounds)
+    if (player_count === 1 && currentRound >= SINGLE_PLAYER_TOTAL_ROUNDS) {
+        endGame();
+        return;
+    }
     
     // Show round start screen
     gameplayScreen.classList.add('hidden');
@@ -1242,41 +1266,35 @@ function endGame() {
     const winnerTitle = endScreen.querySelector('h2');
     const loserMessage = endScreen.querySelector('.loser-message');
     
-    // Determine the winner
-    const player1Won = player1Score > player2Score;
-    
     // Play win sound and duck background music
     duckBackgroundMusicForSound(winSound);
     playSound(winSound);
     
-    // Set appropriate class for positioning
-    if (player1Won) {
-        endScreen.classList.add('player1-won');
-        endScreen.classList.remove('player2-won');
-        winnerScoreElement.textContent = player1Score;
-        // loserScoreElement.textContent = player2Score;
-        
-        if (player_count === 1) {
-            winnerTitle.textContent = 'Computer Wins!';
-            // Get random loss message
-            const randomMessage = LOSS_MESSAGES[Math.floor(Math.random() * LOSS_MESSAGES.length)];
-            loserMessage.textContent = randomMessage + player2Score + ' points.';
-        } else {
-            winnerTitle.textContent = 'You Win!';
-            // Get random loss message
-            const randomMessage = LOSS_MESSAGES[Math.floor(Math.random() * LOSS_MESSAGES.length)];
-            loserMessage.textContent = randomMessage + player2Score + ' points.';
-        }
-    } else {
-        endScreen.classList.add('player2-won');
+    if (player_count === 1) {
+        // Single player mode: show final score
+        endScreen.classList.add('player2-won'); // Always show player 2 side
         endScreen.classList.remove('player1-won');
         winnerScoreElement.textContent = player2Score;
-        // loserScoreElement.textContent = player1Score;
+        winnerTitle.textContent = 'Game Complete!';
+    } else {
+        // Two player mode: determine the winner
+        const player1Won = player1Score > player2Score;
         
-        if (player_count === 1) {
+        // Set appropriate class for positioning
+        if (player1Won) {
+            endScreen.classList.add('player1-won');
+            endScreen.classList.remove('player2-won');
+            winnerScoreElement.textContent = player1Score;
+            
             winnerTitle.textContent = 'You Win!';
-            loserMessage.textContent = 'Computer scored ' + player1Score + ' points.';
+            // Get random loss message
+            const randomMessage = LOSS_MESSAGES[Math.floor(Math.random() * LOSS_MESSAGES.length)];
+            loserMessage.textContent = randomMessage + player2Score + ' points.';
         } else {
+            endScreen.classList.add('player2-won');
+            endScreen.classList.remove('player1-won');
+            winnerScoreElement.textContent = player2Score;
+            
             winnerTitle.textContent = 'You Win!';
             // Get random loss message
             const randomMessage = LOSS_MESSAGES[Math.floor(Math.random() * LOSS_MESSAGES.length)];
