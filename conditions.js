@@ -105,7 +105,7 @@ const conditionsObject = {
             return lastCard.rank === secondLastCard.rank;
         },
         name: 'Double',
-        description: 'Slap when two cards are the same rank',
+        description: 'Slap when two cards in a row are the same rank',
         emoji: '👯‍♀️',
         simplicity: 2,
         startingConditionEligible: true
@@ -124,7 +124,7 @@ const conditionsObject = {
             return sum === 12;
         },
         name: 'Sum to 12',
-        description: 'Slap when 2 number cards sum to 12',
+        description: 'Slap when two cards in a row sum to 12 (face cards are 0)',
         emoji: '🕛',
         simplicity: 2,
         startingConditionEligible: false
@@ -220,7 +220,7 @@ const conditionsObject = {
                    isEven(secondLastCard.rank);
         },
         name: 'Even Steven',
-        description: 'Slap when 2 cards are both even',
+        description: 'Slap when 2 number cards are both even',
         emoji: '👱‍♂️',
         simplicity: 2,
         startingConditionEligible: true
@@ -238,7 +238,7 @@ const conditionsObject = {
                    isOdd(secondLastCard.rank);
         },
         name: 'Odd Todd',
-        description: 'Slap when 2 cards are both odd',
+        description: 'Slap when 2 number cards are both odd',
         emoji: '👨‍🦰',
         simplicity: 2,
         startingConditionEligible: false
