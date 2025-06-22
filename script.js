@@ -32,7 +32,7 @@ const LOSS_MESSAGES = [
     "Looks like it just wasn't in the cards for you. You scored "
 ];
 
-let drawInterval = 500 + ((ROUNDS_TO_MAX_SPEED - 1) * 100); // Start slower, get faster
+let drawInterval = 700 + ((ROUNDS_TO_MAX_SPEED - 1) * 100); // Start slower, get faster
 let currentDeckSize = 0; // Track current deck size
 let activeConditions = new Set(); // Track which conditions are active
 
@@ -1276,6 +1276,7 @@ function endGame() {
         endScreen.classList.remove('player1-won');
         winnerScoreElement.textContent = player2Score;
         winnerTitle.textContent = 'Game Complete!';
+        loserMessage.textContent = '';
     } else {
         // Two player mode: determine the winner
         const player1Won = player1Score > player2Score;
