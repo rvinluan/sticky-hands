@@ -86,6 +86,7 @@ const continueButton = document.getElementById('continue-button');
 const aboutButton = document.getElementById('about-button');
 const aboutScreen = document.getElementById('about-screen');
 const closeAboutButton = document.getElementById('close-about-button');
+const debugStatsElement = document.getElementById('debug-stats');
 
 // Card suits and ranks
 const suits = ['♠', '♥', '♦', '♣'];
@@ -117,6 +118,19 @@ let backgroundMusic = null;
 // Settings state
 let soundEffectsEnabled = true;
 let backgroundMusicEnabled = true;
+
+// Function to update debug stats
+function updateDebugStats() {
+    if (debugStatsElement) {
+        // Only show debug stats on localhost
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            debugStatsElement.textContent = `${window.innerWidth} × ${window.innerHeight}`;
+            debugStatsElement.style.display = 'block';
+        } else {
+            debugStatsElement.style.display = 'none';
+        }
+    }
+}
 
 // Initialize settings from localStorage
 function initializeSettings() {
@@ -1615,3 +1629,9 @@ initializeSettings();
 
 // Initialize tabs
 initializeTabs();
+
+// Initialize debug stats
+updateDebugStats();
+
+// Add window resize event listener for debug stats
+window.addEventListener('resize', updateDebugStats);
