@@ -51,6 +51,7 @@ const SWIPE_THRESHOLD = 70; // Minimum distance for a swipe in pixels
 let player1RecentSlap = { time: 0, valid: false };
 let player2RecentSlap = { time: 0, valid: false };
 const SIMULTANEOUS_THRESHOLD = 150; // ms - threshold for considering slaps simultaneous
+let justChangedColor = false;
 
 // DOM elements
 const welcomeScreen = document.getElementById('welcome-screen');
@@ -636,39 +637,49 @@ function checkConditions(pile) {
 }
 
 function changeColor(player) {
-    playSound(changeSound);
-    if (player === 'player1') {
-        player1ColorIndex = (player1ColorIndex + 1) % colors.length;
-        // Update chain1 color
-        Composite.allBodies(chain1.composite).forEach(body => {
-            if (body.render) {
-                body.render.fillStyle = colors[player1ColorIndex];
-            }
-            if (body.label == "Circle Body") {
-                body.render.sprite.texture = `hand-${colorNames[player1ColorIndex]}.png`;
-            }
-        });
-        Composite.allConstraints(chain1.composite).forEach(constraint => {
-            if (constraint.render) {
-                constraint.render.strokeStyle = colors[player1ColorIndex];
-            }
-        });
+    if(justChangedColor) {
+        console.log('just changed color');
+        return;
     } else {
-        player2ColorIndex = (player2ColorIndex + 1) % colors.length;
-        // Update chain2 color
-        Composite.allBodies(chain2.composite).forEach(body => {
-            if (body.render) {
-                body.render.fillStyle = colors[player2ColorIndex];
-            }
-            if (body.label == "Circle Body") {
-                body.render.sprite.texture = `hand-${colorNames[player2ColorIndex]}.png`;
-            }
-        });
-        Composite.allConstraints(chain2.composite).forEach(constraint => {
-            if (constraint.render) {
-                constraint.render.strokeStyle = colors[player2ColorIndex];
-            }
-        });
+        playSound(changeSound);
+        if (player === 'player1') {
+            player1ColorIndex = (player1ColorIndex + 1) % colors.length;
+            // Update chain1 color
+            Composite.allBodies(chain1.composite).forEach(body => {
+                if (body.render) {
+                    body.render.fillStyle = colors[player1ColorIndex];
+                }
+                if (body.label == "Circle Body") {
+                    body.render.sprite.texture = `hand-${colorNames[player1ColorIndex]}.png`;
+                }
+            });
+            Composite.allConstraints(chain1.composite).forEach(constraint => {
+                if (constraint.render) {
+                    constraint.render.strokeStyle = colors[player1ColorIndex];
+                }
+            });
+
+        } else {
+            player2ColorIndex = (player2ColorIndex + 1) % colors.length;
+            // Update chain2 color
+            Composite.allBodies(chain2.composite).forEach(body => {
+                if (body.render) {
+                    body.render.fillStyle = colors[player2ColorIndex];
+                }
+                if (body.label == "Circle Body") {
+                    body.render.sprite.texture = `hand-${colorNames[player2ColorIndex]}.png`;
+                }
+            });
+            Composite.allConstraints(chain2.composite).forEach(constraint => {
+                if (constraint.render) {
+                    constraint.render.strokeStyle = colors[player2ColorIndex];
+                }
+            });
+        }
+        justChangedColor = true;
+        setTimeout(() => {
+            justChangedColor = false;
+        }, 10);
     }
 }
 
