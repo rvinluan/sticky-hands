@@ -396,10 +396,10 @@ function initializeDeck() {
         shuffleDeck(unusedCards);
         
         // Take initial cards for the deck
-        deck = unusedCards.splice(0, INITIAL_DECK_SIZE - 2);
-        // Add jokers to deck
-        deck.push({ rank: 'joker' });
-        deck.push({ rank: 'joker' });   
+        deck = unusedCards.splice(0, INITIAL_DECK_SIZE);
+        // // Add jokers to deck
+        // deck.push({ rank: 'joker' });
+        // deck.push({ rank: 'joker' });   
         // Shuffle deck
         shuffleDeck(deck);   
         currentDeckSize = deck.length;
@@ -1087,8 +1087,14 @@ async function startNewRound() {
         const inactiveConditions = Object.keys(conditions).filter(key => !activeConditions.has(key));
         if (inactiveConditions.length > 0) {
             const randomIndex = Math.floor(Math.random() * inactiveConditions.length);
-            const newCondition = inactiveConditions[randomIndex];
+            let newCondition = inactiveConditions[randomIndex];
             activeConditions.add(newCondition);
+
+            if (newCondition === 'joker') {                
+                // Add jokers if joker condition is active
+                deck.push({ rank: 'joker' });
+                deck.push({ rank: 'joker' });
+            }
             
             // Show new condition screen
             await showNewConditionScreen(conditions[newCondition]);
@@ -1227,8 +1233,23 @@ async function startGame() {
     // Update initial conditions screen with selected conditions
     updateInitialConditionsScreen();
     
-    // Initialize deck and UI
+    // Initialize deck
     initializeDeck();
+    // Add jokers if joker condition is active
+    if (activeConditions.has('joker')) {
+        // Remove two random cards from the deck
+        deck.splice(Math.floor(Math.random() * deck.length), 1);
+        deck.splice(Math.floor(Math.random() * deck.length), 1);
+        
+        // Add two jokers to the deck
+        deck.push({ rank: 'joker' });
+        deck.push({ rank: 'joker' });
+        
+        // Shuffle deck again after adding jokers
+        shuffleDeck();
+    }
+
+    // Update UI
     displayConditions();
     player1ScoreElement.textContent = '0';
     player2ScoreElement.textContent = '0';
