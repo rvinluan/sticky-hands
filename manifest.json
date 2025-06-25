@@ -2,21 +2,21 @@
   "name": "Sticky Hands",
   "short_name": "Sticky Hands",
   "description": "A fun card slapping game",
-  "scope": "/sticky-hands/",
-  "start_url": "/sticky-hands/index.html",
+  "scope": "/",
+  "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/sticky-hands/icons/icon-192x192.png",
+      "src": "/icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/sticky-hands/icons/icon-512x512.png",
+      "src": "/icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
