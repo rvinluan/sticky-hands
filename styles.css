@@ -1154,6 +1154,15 @@ input:checked + .slider:before {
 }
 
 /* Rules styles */
+.rules-content h4,
+.rules-content ul {
+    text-align: left;
+}
+
+.rules-content li {
+    margin-left: 1em;
+}
+
 .rules-content {
     display: flex;
     flex-direction: column;
