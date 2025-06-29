@@ -15,12 +15,14 @@ const CARDS_PER_ROUND = 6; // Cards to add each round
 const INITIAL_DECK_SIZE = 10; // Starting deck size
 const WINNING_SCORE = 30; // Score needed to win the game
 const SINGLE_PLAYER_TOTAL_ROUNDS = 5; // Total rounds for single player mode
-const ROUNDS_TO_MAX_SPEED = 9; // Number of rounds until max speed is reached
 const INCORRECT_SLAP_PENALTY = 2; // Points deducted for incorrect slaps
-const COMPUTER_SLAP_CHANCE = 0.5; // Chance for computer to slap
-const COMPUTER_SLAP_DELAY = 600; // Delay before computer slaps in ms
-const MIN_DRAW_INTERVAL = 800; // Minimum draw interval in ms (fastest speed)
-const MAX_DRAW_INTERVAL = 1400; // Maximum draw interval in ms (slowest speed)
+//Computer difficulty settings
+var DIFFICULTY = 2; // 1 = easy, 2 = medium, 3 = hard
+var COMPUTER_SLAP_CHANCE = 0.5; // Chance for computer to slap
+var COMPUTER_SLAP_DELAY = 600; // Delay before computer slaps in ms
+var MIN_DRAW_INTERVAL = 800; // Minimum draw interval in ms (fastest speed)
+var MAX_DRAW_INTERVAL = 1400; // Maximum draw interval in ms (slowest speed)
+const ROUNDS_TO_MAX_SPEED = 9; // Number of rounds until max speed is reached
 
 // Array of hand pun loss messages
 const LOSS_MESSAGES = [
@@ -1201,6 +1203,21 @@ async function startGame() {
     isDebugPaused = false;
     currentRound = 1;
     
+    // Set difficulty
+    if (DIFFICULTY === 1) {
+        COMPUTER_SLAP_CHANCE = 0.5;
+        COMPUTER_SLAP_DELAY = 700;
+        MIN_DRAW_INTERVAL = 1200;
+    } else if (DIFFICULTY === 2) {
+        COMPUTER_SLAP_CHANCE = 0.5;
+        COMPUTER_SLAP_DELAY = 500;
+        MIN_DRAW_INTERVAL = 800;
+    } else if (DIFFICULTY === 3) {
+        COMPUTER_SLAP_CHANCE = 0.9;
+        COMPUTER_SLAP_DELAY = 400;
+        MIN_DRAW_INTERVAL = 700;
+    }
+
     // Calculate draw interval delta based on rounds to max speed
     drawIntervalDelta = (MAX_DRAW_INTERVAL - MIN_DRAW_INTERVAL) / (ROUNDS_TO_MAX_SPEED - 1);
     drawInterval = MAX_DRAW_INTERVAL; // Start at maximum interval (slowest speed)
