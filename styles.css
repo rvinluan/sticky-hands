@@ -1141,6 +1141,7 @@ input:checked + .slider:before {
 
 .setting-item {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
     padding: 1rem 0;
@@ -1151,6 +1152,66 @@ input:checked + .slider:before {
     font-family: 'Fragment Mono', monospace;
     font-size: 1.1rem;
     color: black;
+}
+
+.setting-description {
+    text-align: left;
+    font-size: 0.8em;
+    margin-top: 1em;
+    color: #666;
+}
+
+/* Difficulty radio button styles */
+
+.difficulty-options {
+    display: flex;
+    gap: 1rem;
+    flex: 1;
+    justify-content: space-between;
+    margin-top: 1em;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-family: 'Fragment Mono', monospace;
+    font-size: 1rem;
+    transition: color 0.2s ease;
+}
+
+.radio-option input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 1.2rem;
+    height: 1.2rem;
+    border: 2px solid black;
+    border-radius: 50%;
+    background-color: transparent;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.radio-option input[type="radio"]:checked {
+    background-color: var(--palette-green);
+}
+
+.radio-option input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 0.4rem;
+    height: 0.4rem;
+    background-color: black;
+    border-radius: 50%;
+}
+
+.radio-label {
+    cursor: pointer;
 }
 
 /* Rules styles */

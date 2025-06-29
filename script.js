@@ -142,6 +142,7 @@ function updateDebugStats() {
 function initializeSettings() {
     const savedSoundEffects = localStorage.getItem('soundEffectsEnabled');
     const savedBackgroundMusic = localStorage.getItem('backgroundMusicEnabled');
+    const savedDifficulty = localStorage.getItem('difficulty');
     
     if (savedSoundEffects !== null) {
         soundEffectsEnabled = savedSoundEffects === 'true';
@@ -152,12 +153,18 @@ function initializeSettings() {
         backgroundMusicEnabled = savedBackgroundMusic === 'true';
         document.getElementById('background-music-toggle').checked = backgroundMusicEnabled;
     }
+    
+    if (savedDifficulty !== null) {
+        DIFFICULTY = parseInt(savedDifficulty);
+        document.getElementById(`difficulty-${DIFFICULTY === 1 ? 'easy' : DIFFICULTY === 2 ? 'medium' : 'hard'}`).checked = true;
+    }
 }
 
 // Save settings to localStorage
 function saveSettings() {
     localStorage.setItem('soundEffectsEnabled', soundEffectsEnabled.toString());
     localStorage.setItem('backgroundMusicEnabled', backgroundMusicEnabled.toString());
+    localStorage.setItem('difficulty', DIFFICULTY.toString());
 }
 
 // Preload sound effects
@@ -1674,6 +1681,31 @@ document.getElementById('background-music-toggle').addEventListener('change', (e
     }
     
     playSound(interactSmallSound); // Play a sound to confirm the setting works
+});
+
+// Difficulty radio button event listeners
+document.getElementById('difficulty-easy').addEventListener('change', (event) => {
+    if (event.target.checked) {
+        DIFFICULTY = 1;
+        saveSettings();
+        playSound(interactSmallSound);
+    }
+});
+
+document.getElementById('difficulty-medium').addEventListener('change', (event) => {
+    if (event.target.checked) {
+        DIFFICULTY = 2;
+        saveSettings();
+        playSound(interactSmallSound);
+    }
+});
+
+document.getElementById('difficulty-hard').addEventListener('change', (event) => {
+    if (event.target.checked) {
+        DIFFICULTY = 3;
+        saveSettings();
+        playSound(interactSmallSound);
+    }
 });
 
 // Preload sounds
