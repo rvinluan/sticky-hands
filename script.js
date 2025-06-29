@@ -19,6 +19,8 @@ const ROUNDS_TO_MAX_SPEED = 9; // Number of rounds until max speed is reached
 const INCORRECT_SLAP_PENALTY = 2; // Points deducted for incorrect slaps
 const COMPUTER_SLAP_CHANCE = 0.5; // Chance for computer to slap
 const COMPUTER_SLAP_DELAY = 600; // Delay before computer slaps in ms
+const MIN_DRAW_INTERVAL = 800; // Minimum draw interval in ms (fastest speed)
+const MAX_DRAW_INTERVAL = 1400; // Maximum draw interval in ms (slowest speed)
 
 // Array of hand pun loss messages
 const LOSS_MESSAGES = [
@@ -32,7 +34,8 @@ const LOSS_MESSAGES = [
     "Looks like it just wasn't in the cards for you. You scored "
 ];
 
-let drawInterval = 700 + ((ROUNDS_TO_MAX_SPEED - 1) * 100); // Start slower, get faster
+let drawInterval = MAX_DRAW_INTERVAL; // Start at maximum interval (slowest speed)
+let drawIntervalDelta = 0; // Amount to reduce draw interval each round
 let currentDeckSize = 0; // Track current deck size
 let activeConditions = new Set(); // Track which conditions are active
 
@@ -1078,8 +1081,8 @@ async function showNewConditionScreen(condition) {
 
 // Start new round
 async function startNewRound() {
-    // Calculate draw interval based on current round
-    drawInterval = 500 + ((ROUNDS_TO_MAX_SPEED - currentRound) * 100);
+    // Reduce draw interval by the calculated delta for faster speed
+    drawInterval = Math.max(MIN_DRAW_INTERVAL, drawInterval - drawIntervalDelta);
     
     // Add a new random condition if there are still inactive ones
     const newConditionRounds = [3, 5, 7];
@@ -1197,7 +1200,10 @@ async function startGame() {
     isPaused = false;
     isDebugPaused = false;
     currentRound = 1;
-    drawInterval = 500 + ((ROUNDS_TO_MAX_SPEED - 1) * 100);
+    
+    // Calculate draw interval delta based on rounds to max speed
+    drawIntervalDelta = (MAX_DRAW_INTERVAL - MIN_DRAW_INTERVAL) / (ROUNDS_TO_MAX_SPEED - 1);
+    drawInterval = MAX_DRAW_INTERVAL; // Start at maximum interval (slowest speed)
     
     // Clear active conditions from previous game
     activeConditions.clear();
