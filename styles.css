@@ -922,6 +922,20 @@ button {
     }
 }
 
+.color-change-instruction {
+    font-size: .8rem;
+    color: black;
+    font-family: 'Fragment Mono', monospace;
+    margin: .5rem 0;
+    z-index: 1;
+    width: 100%;
+    text-align: left;
+}
+
+.color-change-instruction.mirrored {
+    transform: rotate(180deg);
+}
+
 .player-selection {
     display: flex;
     flex-direction: column;
@@ -1006,7 +1020,7 @@ input:checked + .slider:before {
 
 #lobby-screen .tutorial {
     margin: 2rem 0;
-    height: 20vh;
+    height: 15vh;
     display: flex;
     align-items: center;
 }

@@ -1420,6 +1420,7 @@ if(!document.documentElement.classList.contains('arcade')) {
         const player2Tutorial = document.querySelector('.tutorial.player1');
         if (player_count === 1) {
             player2Tutorial.style.visibility = 'hidden';
+            document.querySelector('.color-change-instruction.mirrored').style.visibility = 'hidden';
         } else {
             player2Tutorial.style.visibility = 'visible';
         }
@@ -1456,11 +1457,15 @@ function handleStartEvent(e) {
     }
 }
 
+function isCurrentScreenSwipeable() {
+    return !gameplayScreen.classList.contains('hidden') || !lobbyScreen.classList.contains('hidden');
+}
+
 // Handle both touch and mouse end events
 function handleEndEvent(e) {
     // Only process swipes when game is active
     if (isDebugPaused || 
-        gameplayScreen.classList.contains('hidden')) {
+        !isCurrentScreenSwipeable()) {
             console.log('end event ignored because game is paused or a screen other than the gameplay screen is visible');
         return;
     }
@@ -1508,28 +1513,10 @@ function handleEndEvent(e) {
         
         // Trigger fling animation
         playSound(wooshSound);
-        console.log('woosh sound played');
         fling(isPlayer1Area);
         
         // Handle the slap
         handleSlap(player);
-    } else {
-        // Handle color cycling on welcome screen
-        if (lobbyScreen && !lobbyScreen.classList.contains('hidden')) {
-            // Check if the click/touch was on the play button
-            const playButton = document.getElementById('play-button');
-            const clickX = endPos.x;
-            const clickY = endPos.y;
-            const buttonRect = playButton.getBoundingClientRect();
-            
-            // Only change color if the click/touch was not on the play button
-            if (!(clickX >= buttonRect.left && 
-                  clickX <= buttonRect.right && 
-                  clickY >= buttonRect.top && 
-                  clickY <= buttonRect.bottom)) {
-                changeColor(player);
-            }
-        }
     }
 }
 
@@ -1538,6 +1525,12 @@ document.addEventListener('touchstart', handleStartEvent, { passive: false });
 document.addEventListener('mousedown', handleStartEvent);
 document.addEventListener('touchend', handleEndEvent);
 document.addEventListener('mouseup', handleEndEvent);
+
+document.querySelectorAll('.color-change-instruction').forEach(instruction => {
+    instruction.addEventListener('click', () => {
+        changeColor(instruction.classList.contains('mirrored') ? 'player1' : 'player2');
+    });
+});
 
 //  ┌─────────────────────────────────────────────────────────────────────────┐
 //  | Settings and About Functionality                                        │
