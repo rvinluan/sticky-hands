@@ -1708,17 +1708,23 @@ document.getElementById('difficulty-hard').addEventListener('change', (event) =>
     }
 });
 
-// Preload sounds
-preloadSounds();
+// Initialize the game immediately since scripts are loaded after screens
+function initializeGame() {
+    // Preload sounds
+    preloadSounds();
 
-// Initialize settings
-initializeSettings();
+    // Initialize settings
+    initializeSettings();
 
-// Initialize tabs
-initializeTabs();
+    // Initialize tabs
+    initializeTabs();
 
-// Initialize debug stats
-updateDebugStats();
+    // Initialize debug stats
+    updateDebugStats();
 
-// Add window resize event listener for debug stats
-window.addEventListener('resize', updateDebugStats);
+    // Add window resize event listener for debug stats
+    window.addEventListener('resize', updateDebugStats);
+}
+
+// Initialize the game immediately
+initializeGame();

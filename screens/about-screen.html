@@ -1,0 +1,90 @@
+<div class="about-content">
+    <button id="close-about-button" class="close-button">×</button>
+    
+    <div class="tab-navigation">
+        <button class="tab-button active" data-tab="about">About</button>
+        <button class="tab-button" data-tab="settings">Settings</button>
+        <button class="tab-button" data-tab="rules">Rules</button>
+    </div>
+    
+    <div class="tab-content">
+        <div id="about-tab" class="tab-panel active">
+            <div class="about-text">
+                <p>👋</p>
+                <p>Sticky Hands is a game by me, Robert Vinluan. It&apos;s based off of the folk card game Egyptian Rat Screw. I did the design and development, as well as the card art and the music. Here's all the stuff other people made:</p>
+                <p>Icon credits:</p>
+                <ul>
+                    <li><a href="https://thenounproject.com/icon/hand-6029811/">Adrien Coquet</a></li>
+                </ul>
+                <p>Sound credits:</p>
+                <ul>
+                    <li><a href="https://freesound.org/people/JakLocke/sounds/697926/">JakLocke</a></li>
+                    <li><a href="https://freesound.org/people/123jorre456/sounds/46631/">123jorre456</a></li>
+                    <li><a href="https://freesound.org/people/ErikCruzDev/sounds/735907/">ErikCruzDev</a></li>
+                    <li><a href="https://freesound.org/people/OpenWindow_2023_Group_14/sounds/708316/">OpenWindow_2023_Group_14</a></li>
+                </ul>
+                <p>Typography credits:</p>
+                <ul>
+                    <li><a href="https://www.future-fonts.com/very-cool-studio/gooper">Gooper</a></li>
+                    <li><a href="https://fonts.google.com/specimen/Chakra+Petch">Chakra Petch</a></li>
+                    <li><a href="https://fonts.google.com/specimen/Fragment+Mono">Fragment Mono</a></li>
+                    <li><a href="https://departuremono.com/">Departure Mono</a></li>
+                </ul>
+                <p>This game is free, but you can <a href="https://ko-fi.com/robertvinluan">give me a few bucks</a> if you want.</p>
+            </div>
+        </div>
+        
+        <div id="settings-tab" class="tab-panel">
+            <div class="settings-content">
+                <div class="setting-item">
+                    <label class="setting-label">Sound Effects</label>
+                    <label class="switch">
+                        <input type="checkbox" id="sound-effects-toggle" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label class="setting-label">Background Music</label>
+                    <label class="switch">
+                        <input type="checkbox" id="background-music-toggle" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label class="setting-label">Difficulty</label>
+                    <p class="setting-description">Controls card draw speed. In 1 Player mode, also affects computer aggressiveness.</p>
+                    <div class="difficulty-options">
+                        <label class="radio-option">
+                            <input type="radio" name="difficulty" value="1" id="difficulty-easy">
+                            <span class="radio-label">Easy</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="difficulty" value="2" id="difficulty-medium" checked>
+                            <span class="radio-label">Medium</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="difficulty" value="3" id="difficulty-hard">
+                            <span class="radio-label">Hard</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="rules-tab" class="tab-panel">
+            <div class="rules-content">
+                <h4>Things you should know:</h4>
+                <ul>
+                    <li>Tap the screen before you begin to change the color of your sticky hand.</li>
+                    <li>During the game, tap any of the rule icons to pause the game and read a list of rules in play.</li>
+                    <li>Jokers don't do anything unless the rule to slap jokers is in play.</li>
+                    <li>Aces are considered consecutive to 2 and K.</li>
+                </ul>
+                <h4>Full Rules List:</h4>
+                <div class="rules-grid" id="all-rules">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

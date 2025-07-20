@@ -43,291 +43,34 @@
     <div id="debug-stats" class="debug-stats"></div>
 
     <!-- Welcome Screen -->
-    <div id="welcome-screen" class="screen">
-        <button id="about-button" class="about-button">☰</button>
-        <h1>
-            <span id="letter-s1">S</span>
-            <span id="letter-t">T</span>
-            <span id="letter-i">I</span>
-            <span id="letter-c">C</span>
-            <span id="letter-k">K</span>
-            <span id="letter-y">Y</span>
-            <br>
-            <span id="letter-h">H</span>
-            <span id="letter-a">A</span>
-            <span id="letter-n">N</span>
-            <span id="letter-d">D</span>
-            <span id="letter-s2">S</span>
-        </h1>
-        <div class="player-selection">
-            <div class="toggle-container">
-                <span class="player-label">1 Player</span>
-                <label class="switch">
-                    <input type="checkbox" id="player-toggle">
-                    <span class="slider round"></span>
-                </label>
-                <span class="player-label">2 Players</span>
-            </div>
-            <button id="continue-button">Continue</button>
-        </div>
-    </div>
+    <div id="welcome-screen" class="screen"></div>
 
     <!-- About Screen -->
-    <div id="about-screen" class="screen hidden">
-        <div class="about-content">
-            <button id="close-about-button" class="close-button">×</button>
-            
-            <div class="tab-navigation">
-                <button class="tab-button active" data-tab="about">About</button>
-                <button class="tab-button" data-tab="settings">Settings</button>
-                <button class="tab-button" data-tab="rules">Rules</button>
-            </div>
-            
-            <div class="tab-content">
-                <div id="about-tab" class="tab-panel active">
-                    <div class="about-text">
-                        <p>👋</p>
-                        <p>Sticky Hands is a game by me, Robert Vinluan. It&apos;s based off of the folk card game Egyptian Rat Screw. I did the design and development, as well as the card art and the music. Here's all the stuff other people made:</p>
-                        <p>Icon credits:</p>
-                        <ul>
-                            <li><a href="https://thenounproject.com/icon/hand-6029811/">Adrien Coquet</a></li>
-                        </ul>
-                        <p>Sound credits:</p>
-                        <ul>
-                            <li><a href="https://freesound.org/people/JakLocke/sounds/697926/">JakLocke</a></li>
-                            <li><a href="https://freesound.org/people/123jorre456/sounds/46631/">123jorre456</a></li>
-                            <li><a href="https://freesound.org/people/ErikCruzDev/sounds/735907/">ErikCruzDev</a></li>
-                            <li><a href="https://freesound.org/people/OpenWindow_2023_Group_14/sounds/708316/">OpenWindow_2023_Group_14</a></li>
-                        </ul>
-                        <p>Typography credits:</p>
-                        <ul>
-                            <li><a href="https://www.future-fonts.com/very-cool-studio/gooper">Gooper</a></li>
-                            <li><a href="https://fonts.google.com/specimen/Chakra+Petch">Chakra Petch</a></li>
-                            <li><a href="https://fonts.google.com/specimen/Fragment+Mono">Fragment Mono</a></li>
-                            <li><a href="https://departuremono.com/">Departure Mono</a></li>
-                        </ul>
-                        <p>This game is free, but you can <a href="https://ko-fi.com/robertvinluan">give me a few bucks</a> if you want.</p>
-                    </div>
-                </div>
-                
-                <div id="settings-tab" class="tab-panel">
-                    <div class="settings-content">
-                        <div class="setting-item">
-                            <label class="setting-label">Sound Effects</label>
-                            <label class="switch">
-                                <input type="checkbox" id="sound-effects-toggle" checked>
-                                <span class="slider round"></span>
-                            </label>
-                        </div>
-                        <div class="setting-item">
-                            <label class="setting-label">Background Music</label>
-                            <label class="switch">
-                                <input type="checkbox" id="background-music-toggle" checked>
-                                <span class="slider round"></span>
-                            </label>
-                        </div>
-                        <div class="setting-item">
-                            <label class="setting-label">Difficulty</label>
-                            <p class="setting-description">Controls card draw speed. In 1 Player mode, also affects computer aggressiveness.</p>
-                            <div class="difficulty-options">
-                                <label class="radio-option">
-                                    <input type="radio" name="difficulty" value="1" id="difficulty-easy">
-                                    <span class="radio-label">Easy</span>
-                                </label>
-                                <label class="radio-option">
-                                    <input type="radio" name="difficulty" value="2" id="difficulty-medium" checked>
-                                    <span class="radio-label">Medium</span>
-                                </label>
-                                <label class="radio-option">
-                                    <input type="radio" name="difficulty" value="3" id="difficulty-hard">
-                                    <span class="radio-label">Hard</span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div id="rules-tab" class="tab-panel">
-                    <div class="rules-content">
-                        <h4>Things you should know:</h4>
-                        <ul>
-                            <li>Tap the screen before you begin to change the color of your sticky hand.</li>
-                            <li>During the game, tap any of the rule icons to pause the game and read a list of rules in play.</li>
-                            <li>Jokers don't do anything unless the rule to slap jokers is in play.</li>
-                            <li>Aces are considered consecutive to 2 and K.</li>
-                        </ul>
-                        <h4>Full Rules List:</h4>
-                        <div class="rules-grid" id="all-rules">
-                            <!-- Will be populated by JavaScript -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div id="about-screen" class="screen hidden"></div>
 
     <!-- Lobby Screen -->
-    <div id="lobby-screen" class="screen hidden">
-        <div class="swipe-area-indicator">
-            <div class="swipe-area-p1">
-                <div class="swipe-area-p1-inner"></div>
-            </div>
-            <div class="swipe-area-p2">
-                <div class="swipe-area-p2-inner"></div>
-            </div>
-        </div>
-        <div class="tutorial player1">
-            <div class="swipe-instruction-container">
-                <p>Swipe within this area to slap</p>
-                <!-- <p>Tap to change colors</p> -->
-                 <!-- <p>Press the button when you're both ready</p> -->
-            </div>
-        </div>
-        <button id="play-button">Begin</button>
-        <div class="tutorial player2">
-            <div class="swipe-instruction-container">
-                <p>Swipe within this area to slap</p>
-                <!-- <p>Tap to change colors</p> -->
-                <!-- <p>Press the button when you're both ready</p> -->
-            </div>
-        </div>
-    </div>
+    <div id="lobby-screen" class="screen hidden"></div>
 
     <!-- Initial Conditions Screen -->
-    <div id="initial-conditions-screen" class="screen hidden">
-        <div class="condition-header player1">
-            <div class="condition-info">
-                <h3>Rules</h3>
-                <div class="initial-conditions-list">
-                    <div class="initial-condition">
-                        <span class="condition-emoji">🤡</span>
-                        <p>Slap when a joker appears</p>
-                    </div>
-                    <div class="initial-condition">
-                        <span class="condition-emoji">➡️</span>
-                        <p>Slap when two cards are consecutive</p>
-                    </div>
-                    <div class="initial-condition">
-                        <span class="condition-emoji">👯‍♀️</span>
-                        <p>Slap doubles</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="tap-instructions">
-            <p class="tap-text">tap twice to advance</p>
-        </div>
-        <div class="condition-header player2">
-            <div class="condition-info">
-                <h3>Rules</h3>
-                <div class="initial-conditions-list">
-                    <div class="initial-condition">
-                        <span class="condition-emoji">🤡</span>
-                        <p>Slap when a joker appears</p>
-                    </div>
-                    <div class="initial-condition">
-                        <span class="condition-emoji">➡️</span>
-                        <p>Slap when two cards are consecutive</p>
-                    </div>
-                    <div class="initial-condition">
-                        <span class="condition-emoji">👯‍♀️</span>
-                        <p>Slap doubles</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div id="initial-conditions-screen" class="screen hidden"></div>
 
     <!-- Gameplay Screen -->
-    <div id="gameplay-screen" class="screen hidden">
-        <div class="scores">
-            <p id="player1-score">0</p>
-            <p id="player2-score">0</p>
-        </div>
-        <div class="game-area">
-            <div class="swipe-area-indicator">
-                <div class="swipe-area-p1">
-                    <div class="swipe-area-p1-inner"></div>
-                </div>
-                <div class="swipe-area-p2">
-                    <div class="swipe-area-p2-inner"></div>
-                </div>
-            </div>
-            <img src="burst.svg" id="burst-effect" class="burst-effect hidden">
-            <div id="conditions-display" class="conditions-display"></div>
-            <div id="card-pile" class="card-pile">
-            </div>
-        </div>
-    </div>
+    <div id="gameplay-screen" class="screen hidden"></div>
 
     <!-- Round Start Screen -->
-    <div id="round-start-screen" class="round-start-screen hidden">
-        <div class="round-header player1">
-            <h2>Round <span id="round-number">1</span></h2>
-            <p class="status-text"></p>
-        </div>
-        <div class="countdown-container">
-            <div id="countdown-bar" class="countdown-bar"></div>
-        </div>
-        <div class="round-header player2">
-            <h2>Round <span id="round-number-2">1</span></h2>
-            <p class="status-text"></p>
-        </div>
-    </div>
+    <div id="round-start-screen" class="round-start-screen hidden"></div>
 
     <!-- New Condition Screen -->
-    <div id="new-condition-screen" class="screen hidden">
-        <div class="condition-header player1">
-            <div class="condition-info">
-                <h3 class="condition-name"></h3>
-                <p class="condition-description"></p>
-            </div>
-        </div>
-        <div class="condition-emoji-large"></div>
-        <div class="countdown-container">
-            <div id="new-condition-countdown-bar" class="countdown-bar"></div>
-        </div>
-        <div class="condition-header player2">
-            <div class="condition-info">
-                <h3 class="condition-name"></h3>
-                <p class="condition-description"></p>
-            </div>
-        </div>
-    </div>
+    <div id="new-condition-screen" class="screen hidden"></div>
 
     <!-- Pause Screen -->
-    <div id="pause-screen" class="screen hidden">
-        <button id="rotate-button" class="rotate-button">↻</button>
-        <div class="condition-header">
-            <div class="condition-info">
-                <h3>Current Rules</h3>
-                <div class="initial-conditions-list">
-                    <!-- Conditions will be populated dynamically -->
-                </div>
-            </div>
-        </div>
-        <div class="pause-button-container">
-            <button id="resume-button">Resume Game</button>
-        </div>
-    </div>
+    <div id="pause-screen" class="screen hidden"></div>
 
     <!-- End Screen -->
-    <div id="end-screen" class="screen end-screen-container hidden">
-        <div class="winner-container">
-            <img src="burst.svg" class="winner-burst">
-            <h2>You Win!</h2>
-            <p class="winner-score"><span id="winner-score">0</span> 🏆</p>
-            <button id="replay-button">Play Again</button>
-        </div>
-        <div class="loser-container">
-            <p class="loser-message">On the other hand, you lost. You scored <span id="loser-score">0</span> points.</p>
-        </div>
-    </div>
+    <div id="end-screen" class="screen end-screen-container hidden"></div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
-    <script src="conditions.js"></script>
-    <script src="script.js"></script>
-    <script src="physics.js"></script>
+    <!-- Screen Loader Script - Loads screens and then dynamically loads other scripts -->
+    <script src="screen-loader.js"></script>
     
     <!-- Service Worker Registration -->
     <script>
