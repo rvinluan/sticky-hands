@@ -2,7 +2,6 @@
 class ScreenLoader {
     constructor() {
         this.screens = [
-            'welcome-screen',
             'about-screen', 
             'lobby-screen',
             'initial-conditions-screen',
@@ -12,6 +11,13 @@ class ScreenLoader {
             'pause-screen',
             'end-screen'
         ];
+        // Check if HTML has 'arcade' class and set welcome screen accordingly
+        const htmlElement = document.documentElement;
+        if (htmlElement.classList.contains('arcade')) {
+            this.screens.push('welcome-screen-arcade');
+        } else {
+            this.screens.push('welcome-screen');
+        }
         this.loadedScreens = 0;
         this.totalScreens = this.screens.length;
     }
@@ -41,7 +47,9 @@ class ScreenLoader {
             const content = await response.text();
             
             // Find the corresponding screen div and replace its content
-            const screenElement = document.getElementById(screenName);
+            // Extract base screen name by removing everything after 'screen'
+            const baseScreenName = screenName.split('screen')[0] + 'screen';
+            const screenElement = document.getElementById(baseScreenName);
             if (screenElement) {
                 screenElement.innerHTML = content;
                 this.loadedScreens++;
@@ -85,6 +93,9 @@ class ScreenLoader {
             // Dispatch event for any remaining initialization
             const event = new CustomEvent('screensLoaded');
             document.dispatchEvent(event);
+            // Show welcome screen
+            const welcomeScreen = document.getElementById('welcome-screen');
+            welcomeScreen.classList.remove('hidden');
         } catch (error) {
             console.error('Failed to load game scripts:', error);
         }
