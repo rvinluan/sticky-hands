@@ -657,10 +657,11 @@ function showToast(message, type = 'error', duration = 500, player = null, point
 
 // Check for conditions
 function checkConditions(pile) {
+    const pileAnimatedOnly = pile.filter(card => card.fullyAnimated);
     const metConditions = [];
     // Only check active conditions
     for (const [key, condition] of Object.entries(conditions)) {
-        if (activeConditions.has(key) && condition.check(pile)) {
+        if (activeConditions.has(key) && condition.check(pileAnimatedOnly)) {
             metConditions.push({ name: condition.name, points: condition.points });
         }
     }
@@ -804,150 +805,116 @@ async function handleSlap(player) {
 
     playSound(slapSound); // Play slap sound
 
-    // Only check conditions for fully animated cards
-    const animatedCards = cardPile.filter(card => card.fullyAnimated);
-    const conditionsMet = checkConditions(animatedCards);
+    const conditionsMet = checkConditions(cardPile);
     
     if (conditionsMet.length > 0) {
-        // Get top card and second-most top card for positioning
-        const cardElements = cardPileElement.querySelectorAll('.card');
-        let topCardElement = null;
-        let targetCardOffset = 0;
+        await resolveSuccessfulSlap(conditionsMet, player);
+    } else if (cardPile.length > 0) { // Only penalize if there are cards in the pile
+        await resolveIncorrectSlap(player);
+    }
+
+    // Clear the card pile
+    cardPile = [];
+    cardPileElement.innerHTML = '';
+    
+    // Resume the game
+    isPaused = false;
+    gameInterval = setInterval(drawCard, drawInterval);
+    
+    // Reset justSlapped
+    justSlapped = false; 
+}
+
+async function resolveSuccessfulSlap(conditionsMet, player) {
+    // Get top card and second-most top card for positioning
+    const cardElements = cardPileElement.querySelectorAll('.card');
+    let targetCardOffset = 0;
+    let topCardElement = cardElements[cardElements.length - 1];
+
+    // Get the offset from second-most card if available, or top card if not
+    const offsetCardElement = cardElements.length > 1 ? 
+        cardElements[cardElements.length - 2] : 
+        topCardElement;
         
-        if (cardElements.length > 0) {
-            // Get the top card for insertion point
-            topCardElement = cardElements[cardElements.length - 1];
-            
-            // Get the offset from second-most card if available, or top card if not
-            const offsetCardElement = cardElements.length > 1 ? 
-                cardElements[cardElements.length - 2] : 
-                topCardElement;
-                
-            if (offsetCardElement) {
-                // Extract the final position from the card's style
-                const finalPositionStyle = offsetCardElement.style.getPropertyValue('--final-position');
-                // Parse the offset value from the CSS value
-                targetCardOffset = parseInt(finalPositionStyle) || 0;
-            }
-            
-            // Insert the burst effect after the top card
-            // This places it visually behind the top card but above all other cards
-            if (offsetCardElement) {
-                cardPileElement.insertBefore(burstEffect, offsetCardElement);
-            } else {
-                cardPileElement.appendChild(burstEffect);
-            }
-            
-            // Pause all card animations
-            cardElements.forEach(card => {
-                card.style.animationPlayState = 'paused';
-            });
-        } else {
-            // If no cards, add to card pile directly
-            cardPileElement.appendChild(burstEffect);
-        }
+    if (offsetCardElement) {
+        // Extract the final position from the card's style
+        const finalPositionStyle = offsetCardElement.style.getPropertyValue('--final-position');
+        // Parse the offset value from the CSS value
+        targetCardOffset = parseInt(finalPositionStyle) || 0;
+    }
         
-        // Show burst effect at the target card's position
-        burstEffect.style.transform = `translate(calc(-50% + ${targetCardOffset}px), -50%)`;
-        burstEffect.classList.remove('hidden');
-        burstEffect.classList.add('show');
+    // Insert the burst effect after the top card
+    // This places it visually behind the top card but above all other cards
+    if (offsetCardElement) {
+        cardPileElement.insertBefore(burstEffect, offsetCardElement);
+    } else {
+        cardPileElement.appendChild(burstEffect);
+    }
         
-        // Hide burst effect after 500ms
-        setTimeout(() => {
-            burstEffect.classList.remove('show');
-            burstEffect.classList.add('hidden');
-            // Reset transform
-            burstEffect.style.transform = 'translate(-50%, -50%)';
-            
-            // Resume all card animations
-            const allCardElements = cardPileElement.querySelectorAll('.card');
-            allCardElements.forEach(card => {
-                card.style.animationPlayState = 'running';
-            });
-        }, 500);
+    // Pause all card animations
+    cardElements.forEach(card => {
+        card.style.animationPlayState = 'paused';
+    });
+
+    // Show burst effect at the target card's position
+    burstEffect.style.transform = `translate(calc(-50% + ${targetCardOffset}px), -50%)`;
+    burstEffect.classList.remove('hidden');
+    burstEffect.classList.add('show');
+
+    // Hide burst effect after 500ms
+    setTimeout(() => {
+        burstEffect.classList.remove('show');
+        burstEffect.classList.add('hidden');
+        // Reset transform
+        burstEffect.style.transform = 'translate(-50%, -50%)';
         
-        // Pause game AFTER a small delay to allow fling animation to start
-        setTimeout(() => {
-            isPaused = true;
-            triggerPhysicsHitstop(player === 'player1');
-            playSound(correctSound); // Play correct sound
-        }, 100);
-        
-        // Show success message with points
-        showToast(conditionsMet[0].name, 'success', 1000, player, cardPile.length);
-        
-        // Animate cards flying off screen
-        await animateCardsFlyOff(player);
-        
-        // Clear the card pile after animation
-        cardPile = [];
-        cardPileElement.innerHTML = '';
-        
-        // Resume the game
-        isPaused = false;
-        console.log('resuming game');
-        gameInterval = setInterval(drawCard, drawInterval);
-        
-        // Reset justSlapped after all animations are complete
-        justSlapped = false;
-    } else if (animatedCards.length > 0) { // Only penalize if there are cards that have finished animating
-        // Pause the game
-        isPaused = true;
-        
-        // Pause all card animations
-        const cardElements = cardPileElement.querySelectorAll('.card');
-        cardElements.forEach(card => {
-            card.style.animationPlayState = 'paused';
-        });
-        
-        // Apply penalty to the player who slapped incorrectly
-        if (updatePlayerScore(player, -INCORRECT_SLAP_PENALTY)) {
-            return;
-        }
-        
-        // Show incorrect slap message with penalty
-        showToast('Incorrect Slap', 'error', 1000, player, -INCORRECT_SLAP_PENALTY);
-        
-        // Play incorrect sound
-        playSound(incorrectSound);
-        
-        // Wait for 0.5 seconds
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        // Resume all card animations before clearing
+        // Resume all card animations
         cardElements.forEach(card => {
             card.style.animationPlayState = 'running';
         });
+    }, 500);
+
+    // Physics hitstop AFTER a small delay to allow fling
+    setTimeout(() => {
+        triggerPhysicsHitstop(player === 'player1');
+        playSound(correctSound); // Play correct sound
+    }, 100);
+
+    // Show success message with points
+    showToast(conditionsMet[0].name, 'success', 1000, player, cardPile.length);
+
+    // Animate cards flying off screen
+    await animateCardsFlyOff(player);
+}
+
+async function resolveIncorrectSlap(player) {
+    // Pause the game
+    isPaused = true;
         
-        // Clear the card pile after 1 second
-        await new Promise(resolve => setTimeout(resolve, 500));
-        cardPile = [];
-        cardPileElement.innerHTML = '';
-        
-        // Resume the game
-        isPaused = false;
-        gameInterval = setInterval(drawCard, drawInterval);
-        
-        // Reset justSlapped after all animations are complete
-        justSlapped = false;
-    } else {
-        //pile is empty, so just resume the game
-        isPaused = false;
-        gameInterval = setInterval(drawCard, drawInterval);
-        
-        // Reset justSlapped immediately since there are no animations
-        justSlapped = false;
+    // Pause all card animations
+    const cardElements = cardPileElement.querySelectorAll('.card');
+    cardElements.forEach(card => {
+        card.style.animationPlayState = 'paused';
+    });
+    
+    // Apply penalty to the player who slapped incorrectly
+    if (updatePlayerScore(player, -INCORRECT_SLAP_PENALTY)) {
+        return;
     }
+    
+    // Show incorrect slap message with penalty
+    showToast('Incorrect Slap', 'error', 1000, player, -INCORRECT_SLAP_PENALTY);
+    
+    // Play incorrect sound
+    playSound(incorrectSound);
+    
+    // Clear the card pile after 1 second
+    await new Promise(resolve => setTimeout(resolve, 1000));
 }
 
 // Function to handle computer's slap decision
-async function handleComputerSlap() {
-    if (player_count !== 1) return; // Only run in single player mode
-    
-    // Only check conditions for fully animated cards
-    const animatedCards = cardPile.filter(card => card.fullyAnimated);
-    const conditionsMet = checkConditions(animatedCards);
-    
+async function handleComputerSlap() {    
+    const conditionsMet = checkConditions(cardPile);
     if (conditionsMet.length > 0) {
         // 50% chance to slap
         if (Math.random() < COMPUTER_SLAP_CHANCE) {
