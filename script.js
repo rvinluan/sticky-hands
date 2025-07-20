@@ -1,16 +1,6 @@
-// Game state
-let deck = [];
-let unusedCards = []; // Array to store unused cards
-let cardPile = [];
-let discardPile = []; // Track discarded cards
-let player1Score = 0;
-let player2Score = 0;
-let gameInterval;
-let isGameActive = false;
-let isPaused = false;
-let isDebugPaused = false; // New debug pause state
-let currentRound = 1;
-let player_count = 1; // Default to 1 player
+//  ┌─────────────────────────────────────────────────────────────────────────┐
+//  | Configuration Variables                                                 │
+//  └─────────────────────────────────────────────────────────────────────────┘
 const CARDS_PER_ROUND = 6; // Cards to add each round
 const INITIAL_DECK_SIZE = 10; // Starting deck size
 const WINNING_SCORE = 30; // Score needed to win the game
@@ -23,6 +13,9 @@ var COMPUTER_SLAP_DELAY = 600; // Delay before computer slaps in ms
 var MIN_DRAW_INTERVAL = 800; // Minimum draw interval in ms (fastest speed)
 var MAX_DRAW_INTERVAL = 1400; // Maximum draw interval in ms (slowest speed)
 const ROUNDS_TO_MAX_SPEED = 9; // Number of rounds until max speed is reached
+const MIN_SLAP_INTERVAL = 300; // Minimum time between slaps in ms
+const SWIPE_THRESHOLD = 70; // Minimum distance for a swipe in pixels
+
 
 // Array of hand pun loss messages
 const LOSS_MESSAGES = [
@@ -36,29 +29,41 @@ const LOSS_MESSAGES = [
     "Looks like it just wasn't in the cards for you. You scored "
 ];
 
+//  ┌─────────────────────────────────────────────────────────────────────────┐
+//  | Gameplay Logic                                                          │
+//  └─────────────────────────────────────────────────────────────────────────┘
+let deck = [];
+let unusedCards = []; // Array to store unused cards
+let cardPile = [];
+let discardPile = []; // Track discarded cards
+let gameInterval; // Main loop function
+let isGameActive = false;
+let isPaused = false;
+let isDebugPaused = false; // New debug pause state
+let currentRound = 1;
+let player_count = 1; // Default to 1 player
 let drawInterval = MAX_DRAW_INTERVAL; // Start at maximum interval (slowest speed)
 let drawIntervalDelta = 0; // Amount to reduce draw interval each round
 let currentDeckSize = 0; // Track current deck size
 let activeConditions = new Set(); // Track which conditions are active
 
-// Track current colors for each player's chain
+// Player specific variables
+let player1Score = 0;
+let player2Score = 0;
 let player1ColorIndex = 0;
 let player2ColorIndex = 1;
-
-// Variables to track player swipes
 let player1LastTouchStart = { x: 0, y: 0, time: 0 };
 let player2LastTouchStart = { x: 0, y: 0, time: 0 };
-let lastSlapTime = 0;
-let justSlapped = false;
-const MIN_SLAP_INTERVAL = 300; // Minimum time between slaps in ms
-const SWIPE_THRESHOLD = 70; // Minimum distance for a swipe in pixels
-// Track recent slaps from both players
 let player1RecentSlap = { time: 0, valid: false };
 let player2RecentSlap = { time: 0, valid: false };
-const SIMULTANEOUS_THRESHOLD = 150; // ms - threshold for considering slaps simultaneous
+
+let lastSlapTime = 0;
+let justSlapped = false;// Track recent slaps from both players
 let justChangedColor = false;
 
-// DOM elements
+//  ┌─────────────────────────────────────────────────────────────────────────┐
+//  | DOM Elements                                                            │
+//  └─────────────────────────────────────────────────────────────────────────┘
 const welcomeScreen = document.getElementById('welcome-screen');
 const lobbyScreen = document.getElementById('lobby-screen');
 const gameplayScreen = document.getElementById('gameplay-screen');
@@ -93,6 +98,8 @@ const aboutButton = document.getElementById('about-button');
 const aboutScreen = document.getElementById('about-screen');
 const closeAboutButton = document.getElementById('close-about-button');
 const debugStatsElement = document.getElementById('debug-stats');
+const settingsButton = document.getElementById('about-button');
+const settingsScreen = document.getElementById('settings-screen');
 
 // Card suits and ranks
 const suits = ['♠', '♥', '♦', '♣'];
@@ -100,10 +107,10 @@ const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
 
 // Access conditions from the imported gameConditions object
 const conditions = window.gameConditions.conditionsObject;
-const getCardValue = window.gameConditions.getCardValueFunction;
-const areConsecutive = window.gameConditions.areConsecutiveFunction;
 
-// Sound effects
+//  ┌─────────────────────────────────────────────────────────────────────────┐
+//  | Sound Effects                                                           │
+//  └─────────────────────────────────────────────────────────────────────────┘
 let slapSound = null;
 let correctSound = null;
 let incorrectSound = null;
@@ -138,6 +145,10 @@ function updateDebugStats() {
     }
 }
 
+//  ┌─────────────────────────────────────────────────────────────────────────┐
+//  | Settings Functionality                                                  │
+//  └─────────────────────────────────────────────────────────────────────────┘
+
 // Initialize settings from localStorage
 function initializeSettings() {
     const savedSoundEffects = localStorage.getItem('soundEffectsEnabled');
@@ -166,6 +177,10 @@ function saveSettings() {
     localStorage.setItem('backgroundMusicEnabled', backgroundMusicEnabled.toString());
     localStorage.setItem('difficulty', DIFFICULTY.toString());
 }
+
+//  ┌─────────────────────────────────────────────────────────────────────────┐
+//  | Audio                                                          │
+//  └─────────────────────────────────────────────────────────────────────────┘
 
 // Preload sound effects
 function preloadSounds() {
@@ -292,6 +307,10 @@ function duckBackgroundMusicForSound(soundEffect, duckVolume = 0.01, duckDuratio
         transitionVolume(backgroundMusic, originalVolume, duckDuration);
     }, { once: true });
 }
+
+//  ┌─────────────────────────────────────────────────────────────────────────┐
+//  | Gameplay Logic                                                          │
+//  └─────────────────────────────────────────────────────────────────────────┘
 
 // Display game conditions
 function displayConditions() {
@@ -769,7 +788,7 @@ function updatePlayerScore(player, points) {
 }
 
 // Handle slap
-async function handleSlap(event, player) {    
+async function handleSlap(player) {    
     if (!isGameActive || isDebugPaused || justSlapped || isPaused) {
         console.log('Game not active or paused or just slapped');
         return;
@@ -935,17 +954,12 @@ async function handleComputerSlap() {
             // Wait 0.6 seconds before slapping
             await new Promise(resolve => setTimeout(resolve, COMPUTER_SLAP_DELAY));
             
-            // Create mock event for handleSlap
-            const mockEvent = {
-                preventDefault: () => {}
-            };
-            
             // Trigger fling animation
             playSound(wooshSound);
             fling(true); // true for player 1
             
             // Handle the slap
-            handleSlap(mockEvent, 'player1');
+            handleSlap('player1');
         }
     }
 }
@@ -1385,26 +1399,32 @@ function endGame() {
     endScreen.classList.remove('hidden');
 }
 
-// Event listeners
-playerToggle.addEventListener('change', () => {
-    playSound(interactSmallSound);
-    player_count = playerToggle.checked ? 2 : 1;
-});
+//  ┌─────────────────────────────────────────────────────────────────────────┐
+//  | Settings and About Functionality                                        │
+//  └─────────────────────────────────────────────────────────────────────────┘
 
-continueButton.addEventListener('click', () => {
-    playSound(interactBigSound);
-    welcomeScreen.classList.add('hidden');
-    lobbyScreen.classList.remove('hidden');
-    physicsCanvas.style.display = 'block';
-    
-    // Update lobby screen based on player count
-    const player2Tutorial = document.querySelector('.tutorial.player1');
-    if (player_count === 1) {
-        player2Tutorial.style.visibility = 'hidden';
-    } else {
-        player2Tutorial.style.visibility = 'visible';
-    }
-});
+// Event listeners
+if(!document.documentElement.classList.contains('arcade')) {
+    playerToggle.addEventListener('change', () => {
+        playSound(interactSmallSound);
+        player_count = playerToggle.checked ? 2 : 1;
+    });
+
+    continueButton.addEventListener('click', () => {
+        playSound(interactBigSound);
+        welcomeScreen.classList.add('hidden');
+        lobbyScreen.classList.remove('hidden');
+        physicsCanvas.style.display = 'block';
+        
+        // Update lobby screen based on player count
+        const player2Tutorial = document.querySelector('.tutorial.player1');
+        if (player_count === 1) {
+            player2Tutorial.style.visibility = 'hidden';
+        } else {
+            player2Tutorial.style.visibility = 'visible';
+        }
+    });
+}
 
 playButton.addEventListener('click', (event) => {
     playSound(interactBigSound);
@@ -1416,51 +1436,6 @@ replayButton.addEventListener('click', (event) => {
     playSound(interactBigSound);
     event.stopPropagation();
     startGame();
-});
-
-// Keyboard controls
-document.addEventListener('keydown', (event) => {
-    if (event.key === '9') {
-        debugger;
-    }
-    // Welcome screen: Enter to start game
-    if (!welcomeScreen.classList.contains('hidden')) {
-        if (event.key === 'Enter') {
-            startGame();
-        }
-    }
-    
-    // Round start screen: Enter to continue
-    if (!roundStartScreen.classList.contains('hidden')) {
-        if (event.key === 'Enter') {
-            startNewRound();
-        }
-    }
-
-    // Gameplay screen: Keyboard shortcuts for slaps and debug
-    if (!gameplayScreen.classList.contains('hidden') && 
-        roundStartScreen.classList.contains('hidden')) {
-        // Debug pause toggle
-        if (event.key === '1') {
-            isDebugPaused = !isDebugPaused;
-            if (isDebugPaused) {
-                console.log('Debug: Game timer paused');
-            } else {
-                console.log('Debug: Game timer resumed');
-            }
-        }
-        
-        // Create a mock event object for handleSlap
-        const mockEvent = {
-            preventDefault: () => {}
-        };
-
-        if (event.key === 'd') { // Player 1 slap
-            handleSlap(mockEvent, 'player1');
-        } else if (event.key === 'k') { // Player 2 slap
-            handleSlap(mockEvent, 'player2');
-        }
-    }
 });
 
 var originalTouches = [];
@@ -1485,11 +1460,7 @@ function handleStartEvent(e) {
 function handleEndEvent(e) {
     // Only process swipes when game is active
     if (isDebugPaused || 
-        roundStartScreen.classList.contains('hidden') === false ||
-        initialConditionsScreen.classList.contains('hidden') === false ||
-        newConditionScreen.classList.contains('hidden') === false ||
-        pauseScreen.classList.contains('hidden') === false ||
-        aboutScreen.classList.contains('hidden') === false) {
+        gameplayScreen.classList.contains('hidden')) {
             console.log('end event ignored because game is paused or a screen other than the gameplay screen is visible');
         return;
     }
@@ -1541,7 +1512,7 @@ function handleEndEvent(e) {
         fling(isPlayer1Area);
         
         // Handle the slap
-        handleSlap(mockEvent, player);
+        handleSlap(player);
     } else {
         // Handle color cycling on welcome screen
         if (lobbyScreen && !lobbyScreen.classList.contains('hidden')) {
@@ -1568,7 +1539,10 @@ document.addEventListener('mousedown', handleStartEvent);
 document.addEventListener('touchend', handleEndEvent);
 document.addEventListener('mouseup', handleEndEvent);
 
-// About screen functionality
+//  ┌─────────────────────────────────────────────────────────────────────────┐
+//  | Settings and About Functionality                                        │
+//  └─────────────────────────────────────────────────────────────────────────┘
+
 aboutButton.addEventListener('click', () => {
     playSound(interactBigSound);
     welcomeScreen.classList.add('hidden');
@@ -1707,8 +1681,26 @@ document.getElementById('difficulty-hard').addEventListener('change', (event) =>
         playSound(interactSmallSound);
     }
 });
+//  ┌─────────────────────────────────────────────────────────────────────────┐
+//  | Event Handling from Input.js                                            │
+//  └─────────────────────────────────────────────────────────────────────────┘
+function handleIntent(intent) {
+    switch(intent) {
+        case 'player-1-slap':
+            handleSlap('player1');
+            break;
+        case 'player-2-slap':
+            handleSlap('player2');
+            break;
+        default:
+            console.log(`Unknown intent: ${intent}`);
+            break;
+    }
+}
 
-// Initialize the game immediately since scripts are loaded after screens
+//  ┌─────────────────────────────────────────────────────────────────────────┐
+//  | Initialize Game                                                         │
+//  └─────────────────────────────────────────────────────────────────────────┘
 function initializeGame() {
     // Preload sounds
     preloadSounds();
@@ -1726,5 +1718,4 @@ function initializeGame() {
     window.addEventListener('resize', updateDebugStats);
 }
 
-// Initialize the game immediately
 initializeGame();
