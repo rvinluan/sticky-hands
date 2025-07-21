@@ -2,11 +2,17 @@
 const { Engine, Render, World, Bodies, Body, Composite, Constraint, Vector } = Matter;
 
 // Color palette array
-const colors = ['#614EF1', '#FF7252', '#D03291', '#FFEC3D'];
-const colorNames = ['indigo', 'orange', 'raspberry', 'yellow'];
+const colors = ['#614EF1', '#FF7252', '#D03291', '#FFEC3D', '#C0FF52', '#90EDFF', '#462D08', '#FF3232'];
+const colorNames = ['indigo', 'orange', 'raspberry', 'yellow', 'green', 'sky', 'brown', 'red'];
+
+const linkWidth = 10;
+const linkHeight = 30;
+const ballRadius = 30;
+const linkCount = 6;
 
 // Physics engine variables
-let engine, world, render, chain1, chain2;
+let engine, world, render;
+let playerPhysicsHands = [];
 
 // Initialize physics after screens are loaded
 function initializePhysics() {
@@ -56,111 +62,27 @@ function initializePhysics() {
         }
     });
 
-    // Function to create a ball and chain
-    function createBallAndChain(x, linkCount, anchorTop = false, colorIndex = 0) {
-        const chainLinks = [];
-        const constraints = [];
-        const linkWidth = 10;
-        const linkHeight = 30;
-        const ballRadius = 30;
-        
-        // Calculate starting position based on anchor point
-        const startY = anchorTop ? linkHeight/2 : window.innerHeight - linkHeight/2;
-        const yDirection = anchorTop ? 1 : -1;
-        
-        // Create the ball
-        const ball = Bodies.circle(x, startY + (linkCount*linkHeight*yDirection), ballRadius, {
-            restitution: 0,
-            friction: 0.4,
-            sleepThreshold: 10,
-            render: {
-                sprite: {
-                    texture: `hand-${colorNames[colorIndex]}.png`,
-                    xScale: 0.24,
-                    yScale: 0.24
-                }
-            }
-        });
-        
-        // Create chain links
-        for (let i = 0; i < linkCount; i++) {
-            const link = Bodies.rectangle(x, startY + (i * (linkHeight*1.5) * yDirection), linkWidth, linkHeight, {
-                isStatic: i === 0, // First link is static
-                restitution: 0,
-                friction: 0.8,
-                render: {
-                    fillStyle: colors[colorIndex]
-                }
-            });
-            chainLinks.push(link);
-            
-            // Create constraints between links
-            if (i > 0) {
-                const constraint = Constraint.create({
-                    bodyA: chainLinks[i - 1],
-                    bodyB: link,
-                    pointA: { x: 0, y: linkHeight/2 * yDirection },
-                    pointB: { x: 0, y: linkHeight/2 * yDirection * -1 },
-                    stiffness: .3, // Less stiffness for more elasticity
-                    render: {
-                        type: 'line',
-                        strokeStyle: colors[colorIndex],
-                        lineWidth: linkWidth
-                    }
-                });
-                constraints.push(constraint);
-            }
-        }
-        
-        // Connect the last link to the ball
-        const ballConstraint = Constraint.create({
-            bodyA: ball,
-            bodyB: chainLinks[chainLinks.length - 1],
-            pointA: { x: 0, y: ballRadius-5 },
-            pointB: { x: 0, y: linkHeight/2 * yDirection},
-            stiffness: 1,
-            render: {
-                type: 'line',
-                strokeStyle: colors[colorIndex],
-                lineWidth: linkWidth
-            }
-        });
-        constraints.push(ballConstraint);
-        
-        // Create a composite containing all parts
-        const composite = Composite.create({
-            bodies: [...chainLinks, ball],
-            constraints: constraints
-        });
-        
-        return {
-            composite,
-            ball,
-            chainLinks,
-            constraints
-        };
-    }
-
     // Create two ball and chains
-    chain1 = createBallAndChain(window.innerWidth / 2 - 100, 6, true, 0); // Top chain
-    chain2 = createBallAndChain(window.innerWidth / 2 + 100, 6, false, 1);  // Bottom chain
+    let y1 = linkHeight/2
+    let y2 = window.innerHeight - linkHeight/2;
 
-    // Add the composites to the world
-    World.add(world, [chain1.composite, chain2.composite]);
+    playerPhysicsHands.push(manifestHand(window.innerWidth / 2 - 100, y1, true, 0));
+    playerPhysicsHands.push(manifestHand(window.innerWidth / 2 + 100, y2, false, 1));  // Bottom chain
 
     // Add constant downward force
     const gravityForce = Vector.create(0, 0.001); // Custom gravity force
     const reverseGravityForce = Vector.create(0, -0.001); // Upward gravity force
 
     function applyGravity() {
-        // Apply downward force to chain1
-        Composite.allBodies(chain1.composite).forEach(body => {
-            Body.applyForce(body, body.position, reverseGravityForce);
-        });
-        
-        // Apply upward force to chain2
-        Composite.allBodies(chain2.composite).forEach(body => {
-            Body.applyForce(body, body.position, gravityForce);
+        // Apply force to chain depending on which side of the screen it is on
+        playerPhysicsHands.forEach(hand => {
+            Composite.allBodies(hand.composite).forEach(body => {
+                if(hand.composite.bodies[0].position.y <= window.innerHeight / 2) {
+                    Body.applyForce(body, body.position, reverseGravityForce);
+                } else {
+                    Body.applyForce(body, body.position, gravityForce);
+                }
+            });
         });
     }
 
@@ -182,9 +104,9 @@ function initializePhysics() {
     const topThreshold = 200; // Y position to consider "top" for chain1
     let hitstopTimeout = null;
 
-    function triggerPhysicsHitstop(isPlayer1 = true) {
+    function triggerPhysicsHitstop(player) {
         engine.timing.timeScale = 0; // Pause physics
-        stopAllForces(isPlayer1);
+        stopAllForces(player);
                 
         // Resume after 0.3 seconds
         hitstopTimeout = setTimeout(() => {
@@ -194,17 +116,101 @@ function initializePhysics() {
         }, 500);
     }
 
-    // Make functions globally available
-    window.fling = fling;
-    window.stopAllForces = stopAllForces;
     window.triggerPhysicsHitstop = triggerPhysicsHitstop;
 }
 
-// Function to fling the ball toward center
-function fling(isPlayer1 = true) {
-    if (!chain1 || !chain2) return;
+// Function to create a ball and chain
+function createBallAndChain(x, y, anchorTop = false, colorIndex = 0) {
+    const chainLinks = [];
+    const constraints = [];
     
-    const whichChain = isPlayer1 ? chain1 : chain2;
+    // Calculate starting position based on anchor point
+    const yDirection = anchorTop ? 1 : -1;
+    
+    // Create the ball
+    const ball = Bodies.circle(x, y + (linkCount*linkHeight*yDirection), ballRadius, {
+        restitution: 0,
+        friction: 0.4,
+        sleepThreshold: 10,
+        render: {
+            sprite: {
+                texture: `hand-${colorNames[colorIndex]}.png`,
+                xScale: 0.24,
+                yScale: 0.24
+            }
+        }
+    });
+    
+    // Create chain links
+    for (let i = 0; i < linkCount; i++) {
+        const link = Bodies.rectangle(x, y + (i * (linkHeight*1.5) * yDirection), linkWidth, linkHeight, {
+            isStatic: i === 0, // First link is static
+            restitution: 0,
+            friction: 0.8,
+            render: {
+                fillStyle: colors[colorIndex]
+            }
+        });
+        chainLinks.push(link);
+        
+        // Create constraints between links
+        if (i > 0) {
+            const constraint = Constraint.create({
+                bodyA: chainLinks[i - 1],
+                bodyB: link,
+                pointA: { x: 0, y: linkHeight/2 * yDirection },
+                pointB: { x: 0, y: linkHeight/2 * yDirection * -1 },
+                stiffness: .3, // Less stiffness for more elasticity
+                render: {
+                    type: 'line',
+                    strokeStyle: colors[colorIndex],
+                    lineWidth: linkWidth
+                }
+            });
+            constraints.push(constraint);
+        }
+    }
+    
+    // Connect the last link to the ball
+    const ballConstraint = Constraint.create({
+        bodyA: ball,
+        bodyB: chainLinks[chainLinks.length - 1],
+        pointA: { x: 0, y: ballRadius-5 },
+        pointB: { x: 0, y: linkHeight/2 * yDirection},
+        stiffness: 1,
+        render: {
+            type: 'line',
+            strokeStyle: colors[colorIndex],
+            lineWidth: linkWidth
+        }
+    });
+    constraints.push(ballConstraint);
+    
+    // Create a composite containing all parts
+    const composite = Composite.create({
+        bodies: [...chainLinks, ball],
+        constraints: constraints
+    });
+    
+    return {
+        composite,
+        ball,
+        chainLinks,
+        constraints
+    };
+}
+
+function manifestHand(x, y, is_top, color) {
+    let h = createBallAndChain(x, y, is_top, color); // Top chain
+    World.add(world, [h.composite]);
+    return h;
+}
+
+// Function to fling the ball toward center
+function fling(player) {
+    if (!playerPhysicsHands[player - 1]) return;
+    
+    const whichChain = playerPhysicsHands[player - 1];
     // Get the ball's current position
     const ballPos = whichChain.ball.position;
     
@@ -231,10 +237,10 @@ function fling(isPlayer1 = true) {
     Body.applyForce(whichChain.ball, whichChain.ball.position, force);
 }
 
-function stopAllForces(isPlayer1 = true) {
-    if (!chain1 || !chain2) return;
+function stopAllForces(player) {
+    if (!playerPhysicsHands[player - 1]) return;
     
-    const whichChain = isPlayer1 ? chain1 : chain2;
+    const whichChain = playerPhysicsHands[player - 1];
     Composite.allBodies(whichChain.composite).forEach(body => {
         Body.setVelocity(body, { x: 0, y: 0 });
     });

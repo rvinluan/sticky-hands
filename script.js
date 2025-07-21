@@ -793,7 +793,7 @@ async function handleSlap(player) {
     if (!isGameActive) {
         //just do a fling animation but nothing else
         playSound(wooshSound);
-        fling(player === 'player1');
+        fling(player === 'player1' ? 1 : 2);
         return;
     } else if (isDebugPaused || justSlapped || isPaused) {
         console.log('Game not active or paused or just slapped');
@@ -808,7 +808,7 @@ async function handleSlap(player) {
 
     // Trigger fling animation
     playSound(wooshSound);
-    fling(player === 'player1');
+    fling(player === 'player1' ? 1 : 2);
 
     const conditionsMet = checkConditions(cardPile);
     
