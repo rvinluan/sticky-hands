@@ -3,23 +3,14 @@ document.addEventListener('keydown', (event) => {
         debugger;
     }
 
-    // Gameplay screen: Keyboard shortcuts for slaps and debug
-    if (!gameplayScreen.classList.contains('hidden') && 
-        roundStartScreen.classList.contains('hidden')) {
-        // Debug pause toggle
-        if (event.key === '1') {
-            isDebugPaused = !isDebugPaused;
-            if (isDebugPaused) {
-                console.log('Debug: Game timer paused');
-            } else {
-                console.log('Debug: Game timer resumed');
-            }
-        }
+    if(event.key === '1') {
+        handleIntent('pause-card-draw');
+    }
 
-        if (event.key === 'd') { // Player 1 slap
-            handleIntent('player-1-slap')
-        } else if (event.key === 'k') { // Player 2 slap
-            handleIntent('player-2-slap')
-        }
+    if (event.key === 'd') { // Player 1 slap
+        console.log('player 1 slap');
+        handleIntent('player-1-slap')
+    } else if (event.key === 'k') { // Player 2 slap
+        handleIntent('player-2-slap')
     }
 });

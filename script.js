@@ -1649,6 +1649,16 @@ function handleIntent(intent) {
         case 'player-2-slap':
             handleSlap('player2');
             break;
+        case 'pause-card-draw':
+            if(!gameplayScreen.classList.contains('hidden')) {
+                isDebugPaused = !isDebugPaused;
+                if (isDebugPaused) {
+                    console.log('Debug: Game timer paused');
+                } else {
+                    console.log('Debug: Game timer resumed');
+                }
+            }
+            break;
         default:
             console.log(`Unknown intent: ${intent}`);
             break;

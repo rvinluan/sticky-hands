@@ -546,6 +546,10 @@ button {
     display: none; /* start off hidden */
 }
 
+html.arcade #physics-canvas {
+    display: block;
+}
+
 .conditions-display {
     position: absolute;
     left: 20px;
