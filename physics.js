@@ -62,12 +62,9 @@ function initializePhysics() {
         }
     });
 
-    // Create two ball and chains
-    let y1 = linkHeight/2
-    let y2 = window.innerHeight - linkHeight/2;
-
-    playerPhysicsHands.push(manifestHand(window.innerWidth / 2 - 100, y1, true, 0));
-    playerPhysicsHands.push(manifestHand(window.innerWidth / 2 + 100, y2, false, 1));  // Bottom chain
+    // Create player one ball and chain
+    playerPhysicsHands.push(manifestHand(window.innerWidth / 2 - 100, linkHeight/2, true, 0));
+    // playerPhysicsHands.push(manifestHand(window.innerWidth / 2 + 100, y2, false, 1));  // Bottom chain
 
     // Add constant downward force
     const gravityForce = Vector.create(0, 0.001); // Custom gravity force
@@ -204,6 +201,15 @@ function manifestHand(x, y, is_top, color) {
     let h = createBallAndChain(x, y, is_top, color); // Top chain
     World.add(world, [h.composite]);
     return h;
+}
+
+function removeHand(playerIndex) {
+    if (!playerPhysicsHands[playerIndex]) return;
+    
+    // Remove the composite from the world
+    World.remove(world, playerPhysicsHands[playerIndex].composite);
+    
+    playerPhysicsHands.splice(playerIndex, 1);
 }
 
 // Function to fling the ball toward center

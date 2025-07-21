@@ -1,5 +1,6 @@
 var originalTouches = [];
 var originalMousePosition = null;
+var playersJoined = [true, false, false, false];
 
 // Handle both touch and mouse start events
 function handleStartEvent(e) {
@@ -74,6 +75,16 @@ document.addEventListener('keydown', (event) => {
 
     if(event.key === '1') {
         handleIntent('pause-card-draw');
+    }
+
+    if(event.key === 'l') {
+        if(!playersJoined[1]) {
+            playerPhysicsHands.push(manifestHand(window.innerWidth / 2 + 100, window.innerHeight - 15, false, 1));  // Bottom chain
+            playersJoined[1] = true;
+        } else {
+            removeHand(1);
+            playersJoined[1] = false;
+        }
     }
 
     if (event.key === 'd') { // Player 1 slap
