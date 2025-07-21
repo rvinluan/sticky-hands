@@ -790,11 +790,14 @@ function updatePlayerScore(player, points) {
 
 // Handle slap
 async function handleSlap(player) {    
-    if (!isGameActive || isDebugPaused || justSlapped || isPaused) {
+    if (!isGameActive) {
+        //just do a fling animation but nothing else
+        playSound(wooshSound);
+        fling(player === 'player1');
+        return;
+    } else if (isDebugPaused || justSlapped || isPaused) {
         console.log('Game not active or paused or just slapped');
         return;
-    } else {
-        // debugger;
     }
 
     justSlapped = true;
@@ -803,7 +806,9 @@ async function handleSlap(player) {
     console.log('stopping game');
     clearInterval(gameInterval);
 
-    playSound(slapSound); // Play slap sound
+    // Trigger fling animation
+    playSound(wooshSound);
+    fling(player === 'player1');
 
     const conditionsMet = checkConditions(cardPile);
     
@@ -877,6 +882,7 @@ async function resolveSuccessfulSlap(conditionsMet, player) {
     // Physics hitstop AFTER a small delay to allow fling
     setTimeout(() => {
         triggerPhysicsHitstop(player === 'player1');
+        playSound(slapSound);
         playSound(correctSound); // Play correct sound
     }, 100);
 
@@ -906,6 +912,7 @@ async function resolveIncorrectSlap(player) {
     showToast('Incorrect Slap', 'error', 1000, player, -INCORRECT_SLAP_PENALTY);
     
     // Play incorrect sound
+    playSound(slapSound);
     playSound(incorrectSound);
     
     // Clear the card pile after 1 second
@@ -919,13 +926,7 @@ async function handleComputerSlap() {
         // 50% chance to slap
         if (Math.random() < COMPUTER_SLAP_CHANCE) {
             // Wait 0.6 seconds before slapping
-            await new Promise(resolve => setTimeout(resolve, COMPUTER_SLAP_DELAY));
-            
-            // Trigger fling animation
-            playSound(wooshSound);
-            fling(true); // true for player 1
-            
-            // Handle the slap
+            await new Promise(resolve => setTimeout(resolve, COMPUTER_SLAP_DELAY));            
             handleSlap('player1');
         }
     }
@@ -1477,10 +1478,6 @@ function handleEndEvent(e) {
             clientY: isPlayer1Area ? viewportHeight * 0.25 : viewportHeight * 0.75,
             preventDefault: () => {}
         };
-        
-        // Trigger fling animation
-        playSound(wooshSound);
-        fling(isPlayer1Area);
         
         // Handle the slap
         handleSlap(player);

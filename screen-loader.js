@@ -85,8 +85,8 @@ class ScreenLoader {
         try {
             // Load scripts in order
             await this.loadScript('conditions.js');
-            await this.loadScript('script.js');
             await this.loadScript('physics.js');
+            await this.loadScript('script.js');
             await this.loadScript('input.js');
             
             console.log('All game scripts loaded successfully');
