@@ -18,13 +18,6 @@ function handleStartEvent(e) {
 
 // Handle both touch and mouse end events
 function handleEndEvent(e) {
-    // Only process swipes when game is active
-    if (isDebugPaused || 
-        !isCurrentScreenSwipeable()) {
-            console.log('end event ignored because game is paused or a screen other than the gameplay screen is visible');
-        return;
-    }
-
     const viewportHeight = window.innerHeight;
     
     // Get start and end positions
@@ -73,6 +66,7 @@ document.addEventListener('mousedown', handleStartEvent);
 document.addEventListener('touchend', handleEndEvent);
 document.addEventListener('mouseup', handleEndEvent);
 
+//keyboard input
 document.addEventListener('keydown', (event) => {
     if (event.key === '9') {
         debugger;

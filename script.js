@@ -1407,10 +1407,6 @@ replayButton.addEventListener('click', (event) => {
     startGame();
 });
 
-function isCurrentScreenSwipeable() {
-    return !gameplayScreen.classList.contains('hidden') || !lobbyScreen.classList.contains('hidden');
-}
-
 document.querySelectorAll('.color-change-instruction').forEach(instruction => {
     instruction.addEventListener('click', () => {
         changeColor(instruction.classList.contains('mirrored') ? 'player1' : 'player2');
@@ -1562,12 +1558,23 @@ document.getElementById('difficulty-hard').addEventListener('change', (event) =>
 //  ┌─────────────────────────────────────────────────────────────────────────┐
 //  | Event Handling from Input.js                                            │
 //  └─────────────────────────────────────────────────────────────────────────┘
+function isCurrentScreenSwipeable() {
+    const swipeableScreens = [gameplayScreen, lobbyScreen, welcomeScreen];
+    return swipeableScreens.some(screen => !screen.classList.contains('hidden'));
+}
+
 function handleIntent(intent) {
     switch(intent) {
         case 'player-1-slap':
+            if(!isCurrentScreenSwipeable()) {
+                return;
+            }
             handleSlap('player1');
             break;
         case 'player-2-slap':
+            if(!isCurrentScreenSwipeable()) {
+                return;
+            }
             handleSlap('player2');
             break;
         case 'pause-card-draw':
