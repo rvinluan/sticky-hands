@@ -79,7 +79,7 @@ document.addEventListener('keydown', (event) => {
 
     if(event.key === 'l') {
         if(!playersJoined[1]) {
-            playerPhysicsHands.push(manifestHand(window.innerWidth / 2 + 100, window.innerHeight - 15, false, 1));  // Bottom chain
+            playerPhysicsHands.push(manifestHand(players[1], window.innerWidth / 2 + 100, window.innerHeight - 15, false, 1));  // Bottom chain
             playersJoined[1] = true;
         } else {
             removeHand(1);

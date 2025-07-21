@@ -41,21 +41,44 @@ let isGameActive = false;
 let isPaused = false;
 let isDebugPaused = false; // New debug pause state
 let currentRound = 1;
-let player_count = 1; // Default to 1 player
 let drawInterval = MAX_DRAW_INTERVAL; // Start at maximum interval (slowest speed)
 let drawIntervalDelta = 0; // Amount to reduce draw interval each round
 let currentDeckSize = 0; // Track current deck size
 let activeConditions = new Set(); // Track which conditions are active
 
-// Player specific variables
-let player1Score = 0;
-let player2Score = 0;
-let player1ColorIndex = 0;
-let player2ColorIndex = 1;
-let player1LastTouchStart = { x: 0, y: 0, time: 0 };
-let player2LastTouchStart = { x: 0, y: 0, time: 0 };
-let player1RecentSlap = { time: 0, valid: false };
-let player2RecentSlap = { time: 0, valid: false };
+let player_count = 1; // Default to 1 player
+
+class Player {
+    constructor(id, colorIndex) {
+        this.id = id;
+        this.colorIndex = colorIndex;
+        this.score = 0;
+        this.scoreElement = document.getElementById(`player${id}-score`);
+        this.statusTextElement = document.querySelector(`.player${id} .status-text`);
+        this.position = { x: 0, y: 0 };
+        this.joined = false;
+        this.ready = false;
+        this.hand = null;
+    }
+
+    updateScore(points) {
+        this.score += points;
+        this.scoreElement.textContent = this.score;
+    }
+
+    reset() {
+        this.score = 0;
+        this.scoreElement.textContent = this.score;
+        this.statusTextElement.textContent = "";
+    }
+
+    updateStatusText(text) {
+        this.statusTextElement.textContent = text;
+    }
+}
+
+let players = [new Player(1, 0), new Player(2, 1)];
+playerPhysicsHands.push(manifestHand(players[0], window.innerWidth / 2 - 100, linkHeight/2, true, 0));
 
 let lastSlapTime = 0;
 let justSlapped = false;// Track recent slaps from both players
@@ -83,10 +106,10 @@ const roundNumberElement = document.getElementById('round-number');
 const roundNumberElement2 = document.getElementById('round-number-2');
 const countdownBar = document.getElementById('countdown-bar');
 const newConditionCountdownBar = document.getElementById('new-condition-countdown-bar');
-const player1ScoreElement = document.getElementById('player1-score');
-const player2ScoreElement = document.getElementById('player2-score');
-const player1StatusText = document.querySelector('.player1 .status-text');
-const player2StatusText = document.querySelector('.player2 .status-text');
+// const player1ScoreElement = document.getElementById('player1-score');
+// const player2ScoreElement = document.getElementById('player2-score');
+// const player1StatusText = document.querySelector('.player1 .status-text');
+// const player2StatusText = document.querySelector('.player2 .status-text');
 const conditionEmojiLarge = document.querySelector('.condition-emoji-large');
 const conditionName = document.querySelector('.condition-name');
 const conditionDescription = document.querySelector('.condition-description');
@@ -612,11 +635,7 @@ function showToast(message, type = 'error', duration = 500, player = null, point
     toast.className = `toast ${type} toast-invisible`;
     
     // Add player-specific class if provided
-    if (player === 'player1') {
-        toast.classList.add('player1');
-    } else if (player === 'player2') {
-        toast.classList.add('player2');
-    }
+    toast.classList.add(`player${player.id}`);
     
     // Create message text element
     const messageText = document.createElement('div');
@@ -674,40 +693,20 @@ function changeColor(player) {
         return;
     } else {
         playSound(changeSound);
-        if (player === 'player1') {
-            player1ColorIndex = (player1ColorIndex + 1) % colors.length;
-            // Update chain1 color
-            Composite.allBodies(chain1.composite).forEach(body => {
-                if (body.render) {
-                    body.render.fillStyle = colors[player1ColorIndex];
-                }
-                if (body.label == "Circle Body") {
-                    body.render.sprite.texture = `hand-${colorNames[player1ColorIndex]}.png`;
-                }
-            });
-            Composite.allConstraints(chain1.composite).forEach(constraint => {
-                if (constraint.render) {
-                    constraint.render.strokeStyle = colors[player1ColorIndex];
-                }
-            });
-
-        } else {
-            player2ColorIndex = (player2ColorIndex + 1) % colors.length;
-            // Update chain2 color
-            Composite.allBodies(chain2.composite).forEach(body => {
-                if (body.render) {
-                    body.render.fillStyle = colors[player2ColorIndex];
-                }
-                if (body.label == "Circle Body") {
-                    body.render.sprite.texture = `hand-${colorNames[player2ColorIndex]}.png`;
-                }
-            });
-            Composite.allConstraints(chain2.composite).forEach(constraint => {
-                if (constraint.render) {
-                    constraint.render.strokeStyle = colors[player2ColorIndex];
-                }
-            });
-        }
+        player.colorIndex = (player.colorIndex + 1) % colors.length;
+        Composite.allBodies(player.hand.composite).forEach(body => {
+            if (body.render) {
+                body.render.fillStyle = colors[player.colorIndex];
+            }
+            if (body.label == "Circle Body") {
+                body.render.sprite.texture = `hand-${colorNames[player.colorIndex]}.png`;
+            }
+        });
+        Composite.allConstraints(player.hand.composite).forEach(constraint => {
+            if (constraint.render) {
+                constraint.render.strokeStyle = colors[player.colorIndex];
+            }
+        });
         justChangedColor = true;
         setTimeout(() => {
             justChangedColor = false;
@@ -720,10 +719,6 @@ async function animateCardsFlyOff(player) {
     const cardElements = cardPileElement.querySelectorAll('.card');
     const viewportHeight = window.innerHeight;
     
-    // Set the animation direction based on player
-    const direction = player === 'player1' ? -1 : 1;
-    const targetY = direction * (viewportHeight + 100); // Fly off screen with some extra distance
-
     // Create and apply the animation to each card
     const animations = Array.from(cardElements).map((card, index) => {
         return new Promise(resolve => {
@@ -741,7 +736,7 @@ async function animateCardsFlyOff(player) {
             card.style.animationDelay = `${delay}ms`;
             
             // Add fly-off animation
-            if(player === 'player1') {
+            if(player.position.y < window.innerHeight / 2) {
                 card.classList.add('should-fly-off-top');
             } else {
                 card.classList.add('should-fly-off-bottom');
@@ -753,8 +748,10 @@ async function animateCardsFlyOff(player) {
                 console.log('card animation resolution');
                 // Update score for the correct player
                 playSound(pointSound);
-                if (updatePlayerScore(player, 1)) {
-                    return;
+                player.updateScore(1);
+                if(player.score >= WINNING_SCORE) {
+                    endGame();
+                    resolve();
                 }
                 resolve();
             }, { once: true });
@@ -766,34 +763,13 @@ async function animateCardsFlyOff(player) {
     console.log('cards are done flying off screen');
 }
 
-// Update player score, return true if player has won
-function updatePlayerScore(player, points) {
-    if (player === 'player1') {
-        player1Score += points;
-        player1ScoreElement.textContent = player1Score;
-        // Check if player 1 has won (only in 2-player mode)
-        if (player_count === 2 && player1Score >= WINNING_SCORE) {
-            endGame();
-            return true;
-        }
-    } else {
-        player2Score += points;
-        player2ScoreElement.textContent = player2Score;
-        // Check if player 2 has won (only in 2-player mode)
-        if (player_count === 2 && player2Score >= WINNING_SCORE) {
-            endGame();
-            return true;
-        }
-    }
-    return false;
-}
 
 // Handle slap
 async function handleSlap(player) {    
     if (!isGameActive) {
         //just do a fling animation but nothing else
         playSound(wooshSound);
-        fling(player === 'player1' ? 1 : 2);
+        fling(player);
         return;
     } else if (isDebugPaused || justSlapped || isPaused) {
         console.log('Game not active or paused or just slapped');
@@ -808,7 +784,7 @@ async function handleSlap(player) {
 
     // Trigger fling animation
     playSound(wooshSound);
-    fling(player === 'player1' ? 1 : 2);
+    fling(player);
 
     const conditionsMet = checkConditions(cardPile);
     
@@ -881,7 +857,7 @@ async function resolveSuccessfulSlap(conditionsMet, player) {
 
     // Physics hitstop AFTER a small delay to allow fling
     setTimeout(() => {
-        triggerPhysicsHitstop(player === 'player1');
+        triggerPhysicsHitstop(player);
         playSound(slapSound);
         playSound(correctSound); // Play correct sound
     }, 100);
@@ -904,9 +880,8 @@ async function resolveIncorrectSlap(player) {
     });
     
     // Apply penalty to the player who slapped incorrectly
-    if (updatePlayerScore(player, -INCORRECT_SLAP_PENALTY)) {
-        return;
-    }
+    // No need to check for win since this deducts points
+    player.updateScore(-INCORRECT_SLAP_PENALTY);
     
     // Show incorrect slap message with penalty
     showToast('Incorrect Slap', 'error', 1000, player, -INCORRECT_SLAP_PENALTY);
@@ -927,7 +902,7 @@ async function handleComputerSlap() {
         if (Math.random() < COMPUTER_SLAP_CHANCE) {
             // Wait 0.6 seconds before slapping
             await new Promise(resolve => setTimeout(resolve, COMPUTER_SLAP_DELAY));            
-            handleSlap('player1');
+            handleSlap(players[0]);
         }
     }
 }
@@ -987,12 +962,12 @@ function updateRoundStartScreen() {
         // Single player mode: show rounds left
         const roundsLeft = SINGLE_PLAYER_TOTAL_ROUNDS - currentRound + 1;
         if (roundsLeft === 1) {
-            player2StatusText.textContent = "Final round!";
+            players[1].updateStatusText("Final round!");
         } else {
             if(currentRound === 1) {
-                player2StatusText.textContent = `Earn as many points as you can in ${SINGLE_PLAYER_TOTAL_ROUNDS} rounds!`;
+                players[1].updateStatusText(`Earn as many points as you can in ${SINGLE_PLAYER_TOTAL_ROUNDS} rounds!`);
             } else {
-                player2StatusText.textContent = `${roundsLeft} rounds left`;
+                players[1].updateStatusText(`${roundsLeft} rounds left`);
             }
         }
         // Hide player 1 status text in single player mode
@@ -1000,17 +975,17 @@ function updateRoundStartScreen() {
     } else {
         // Two player mode: show score status
         if (currentRound === 1) {
-            player1StatusText.textContent = `First to ${WINNING_SCORE} points wins`;
-            player2StatusText.textContent = `First to ${WINNING_SCORE} points wins`;
-        } else if (player1Score > player2Score) {
-            player1StatusText.textContent = "you're winning";
-            player2StatusText.textContent = "you're losing";
-        } else if (player2Score > player1Score) {
-            player1StatusText.textContent = "you're losing";
-            player2StatusText.textContent = "you're winning";
+            players[0].updateStatusText(`First to ${WINNING_SCORE} points wins`);
+            players[1].updateStatusText(`First to ${WINNING_SCORE} points wins`);
+        } else if (players[0].score > players[1].score) {
+            players[0].updateStatusText("you're winning");
+            players[1].updateStatusText("you're losing");
+        } else if (players[1].score > players[0].score) {
+            players[0].updateStatusText("you're losing");
+            players[1].updateStatusText("you're winning");
         } else {
-            player1StatusText.textContent = "you're tied";
-            player2StatusText.textContent = "you're tied";
+            players[0].updateStatusText("you're tied");
+            players[1].updateStatusText("you're tied");
         }
     }
 }
@@ -1184,8 +1159,8 @@ async function startGame() {
     }
     
     // Reset game state
-    player1Score = 0;
-    player2Score = 0;
+    players[0].reset();
+    players[1].reset();
     cardPile = [];
     isGameActive = true;
     isPaused = false;
@@ -1263,8 +1238,6 @@ async function startGame() {
 
     // Update UI
     displayConditions();
-    player1ScoreElement.textContent = '0';
-    player2ScoreElement.textContent = '0';
     
     // Clear only the cards, not the overlay
     const cards = cardPileElement.querySelectorAll('.card');
@@ -1332,32 +1305,32 @@ function endGame() {
         // Single player mode: show final score
         endScreen.classList.add('player2-won'); // Always show player 2 side
         endScreen.classList.remove('player1-won');
-        winnerScoreElement.textContent = player2Score;
+        winnerScoreElement.textContent = players[1].score;
         winnerTitle.textContent = 'Game Complete!';
         loserMessage.textContent = '';
     } else {
         // Two player mode: determine the winner
-        const player1Won = player1Score > player2Score;
+        const player1Won = players[0].score > players[1].score;
         
         // Set appropriate class for positioning
         if (player1Won) {
             endScreen.classList.add('player1-won');
             endScreen.classList.remove('player2-won');
-            winnerScoreElement.textContent = player1Score;
+            winnerScoreElement.textContent = players[0].score;
             
             winnerTitle.textContent = 'You Win!';
             // Get random loss message
             const randomMessage = LOSS_MESSAGES[Math.floor(Math.random() * LOSS_MESSAGES.length)];
-            loserMessage.textContent = randomMessage + player2Score + ' points.';
+            loserMessage.textContent = randomMessage + players[1].score + ' points.';
         } else {
             endScreen.classList.add('player2-won');
             endScreen.classList.remove('player1-won');
-            winnerScoreElement.textContent = player2Score;
+            winnerScoreElement.textContent = players[1].score;
             
             winnerTitle.textContent = 'You Win!';
             // Get random loss message
             const randomMessage = LOSS_MESSAGES[Math.floor(Math.random() * LOSS_MESSAGES.length)];
-            loserMessage.textContent = randomMessage + player1Score + ' points.';
+            loserMessage.textContent = randomMessage + players[0].score + ' points.';
         }
     }
     
@@ -1409,7 +1382,7 @@ replayButton.addEventListener('click', (event) => {
 
 document.querySelectorAll('.color-change-instruction').forEach(instruction => {
     instruction.addEventListener('click', () => {
-        changeColor(instruction.classList.contains('mirrored') ? 'player1' : 'player2');
+        changeColor(instruction.classList.contains('mirrored') ? players[0] : players[1]);
     });
 });
 
@@ -1569,13 +1542,13 @@ function handleIntent(intent) {
             if(!isCurrentScreenSwipeable()) {
                 return;
             }
-            handleSlap('player1');
+            handleSlap(players[0]);
             break;
         case 'player-2-slap':
             if(!isCurrentScreenSwipeable()) {
                 return;
             }
-            handleSlap('player2');
+            handleSlap(players[1]);
             break;
         case 'pause-card-draw':
             if(!gameplayScreen.classList.contains('hidden')) {

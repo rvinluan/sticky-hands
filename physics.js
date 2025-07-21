@@ -62,10 +62,6 @@ function initializePhysics() {
         }
     });
 
-    // Create player one ball and chain
-    playerPhysicsHands.push(manifestHand(window.innerWidth / 2 - 100, linkHeight/2, true, 0));
-    // playerPhysicsHands.push(manifestHand(window.innerWidth / 2 + 100, y2, false, 1));  // Bottom chain
-
     // Add constant downward force
     const gravityForce = Vector.create(0, 0.001); // Custom gravity force
     const reverseGravityForce = Vector.create(0, -0.001); // Upward gravity force
@@ -197,9 +193,11 @@ function createBallAndChain(x, y, anchorTop = false, colorIndex = 0) {
     };
 }
 
-function manifestHand(x, y, is_top, color) {
-    let h = createBallAndChain(x, y, is_top, color); // Top chain
+function manifestHand(player, x, y, is_top, color) {
+    let h = createBallAndChain(x, y, is_top, color);
     World.add(world, [h.composite]);
+    player.hand = h;
+    player.position = h.composite.bodies[0].position;
     return h;
 }
 
@@ -214,9 +212,9 @@ function removeHand(playerIndex) {
 
 // Function to fling the ball toward center
 function fling(player) {
-    if (!playerPhysicsHands[player - 1]) return;
+    if (!player.hand) return;
     
-    const whichChain = playerPhysicsHands[player - 1];
+    const whichChain = player.hand;
     // Get the ball's current position
     const ballPos = whichChain.ball.position;
     
@@ -244,9 +242,9 @@ function fling(player) {
 }
 
 function stopAllForces(player) {
-    if (!playerPhysicsHands[player - 1]) return;
+    if (!player.hand) return;
     
-    const whichChain = playerPhysicsHands[player - 1];
+    const whichChain = player.hand;
     Composite.allBodies(whichChain.composite).forEach(body => {
         Body.setVelocity(body, { x: 0, y: 0 });
     });
