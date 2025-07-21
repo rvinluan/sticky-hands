@@ -1,3 +1,78 @@
+var originalTouches = [];
+var originalMousePosition = null;
+
+// Handle both touch and mouse start events
+function handleStartEvent(e) {
+    const position = {
+        x: e.clientX || e.touches[0].clientX,
+        y: e.clientY || e.touches[0].clientY
+    };
+
+    if (e.type === 'touchstart') {
+        let index = e.changedTouches[0].identifier;
+        originalTouches[index] = position;
+    } else {
+        originalMousePosition = position;
+    }
+}
+
+// Handle both touch and mouse end events
+function handleEndEvent(e) {
+    // Only process swipes when game is active
+    if (isDebugPaused || 
+        !isCurrentScreenSwipeable()) {
+            console.log('end event ignored because game is paused or a screen other than the gameplay screen is visible');
+        return;
+    }
+
+    const viewportHeight = window.innerHeight;
+    
+    // Get start and end positions
+    let startPos, endPos;
+    if (e.type === 'touchend') {
+        const index = e.changedTouches[0].identifier;
+        startPos = originalTouches[index];
+        endPos = {
+            x: e.changedTouches[0].clientX,
+            y: e.changedTouches[0].clientY
+        };
+    } else {
+        startPos = originalMousePosition;
+        endPos = {
+            x: e.clientX,
+            y: e.clientY
+        };
+    }
+
+    if (!startPos) return;
+
+    const isPlayer1Area = startPos.y < viewportHeight / 2;
+    const yDelta = endPos.y - startPos.y;
+    const xDelta = endPos.x - startPos.x;
+    const distance = Math.sqrt(xDelta * xDelta + yDelta * yDelta);
+    const player = isPlayer1Area ? 'player1' : 'player2';
+
+    // In single player mode, ignore swipes on player 1's side
+    if (player_count === 1 && isPlayer1Area) {
+        return;
+    }
+
+    if (distance > SWIPE_THRESHOLD) {                
+        // Handle the slap
+        if(player === 'player1') {
+            handleIntent('player-1-slap');
+        } else {
+            handleIntent('player-2-slap');
+        }
+    }
+}
+
+// Add event listeners for both touch and mouse events
+document.addEventListener('touchstart', handleStartEvent, { passive: false });
+document.addEventListener('mousedown', handleStartEvent);
+document.addEventListener('touchend', handleEndEvent);
+document.addEventListener('mouseup', handleEndEvent);
+
 document.addEventListener('keydown', (event) => {
     if (event.key === '9') {
         debugger;
