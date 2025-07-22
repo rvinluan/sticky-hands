@@ -1,6 +1,5 @@
 var originalTouches = [];
 var originalMousePosition = null;
-var playersJoined = [true, false, false, false];
 
 // Handle both touch and mouse start events
 function handleStartEvent(e) {
@@ -64,6 +63,13 @@ document.addEventListener('mousedown', handleStartEvent);
 document.addEventListener('touchend', handleEndEvent);
 document.addEventListener('mouseup', handleEndEvent);
 
+const PLAYER_KEYBINDS = {
+    1: { primary: 'k', secondary: 'l' },
+    2: { primary: 'w', secondary: 'q' },
+    3: { primary: 'o', secondary: 'p' },
+    4: { primary: 'd', secondary: 's' }
+};
+
 //keyboard input
 document.addEventListener('keydown', (event) => {
     if (event.key === '9') {
@@ -74,19 +80,99 @@ document.addEventListener('keydown', (event) => {
         handleIntent('pause-card-draw');
     }
 
-    if(event.key === 'l') {
-        if(!playersJoined[1]) {
-            playerPhysicsHands.push(manifestHand(players[1], window.innerWidth / 2 - 100, linkHeight/2, true, 0));
-            playersJoined[1] = true;
+    // Player 1
+    if (event.key == PLAYER_KEYBINDS[1].primary) {
+        if(!players[0].joined) {
+            players[0].joined = true;
+            handleIntent('player-1-join');
+            playerPhysicsHands.push(manifestHand(players[0], window.innerWidth / 2 + X_POSITION_OFFSET, window.innerHeight - 15, false, 1));
         } else {
-            removeHand(1);
-            playersJoined[1] = false;
+            if(!players[0].ready) {
+                players[0].ready = true;
+                handleIntent('player-1-ready');
+            } else {
+                handleIntent('player-1-slap');
+            }
+        }
+    }
+    // Player 1 secondary
+    if(event.key == PLAYER_KEYBINDS[1].secondary) {
+        if(players[0].joined && !players[0].ready) {
+            players[0].joined = false;
+            handleIntent('player-1-unjoin');
+            removeHand(players[0]);
         }
     }
 
-    if (event.key === 'd') { // Player 1 slap
-        handleIntent('player-1-slap')
-    } else if (event.key === 'k') { // Player 2 slap
-        handleIntent('player-2-slap')
+    // Player 2
+    if (event.key == PLAYER_KEYBINDS[2].primary) {
+        if(!players[1].joined) {
+            players[1].joined = true;
+            handleIntent('player-2-join');
+            playerPhysicsHands.push(manifestHand(players[1], window.innerWidth / 2 - X_POSITION_OFFSET, linkHeight/2, true, 0));
+        } else {
+            if(!players[1].ready) {
+                players[1].ready = true;
+                handleIntent('player-2-ready');
+            } else {
+                handleIntent('player-2-slap');
+            }
+        }
+    }
+    // Player 2 secondary
+    if(event.key == PLAYER_KEYBINDS[2].secondary) {
+        if(players[1].joined && !players[1].ready) {
+            players[1].joined = false;
+            handleIntent('player-2-unjoin');
+            removeHand(players[1]);
+        }
+    }
+
+    // Player 3
+    if (event.key == PLAYER_KEYBINDS[3].primary) {
+        if(!players[2].joined) {
+            players[2].joined = true;
+            handleIntent('player-3-join');
+            playerPhysicsHands.push(manifestHand(players[2], window.innerWidth / 2 + X_POSITION_OFFSET, linkHeight/2, true, 2));
+        } else {
+            if(!players[2].ready) {
+                players[2].ready = true;
+                handleIntent('player-3-ready');
+            } else {
+                handleIntent('player-3-slap');
+            }
+        }
+    }
+    // Player 3 secondary
+    if(event.key == PLAYER_KEYBINDS[3].secondary) {
+        if(players[2].joined && !players[2].ready) {
+            players[2].joined = false;
+            handleIntent('player-3-unjoin');
+            removeHand(players[2]);
+        }
+    }
+
+    // Player 4
+    if (event.key == PLAYER_KEYBINDS[4].primary) {
+        if(!players[3].joined) {
+            players[3].joined = true;
+            handleIntent('player-4-join');
+            playerPhysicsHands.push(manifestHand(players[3], window.innerWidth / 2 - X_POSITION_OFFSET, window.innerHeight - 15, false, 3));
+        } else {
+            if(!players[3].ready) {
+                players[3].ready = true;
+                handleIntent('player-4-ready');
+            } else {
+                handleIntent('player-4-slap');
+            }
+        }
+    }
+    // Player 4 secondary
+    if(event.key == PLAYER_KEYBINDS[4].secondary) {
+        if(players[3].joined && !players[3].ready) {
+            players[3].joined = false;
+            handleIntent('player-4-unjoin');
+            removeHand(players[3]);
+        }
     }
 });

@@ -15,7 +15,7 @@ var MAX_DRAW_INTERVAL = 1400; // Maximum draw interval in ms (slowest speed)
 const ROUNDS_TO_MAX_SPEED = 9; // Number of rounds until max speed is reached
 const MIN_SLAP_INTERVAL = 300; // Minimum time between slaps in ms
 const SWIPE_THRESHOLD = 70; // Minimum distance for a swipe in pixels
-
+const X_POSITION_OFFSET = 200; // Position offset for player hands
 
 // Array of hand pun loss messages
 const LOSS_MESSAGES = [
@@ -77,8 +77,11 @@ class Player {
     }
 }
 
-let players = [new Player(1, 0), new Player(2, 1)];
-playerPhysicsHands.push(manifestHand(players[0], window.innerWidth / 2 + 100, window.innerHeight - 15, false, 1));
+let players = [new Player(1, 0), new Player(2, 1), new Player(3, 2), new Player(4, 3)];
+// playerPhysicsHands.push(manifestHand(players[0], window.innerWidth / 2 + X_POSITION_OFFSET, window.innerHeight - 15, false, 1));
+// players[0].joined = true;
+// players[0].ready = true;
+// handleIntent('player-1-ready');
 
 let lastSlapTime = 0;
 let justSlapped = false;// Track recent slaps from both players
@@ -117,7 +120,6 @@ const aboutButton = document.getElementById('about-button');
 const aboutScreen = document.getElementById('about-screen');
 const closeAboutButton = document.getElementById('close-about-button');
 const debugStatsElement = document.getElementById('debug-stats');
-const settingsButton = document.getElementById('about-button');
 const settingsScreen = document.getElementById('settings-screen');
 
 // Card suits and ranks
@@ -1434,18 +1436,20 @@ document.querySelectorAll('.color-change-instruction').forEach(instruction => {
 //  | Settings and About Functionality                                        │
 //  └─────────────────────────────────────────────────────────────────────────┘
 
-aboutButton.addEventListener('click', () => {
-    playSound(interactBigSound);
-    welcomeScreen.classList.add('hidden');
-    aboutScreen.classList.remove('hidden');
-    populateRulesTab();
-});
+if(!document.documentElement.classList.contains('arcade')) {
+    aboutButton.addEventListener('click', () => {
+        playSound(interactBigSound);
+        welcomeScreen.classList.add('hidden');
+        aboutScreen.classList.remove('hidden');
+        populateRulesTab();
+    });
 
-closeAboutButton.addEventListener('click', () => {
-    playSound(interactBigSound);
-    aboutScreen.classList.add('hidden');
-    welcomeScreen.classList.remove('hidden');
-});
+    closeAboutButton.addEventListener('click', () => {
+        playSound(interactBigSound);
+        aboutScreen.classList.add('hidden');
+        welcomeScreen.classList.remove('hidden');
+    });
+}
 
 // Tab switching functionality
 function initializeTabs() {
@@ -1583,17 +1587,51 @@ function isCurrentScreenSwipeable() {
 
 function handleIntent(intent) {
     switch(intent) {
-        case 'player-1-slap':
-            if(!isCurrentScreenSwipeable()) {
-                return;
-            }
-            handleSlap(players[0]);
+        case 'player-1-join':
+            updateJoinMessage(1, 'join');
             break;
+        case 'player-2-join':
+            updateJoinMessage(2, 'join');
+            break;
+        case 'player-3-join':
+            updateJoinMessage(3, 'join');
+            break;
+        case 'player-4-join':
+            updateJoinMessage(4, 'join');
+            break;
+        case 'player-1-unjoin':
+            updateJoinMessage(1, 'unjoin');
+            break;
+        case 'player-2-unjoin':
+            updateJoinMessage(2, 'unjoin');
+            break;
+        case 'player-3-unjoin':
+            updateJoinMessage(3, 'unjoin');
+            break;
+        case 'player-4-unjoin':
+            updateJoinMessage(4, 'unjoin');
+            break;
+        case 'player-1-ready':
+            updateJoinMessage(1, 'ready');
+            break;
+        case 'player-2-ready':
+            updateJoinMessage(2, 'ready');
+            break;
+        case 'player-3-ready':
+            updateJoinMessage(3, 'ready');
+            break;
+        case 'player-4-ready':
+            updateJoinMessage(4, 'ready');
+            break;
+        case 'player-1-slap':
         case 'player-2-slap':
+        case 'player-3-slap':
+        case 'player-4-slap':
             if(!isCurrentScreenSwipeable()) {
                 return;
             }
-            handleSlap(players[1]);
+            console.log(intent);
+            handleSlap(players[intent.split('-')[1] - 1]);
             break;
         case 'pause-card-draw':
             if(!gameplayScreen.classList.contains('hidden')) {
@@ -1608,6 +1646,51 @@ function handleIntent(intent) {
         default:
             console.log(`Unknown intent: ${intent}`);
             break;
+    }
+}
+
+function updateJoinMessage(playerNum, state) {
+    // Map playerNum to class
+    const classMap = {1: 'player1', 2: 'player2', 3: 'player3', 4: 'player4'};
+    // Use PLAYER_KEYBINDS from input.js
+    const keyMap = window.PLAYER_KEYBINDS || {
+        1: { primary: 'k', secondary: 'l' },
+        2: { primary: 'w', secondary: 'q' },
+        3: { primary: 'o', secondary: 'p' },
+        4: { primary: 'd', secondary: 's' }
+    };
+    const joinDiv = document.querySelector(`.player-join-status .${classMap[playerNum]}`);
+    if (joinDiv) {
+        const joinText = joinDiv.querySelector('.join-text');
+        const unjoinText = joinDiv.querySelector('.unjoin-text');
+        const readyText = joinDiv.querySelector('.ready-text');
+        if (state === 'join') {
+            joinText.textContent = `Press `;
+            const keySpan = document.createElement('span');
+            keySpan.className = 'key-code';
+            keySpan.textContent = keyMap[playerNum].primary;
+            joinText.appendChild(keySpan);
+            joinText.appendChild(document.createTextNode(' to ready!'));
+            joinText.classList.remove('hidden');
+            unjoinText.innerHTML = `Press <span class="key-code">${keyMap[playerNum].secondary}</span> to un-join`;
+            unjoinText.classList.remove('hidden');
+            readyText.classList.add('hidden');
+        } else if (state === 'unjoin') {
+            joinText.textContent = `Press `;
+            const keySpan = document.createElement('span');
+            keySpan.className = 'key-code';
+            keySpan.textContent = keyMap[playerNum].primary;
+            joinText.appendChild(keySpan);
+            joinText.appendChild(document.createTextNode(' to join'));
+            joinText.classList.remove('hidden');
+            unjoinText.innerHTML = `Press <span class="key-code">${keyMap[playerNum].secondary}</span> to un-join`;
+            unjoinText.classList.add('hidden');
+            readyText.classList.add('hidden');
+        } else if (state === 'ready') {
+            joinText.classList.add('hidden');
+            unjoinText.classList.add('hidden');
+            readyText.classList.remove('hidden');
+        }
     }
 }
 

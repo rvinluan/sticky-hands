@@ -201,8 +201,10 @@ function manifestHand(player, x, y, is_top, color) {
     return h;
 }
 
-function removeHand(playerIndex) {
-    if (!playerPhysicsHands[playerIndex]) return;
+function removeHand(player) {
+    if (!player.hand) return;
+
+    let playerIndex = playerPhysicsHands.indexOf(player.hand);
     
     // Remove the composite from the world
     World.remove(world, playerPhysicsHands[playerIndex].composite);

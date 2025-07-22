@@ -1423,3 +1423,76 @@ input:checked + .slider:before {
     z-index: 9999;
     pointer-events: none;
 }
+
+.player-join-status {
+    position: fixed;
+    top: 0;
+    left: 10vw;
+    width: 80vw;
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    pointer-events: none;
+    z-index: 10;
+}
+.player-join-status .join-text-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: black;
+    margin: 2vw;
+    pointer-events: auto;
+    min-width: 0;
+    min-height: 0;
+    text-align: center;
+}
+.player-join-status .join-text-container .hidden {
+    display: none;
+}
+.player-join-status .join-text-container p {
+    margin: .5em;
+}
+.player-join-status .top-left {
+    grid-row: 1;
+    grid-column: 1;
+}
+.player-join-status .top-right {
+    grid-row: 1;
+    grid-column: 2;
+}
+.player-join-status .bottom-left {
+    grid-row: 2;
+    grid-column: 1;
+}
+.player-join-status .bottom-right {
+    grid-row: 2;
+    grid-column: 2;
+}
+
+.key-code {
+    display: inline-block;
+    padding: 0.18em 0.6em;
+    margin: 0 0.1em;
+    border: 2px solid #bbb;
+    border-radius: 0.4em;
+    background: #f7f7f7;
+    box-shadow: 0 2px 0 #bbb;
+    font-family: 'Departure Mono', monospace;
+    font-size: 1em;
+    font-weight: bold;
+    color: #222;
+    vertical-align: middle;
+    line-height: 1.1;
+}
+
+.ready-text {
+    background: black;
+    color: white;
+    padding: 0.4em 1em;
+    font-weight: bold;
+    font-family: 'Departure Mono', monospace;
+    font-size: 1.1em;
+    display: inline-block;
+}
