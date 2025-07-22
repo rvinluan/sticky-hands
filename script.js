@@ -106,10 +106,6 @@ const roundNumberElement = document.getElementById('round-number');
 const roundNumberElement2 = document.getElementById('round-number-2');
 const countdownBar = document.getElementById('countdown-bar');
 const newConditionCountdownBar = document.getElementById('new-condition-countdown-bar');
-// const player1ScoreElement = document.getElementById('player1-score');
-// const player2ScoreElement = document.getElementById('player2-score');
-// const player1StatusText = document.querySelector('.player1 .status-text');
-// const player2StatusText = document.querySelector('.player2 .status-text');
 const conditionEmojiLarge = document.querySelector('.condition-emoji-large');
 const conditionName = document.querySelector('.condition-name');
 const conditionDescription = document.querySelector('.condition-description');
@@ -332,7 +328,54 @@ function duckBackgroundMusicForSound(soundEffect, duckVolume = 0.01, duckDuratio
 }
 
 //  ┌─────────────────────────────────────────────────────────────────────────┐
-//  | Gameplay Logic                                                          │
+//  | Helper Functions                                                        │
+//  └─────────────────────────────────────────────────────────────────────────┘
+
+/*
+Player Areas Diagram Depending on Player Count:
+2 Players:          3 Players:          4 Players:
+┌────────┐         ┌────────┐         ┌────────┐
+│   2    │         │ 2    3 │         │ 2    3 │
+├────────┤         ├────────┤         ├────────┤
+│   1    │         │   1    │         │ 4    1 │
+└────────┘         └────────┘         └────────┘
+*/
+
+function getPlayerArea(x, y, playerCount=4) {
+    if(y < window.innerHeight / 2) {
+        //top half
+        if(playerCount < 3) {
+            return 2;
+        }
+        if(x < window.innerWidth / 2) {
+            //left
+            return 2;
+        } else {
+            //right
+            return 3;
+        }
+    } else {
+        //bottom half
+        if(playerCount < 3) {
+            return 1;
+        }
+        if(x < window.innerWidth / 2) {
+            //left
+            if(playerCount < 4) {
+                return 1;
+            } else {
+                return 4;
+            }
+        } else {
+            //right
+            return 1;
+        }
+    }   
+}
+
+
+//  ┌─────────────────────────────────────────────────────────────────────────┐
+//  | Pause Screen Logic                                                      │
 //  └─────────────────────────────────────────────────────────────────────────┘
 
 // Display game conditions
@@ -430,6 +473,10 @@ resumeButton.addEventListener('click', () => {
     playSound(interactBigSound);
     resumeGame();
 });
+
+//  ┌─────────────────────────────────────────────────────────────────────────┐
+//  | Gameplay Logic - Cards                                                  │
+//  └─────────────────────────────────────────────────────────────────────────┘
 
 // Initialize deck
 function initializeDeck() {
@@ -628,6 +675,10 @@ function createCardElement(card, index) {
     
     return cardElement;
 }
+
+//  ┌─────────────────────────────────────────────────────────────────────────┐
+//  | Gameplay Logic - UI                                                     │
+//  └─────────────────────────────────────────────────────────────────────────┘
 
 // Show toast message
 function showToast(message, type = 'error', duration = 500, player = null, points = null) {
@@ -1153,12 +1204,10 @@ function updateInitialConditionsScreen() {
 
 // Start game
 async function startGame() {    
-    // Clear any existing game interval
+        // Reset game state
     if (gameInterval) {
         clearInterval(gameInterval);
     }
-    
-    // Reset game state
     players[0].reset();
     players[1].reset();
     cardPile = [];
@@ -1531,6 +1580,7 @@ document.getElementById('difficulty-hard').addEventListener('change', (event) =>
 //  ┌─────────────────────────────────────────────────────────────────────────┐
 //  | Event Handling from Input.js                                            │
 //  └─────────────────────────────────────────────────────────────────────────┘
+
 function isCurrentScreenSwipeable() {
     const swipeableScreens = [gameplayScreen, lobbyScreen, welcomeScreen];
     return swipeableScreens.some(screen => !screen.classList.contains('hidden'));

@@ -4,6 +4,7 @@ var playersJoined = [true, false, false, false];
 
 // Handle both touch and mouse start events
 function handleStartEvent(e) {
+    console.log(getPlayerArea(e.clientX, e.clientY, 4));
     const position = {
         x: e.clientX || e.touches[0].clientX,
         y: e.clientY || e.touches[0].clientY
