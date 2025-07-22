@@ -4,7 +4,7 @@ var playersJoined = [true, false, false, false];
 
 // Handle both touch and mouse start events
 function handleStartEvent(e) {
-    console.log(getPlayerArea(e.clientX, e.clientY, 4));
+    // console.log(getPlayerArea(e.clientX, e.clientY, 4));
     const position = {
         x: e.clientX || e.touches[0].clientX,
         y: e.clientY || e.touches[0].clientY
@@ -41,24 +41,20 @@ function handleEndEvent(e) {
 
     if (!startPos) return;
 
-    const isPlayer1Area = startPos.y < viewportHeight / 2;
     const yDelta = endPos.y - startPos.y;
     const xDelta = endPos.x - startPos.x;
     const distance = Math.sqrt(xDelta * xDelta + yDelta * yDelta);
-    const player = isPlayer1Area ? 'player1' : 'player2';
+    const player = getPlayerArea(startPos.x, startPos.y, player_count);
 
-    // In single player mode, ignore swipes on player 1's side
-    if (player_count === 1 && isPlayer1Area) {
+    // In single player mode, ignore swipes on player 2's side
+    if (player_count === 1 && player == 2) {
         return;
     }
 
     if (distance > SWIPE_THRESHOLD) {                
         // Handle the slap
-        if(player === 'player1') {
-            handleIntent('player-1-slap');
-        } else {
-            handleIntent('player-2-slap');
-        }
+        console.log(`player-${player}-slap`);
+        handleIntent(`player-${player}-slap`);
     }
 }
 
@@ -80,7 +76,7 @@ document.addEventListener('keydown', (event) => {
 
     if(event.key === 'l') {
         if(!playersJoined[1]) {
-            playerPhysicsHands.push(manifestHand(players[1], window.innerWidth / 2 + 100, window.innerHeight - 15, false, 1));  // Bottom chain
+            playerPhysicsHands.push(manifestHand(players[1], window.innerWidth / 2 - 100, linkHeight/2, true, 0));
             playersJoined[1] = true;
         } else {
             removeHand(1);
@@ -89,7 +85,6 @@ document.addEventListener('keydown', (event) => {
     }
 
     if (event.key === 'd') { // Player 1 slap
-        console.log('player 1 slap');
         handleIntent('player-1-slap')
     } else if (event.key === 'k') { // Player 2 slap
         handleIntent('player-2-slap')

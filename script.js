@@ -78,7 +78,7 @@ class Player {
 }
 
 let players = [new Player(1, 0), new Player(2, 1)];
-playerPhysicsHands.push(manifestHand(players[0], window.innerWidth / 2 - 100, linkHeight/2, true, 0));
+playerPhysicsHands.push(manifestHand(players[0], window.innerWidth / 2 + 100, window.innerHeight - 15, false, 1));
 
 let lastSlapTime = 0;
 let justSlapped = false;// Track recent slaps from both players
@@ -1021,8 +1021,6 @@ function updateRoundStartScreen() {
                 players[1].updateStatusText(`${roundsLeft} rounds left`);
             }
         }
-        // Hide player 1 status text in single player mode
-        player1StatusText.textContent = "";
     } else {
         // Two player mode: show score status
         if (currentRound === 1) {
@@ -1168,38 +1166,35 @@ function animateCountdown(bar, duration = 3000) {
 // Update initial conditions screen
 function updateInitialConditionsScreen() {
     // Get both player's condition lists
-    const player1ConditionsList = document.querySelector('.player1 .initial-conditions-list');
-    const player2ConditionsList = document.querySelector('.player2 .initial-conditions-list');
+    const bothConditionsList = document.querySelectorAll('.initial-conditions-list');
     
-    // Clear existing conditions
-    player1ConditionsList.innerHTML = '';
-    player2ConditionsList.innerHTML = '';
-    
-    // Add each active condition to both players' lists
-    for (const conditionKey of activeConditions) {
-        const condition = conditions[conditionKey];
-        
-        // Create condition element
-        const conditionElement = document.createElement('div');
-        conditionElement.className = 'initial-condition';
-        
-        // Create emoji span
-        const emojiSpan = document.createElement('span');
-        emojiSpan.className = 'condition-emoji';
-        emojiSpan.textContent = condition.emoji;
-        
-        // Create description paragraph
-        const descriptionP = document.createElement('p');
-        descriptionP.textContent = condition.description;
-        
-        // Add elements to condition element
-        conditionElement.appendChild(emojiSpan);
-        conditionElement.appendChild(descriptionP);
-        
-        // Add condition element to both players' lists
-        player1ConditionsList.appendChild(conditionElement.cloneNode(true));
-        player2ConditionsList.appendChild(conditionElement.cloneNode(true));
-    }
+    bothConditionsList.forEach(list => {
+        list.innerHTML = '';
+        // Add each active condition to both players' lists
+        for (const conditionKey of activeConditions) {
+            const condition = conditions[conditionKey];
+            
+            // Create condition element
+            const conditionElement = document.createElement('div');
+            conditionElement.className = 'initial-condition';
+            
+            // Create emoji span
+            const emojiSpan = document.createElement('span');
+            emojiSpan.className = 'condition-emoji';
+            emojiSpan.textContent = condition.emoji;
+            
+            // Create description paragraph
+            const descriptionP = document.createElement('p');
+            descriptionP.textContent = condition.description;
+            
+            // Add elements to condition element
+            conditionElement.appendChild(emojiSpan);
+            conditionElement.appendChild(descriptionP);
+            
+            // Add condition element to both players' lists
+            list.appendChild(conditionElement.cloneNode(true));
+        }
+    });
 }
 
 // Start game
@@ -1407,13 +1402,13 @@ if(!document.documentElement.classList.contains('arcade')) {
         physicsCanvas.style.display = 'block';
         
         // Update lobby screen based on player count
-        const player2Tutorial = document.querySelector('.tutorial.player1');
-        if (player_count === 1) {
-            player2Tutorial.style.visibility = 'hidden';
-            document.querySelector('.color-change-instruction.mirrored').style.visibility = 'hidden';
-        } else {
-            player2Tutorial.style.visibility = 'visible';
-        }
+        // const player2Tutorial = document.querySelector('.tutorial.player1');
+        // if (player_count === 1) {
+        //     player2Tutorial.style.visibility = 'hidden';
+        //     document.querySelector('.color-change-instruction.mirrored').style.visibility = 'hidden';
+        // } else {
+        //     player2Tutorial.style.visibility = 'visible';
+        // }
     });
 }
 

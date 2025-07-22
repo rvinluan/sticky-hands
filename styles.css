@@ -72,6 +72,10 @@ h1 {
     font-family: 'Gooper';
 }
 
+.mirrored {
+    transform: rotate(180deg) !important;
+}
+
 /* Individual letter styles for the title */
 h1 span {
     display: inline-block;
@@ -202,12 +206,12 @@ button {
     color: #fff;
 }
 
-#player2-score {
+#player1-score {
     bottom: 0;
     left: 0;
 }
 
-#player1-score {
+#player2-score {
     top: 0;
     right: 0;
     transform: rotate(180deg);
@@ -376,30 +380,30 @@ button {
     color: white;
 }
 
-.toast.player1 {
+.toast.player2 {
     transform: translate(-50%, -15vh) rotate(180deg) translateY(-10px);
 }
 
-.toast.player1.toast-visible {
+.toast.player2.toast-visible {
     transform: translate(-50%, -15vh) rotate(180deg);
     opacity: 1;
 }
 
-.toast.player1.toast-invisible {
+.toast.player2.toast-invisible {
     transform: translate(-50%, -15vh) rotate(180deg) translateY(-10px);
     opacity: 0;
 }
 
-.toast.player2 {
+.toast.player1 {
     transform: translate(-50%, 15vh) translateY(10px);
 }
 
-.toast.player2.toast-visible {
+.toast.player1.toast-visible {
     transform: translate(-50%, 15vh);
     opacity: 1;
 }
 
-.toast.player2.toast-invisible {
+.toast.player1.toast-invisible {
     transform: translate(-50%, 15vh) translateY(10px);
     opacity: 0;
 }
@@ -445,10 +449,6 @@ button {
     width: 100%;
     text-align: center;
     padding: 1rem;
-}
-
-.round-header.player1 {
-    transform: rotate(180deg);
 }
 
 .round-header h2 {
@@ -646,10 +646,6 @@ html.arcade #physics-canvas {
     width: 100%;
 }
 
-.condition-header.player1 {
-    transform: rotate(180deg);
-}
-
 .condition-emoji-large {
     font-size: 8rem;
     margin: 2rem 0;
@@ -760,14 +756,6 @@ html.arcade #physics-canvas {
     flex-direction:column-reverse;
 }
 
-.player1-won .winner-container {
-    transform: rotate(180deg);
-}
-
-.player2-won .loser-container {
-    transform: rotate(180deg);
-}
-
 /* Tutorial styles */
 .tutorial {
     text-align: center;
@@ -786,13 +774,14 @@ html.arcade #physics-canvas {
     animation: bounce 1s infinite;
 }
 
-.tutorial.player1 {
-    transform: rotate(180deg);
-    margin-bottom: 3rem;
+.tutorial {
+    margin-top: 3rem;
+    margin-bottom: 0;
 }
 
-.tutorial.player2 {
-    margin-top: 3rem;
+.tutorial.mirrored {
+    martin-top: 0;
+    margin-bottom: 3rem;
 }
 
 @keyframes bounce {
@@ -876,10 +865,6 @@ html.arcade #physics-canvas {
 .condition-header {
     text-align: center;
     width: 100%;
-}
-
-.condition-header.player1 {
-    transform: rotate(180deg);
 }
 
 .swipe-instruction {
