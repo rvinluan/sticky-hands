@@ -16,6 +16,7 @@ const ROUNDS_TO_MAX_SPEED = 9; // Number of rounds until max speed is reached
 const MIN_SLAP_INTERVAL = 300; // Minimum time between slaps in ms
 const SWIPE_THRESHOLD = 70; // Minimum distance for a swipe in pixels
 const X_POSITION_OFFSET = 200; // Position offset for player hands
+const SIMULTANEOUS_SLAP_THRESHOLD = 100; // Time threshold for simultaneous slaps in ms
 
 // Array of hand pun loss messages
 const LOSS_MESSAGES = [
@@ -59,6 +60,7 @@ class Player {
         this.joined = false;
         this.ready = false;
         this.hand = null;
+        this.lastSlappedTimestamp = 0; // Track when player last slapped
     }
 
     updateScore(points) {
@@ -816,17 +818,42 @@ async function animateCardsFlyOff(player) {
     console.log('cards are done flying off screen');
 }
 
+function checkForSimultaneousSlaps(player) {    
+    let simultaneousSlaps = players
+        .filter(p => p.joined) // Only check ready players who have joined
+        .every(p => {
+            const timeDelta = Math.abs(player.lastSlappedTimestamp - p.lastSlappedTimestamp);
+            console.log('timeDelta', timeDelta);
+            return timeDelta < SIMULTANEOUS_SLAP_THRESHOLD;
+        });
 
+    return simultaneousSlaps;
+}
 // Handle slap
 async function handleSlap(player) {    
     if (!isGameActive) {
         //just do a fling animation but nothing else
         playSound(wooshSound);
         fling(player);
+        // Record the current timestamp for this player's slap
+        const currentTime = Date.now();
+        player.lastSlappedTimestamp = currentTime;
+        if (checkForSimultaneousSlaps(player)) {
+            alert('simultaneous slap detected');
+            return;
+        }
         return;
     } else if (isDebugPaused || justSlapped || isPaused) {
         console.log('Game not active or paused or just slapped');
         return;
+    }
+
+    // Record the current timestamp for this player's slap
+    const currentTime = Date.now();
+    player.lastSlappedTimestamp = currentTime;
+
+    if (checkForSimultaneousSlaps(player)) {
+        alert('simultaneous slap detected');
     }
 
     justSlapped = true;
