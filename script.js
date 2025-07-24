@@ -823,7 +823,6 @@ function checkForSimultaneousSlaps(player) {
         .filter(p => p.joined) // Only check ready players who have joined
         .every(p => {
             const timeDelta = Math.abs(player.lastSlappedTimestamp - p.lastSlappedTimestamp);
-            console.log('timeDelta', timeDelta);
             return timeDelta < SIMULTANEOUS_SLAP_THRESHOLD;
         });
 
@@ -835,25 +834,22 @@ async function handleSlap(player) {
         //just do a fling animation but nothing else
         playSound(wooshSound);
         fling(player);
-        // Record the current timestamp for this player's slap
+        // Check for slaps, we only do this here because during gameplay it's irrelevant
         const currentTime = Date.now();
         player.lastSlappedTimestamp = currentTime;
         if (checkForSimultaneousSlaps(player)) {
-            alert('simultaneous slap detected');
+            // Wait 500ms before starting the game
+            isGameActive = true;
+            setTimeout(() => {
+                player_count = players.filter(p => p.ready).length;
+                startGame();
+            }, 500);
             return;
         }
         return;
     } else if (isDebugPaused || justSlapped || isPaused) {
         console.log('Game not active or paused or just slapped');
         return;
-    }
-
-    // Record the current timestamp for this player's slap
-    const currentTime = Date.now();
-    player.lastSlappedTimestamp = currentTime;
-
-    if (checkForSimultaneousSlaps(player)) {
-        alert('simultaneous slap detected');
     }
 
     justSlapped = true;
@@ -1414,11 +1410,24 @@ function endGame() {
 }
 
 //  ┌─────────────────────────────────────────────────────────────────────────┐
-//  | Settings and About Functionality                                        │
+//  | Lobby Functionality                                                     │
 //  └─────────────────────────────────────────────────────────────────────────┘
 
-// Event listeners
-if(!document.documentElement.classList.contains('arcade')) {
+
+function configureLobbyScreen() {
+    // Update lobby screen based on player count
+    const player2Tutorial = document.querySelector('.tutorial.player1');
+    if (player_count === 1) {
+        player2Tutorial.style.visibility = 'hidden';
+        document.querySelector('.color-change-instruction.mirrored').style.visibility = 'hidden';
+    } else {
+        player2Tutorial.style.visibility = 'visible';
+    }
+}
+
+if(document.documentElement.classList.contains('arcade')) {
+    console.log('arcade mode');
+} else {
     playerToggle.addEventListener('change', () => {
         playSound(interactSmallSound);
         player_count = playerToggle.checked ? 2 : 1;
@@ -1429,15 +1438,7 @@ if(!document.documentElement.classList.contains('arcade')) {
         welcomeScreen.classList.add('hidden');
         lobbyScreen.classList.remove('hidden');
         physicsCanvas.style.display = 'block';
-        
-        // Update lobby screen based on player count
-        // const player2Tutorial = document.querySelector('.tutorial.player1');
-        // if (player_count === 1) {
-        //     player2Tutorial.style.visibility = 'hidden';
-        //     document.querySelector('.color-change-instruction.mirrored').style.visibility = 'hidden';
-        // } else {
-        //     player2Tutorial.style.visibility = 'visible';
-        // }
+        configureLobbyScreen();
     });
 }
 
@@ -1719,6 +1720,21 @@ function updateJoinMessage(playerNum, state) {
             readyText.classList.remove('hidden');
         }
     }
+    
+    // Update player selection text based on whether any players have joined
+    updatePlayerSelectionText();
+}
+
+function updatePlayerSelectionText() {
+    const playerSelectionDiv = document.querySelector('.player-selection p');
+    if (playerSelectionDiv) {
+        const hasJoinedPlayers = players.some(p => p.joined);
+        if (hasJoinedPlayers) {
+            playerSelectionDiv.textContent = 'All players slap simultaneously to start the game';
+        } else {
+            playerSelectionDiv.textContent = 'Waiting for players to join...';
+        }
+    }
 }
 
 //  ┌─────────────────────────────────────────────────────────────────────────┐
@@ -1739,6 +1755,9 @@ function initializeGame() {
 
     // Add window resize event listener for debug stats
     window.addEventListener('resize', updateDebugStats);
+    
+    // Initialize player selection text
+    updatePlayerSelectionText();
 }
 
 initializeGame();
