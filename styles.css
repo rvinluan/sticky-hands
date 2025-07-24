@@ -200,7 +200,7 @@ button {
     z-index: 2;
 }
 
-#player1-score, #player2-score {
+#player1-score, #player2-score, #player3-score, #player4-score {
     position: absolute;
     font: normal 300 9em/1 'Chakra Petch', sans-serif;
     color: #fff;
@@ -208,13 +208,24 @@ button {
 
 #player1-score {
     bottom: 0;
-    left: 0;
+    right: 0;
 }
 
 #player2-score {
     top: 0;
+    left: 0;
+    transform: rotate(180deg);
+}
+
+#player3-score {
+    top: 0;
     right: 0;
     transform: rotate(180deg);
+}
+
+#player4-score {
+    bottom: 0;
+    left: 0;
 }
 
 .game-area {
@@ -309,10 +320,10 @@ button {
 
 @keyframes flyOffTop {
     0% {
-        margin-top: 0;
+        transform: translateX(var(--final-position)) rotate(var(--rotation, 0deg));
     }
     100% {
-        margin-top: -150vh;
+        transform: translateX(var(--target-x)) translateY(-150vh) rotate(var(--rotation, 0deg));
     }
 }
 
@@ -323,12 +334,10 @@ button {
 
 @keyframes flyOffBottom {
     0% {
-        margin-top: 0;
         transform: translateX(var(--final-position)) rotate(var(--rotation, 0deg));
     }
     100% {
-        margin-top: 150vh;
-        transform: translateX(0) rotate(var(--rotation, 0deg));
+        transform: translateX(var(--target-x)) translateY(150vh) rotate(var(--rotation, 0deg));
     }
 }
 
@@ -381,16 +390,16 @@ button {
 }
 
 .toast.player2 {
-    transform: translate(-50%, -15vh) rotate(180deg) translateY(-10px);
+    transform: translate(-50%, -15vh) translateY(-10px);
 }
 
 .toast.player2.toast-visible {
-    transform: translate(-50%, -15vh) rotate(180deg);
+    transform: translate(-50%, -15vh);
     opacity: 1;
 }
 
 .toast.player2.toast-invisible {
-    transform: translate(-50%, -15vh) rotate(180deg) translateY(-10px);
+    transform: translate(-50%, -15vh) translateY(-10px);
     opacity: 0;
 }
 
@@ -404,6 +413,34 @@ button {
 }
 
 .toast.player1.toast-invisible {
+    transform: translate(-50%, 15vh) translateY(10px);
+    opacity: 0;
+}
+
+.toast.player3 {
+    transform: translate(-50%, -15vh) translateY(-10px);
+}
+
+.toast.player3.toast-visible {
+    transform: translate(-50%, -15vh) ;
+    opacity: 1;
+}
+
+.toast.player3.toast-invisible {
+    transform: translate(-50%, -15vh) translateY(-10px);
+    opacity: 0;
+}
+
+.toast.player4 {
+    transform: translate(-50%, 15vh) translateY(10px);
+}
+
+.toast.player4.toast-visible {
+    transform: translate(-50%, 15vh);
+    opacity: 1;
+}
+
+.toast.player4.toast-invisible {
     transform: translate(-50%, 15vh) translateY(10px);
     opacity: 0;
 }

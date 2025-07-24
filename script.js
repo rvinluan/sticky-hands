@@ -773,6 +773,23 @@ function changeColor(player) {
 async function animateCardsFlyOff(player) {
     const cardElements = cardPileElement.querySelectorAll('.card');
     const viewportHeight = window.innerHeight;
+    const viewportWidth = window.innerWidth;
+    
+    // Calculate target x position based on player
+    let targetX = 0;
+    if (player.id === 1) {
+        // Player 1: bottom-right
+        targetX = viewportWidth * 0.25;
+    } else if (player.id === 2) {
+        // Player 2: top-left
+        targetX = -viewportWidth * 0.25;
+    } else if (player.id === 3) {
+        // Player 3: top-right
+        targetX = viewportWidth * 0.25;
+    } else if (player.id === 4) {
+        // Player 4: bottom-left
+        targetX = -viewportWidth * 0.25;
+    }
     
     // Create and apply the animation to each card
     const animations = Array.from(cardElements).map((card, index) => {
@@ -788,6 +805,7 @@ async function animateCardsFlyOff(player) {
             const currentPosition = matrix.m41;
             //set final position to current position
             card.style.setProperty('--final-position', `${currentPosition}px`);
+            card.style.setProperty('--target-x', `${targetX}px`);
             card.style.animationDelay = `${delay}ms`;
             
             // Add fly-off animation
@@ -796,7 +814,6 @@ async function animateCardsFlyOff(player) {
             } else {
                 card.classList.add('should-fly-off-bottom');
             }
-            // debugger;
             
             // Resolve after animation completes
             card.addEventListener('animationend', () => {
@@ -1308,6 +1325,14 @@ async function startGame() {
     // Update UI
     displayConditions();
     
+    // Hide all score elements initially
+    for (let i = 1; i <= 4; i++) {
+        const scoreElement = document.getElementById(`player${i}-score`);
+        if (scoreElement) {
+            scoreElement.classList.add('hidden');
+        }
+    }
+    
     // Clear only the cards, not the overlay
     const cards = cardPileElement.querySelectorAll('.card');
     cards.forEach(card => card.remove());
@@ -1343,6 +1368,18 @@ async function startGame() {
             
             // Animate countdown and then start game
             animateCountdown(countdownBar).then(() => {
+                // Show score elements for ready players
+                players.forEach(player => {
+                    const scoreElement = document.getElementById(`player${player.id}-score`);
+                    if (scoreElement) {
+                        if (player.ready) {
+                            scoreElement.classList.remove('hidden');
+                        } else {
+                            scoreElement.classList.add('hidden');
+                        }
+                    }
+                });
+                
                 playBackgroundMusic();
                 roundStartScreen.classList.add('hidden');
                 gameplayScreen.classList.remove('hidden');
@@ -1400,6 +1437,14 @@ function endGame() {
             // Get random loss message
             const randomMessage = LOSS_MESSAGES[Math.floor(Math.random() * LOSS_MESSAGES.length)];
             loserMessage.textContent = randomMessage + players[0].score + ' points.';
+        }
+    }
+    
+    // Hide all score elements when game ends
+    for (let i = 1; i <= 4; i++) {
+        const scoreElement = document.getElementById(`player${i}-score`);
+        if (scoreElement) {
+            scoreElement.classList.add('hidden');
         }
     }
     
