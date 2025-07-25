@@ -862,6 +862,11 @@ async function handleSlap(player) {
         if (checkForSimultaneousSlaps(player)) {
             // Wait 500ms before starting the game
             isGameActive = true;
+            playSound(slapSound);
+            playSound(correctSound);
+            setTimeout(() => {
+                triggerPhysicsHitstop(player);
+            }, 150);
             setTimeout(() => {
                 player_count = players.filter(p => p.ready).length;
                 startGame();
