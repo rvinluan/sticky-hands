@@ -817,7 +817,7 @@ html.arcade #physics-canvas {
 }
 
 .tutorial.mirrored {
-    martin-top: 0;
+    margin-top: 0;
     margin-bottom: 3rem;
 }
 
