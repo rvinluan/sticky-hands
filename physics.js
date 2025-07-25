@@ -193,8 +193,8 @@ function createBallAndChain(x, y, anchorTop = false, colorIndex = 0) {
     };
 }
 
-function manifestHand(player, x, y, is_top, color) {
-    let h = createBallAndChain(x, y, is_top, color);
+function manifestHand(player, x, y, is_top) {
+    let h = createBallAndChain(x, y, is_top, player.colorIndex);
     World.add(world, [h.composite]);
     player.hand = h;
     player.position = h.composite.bodies[0].position;

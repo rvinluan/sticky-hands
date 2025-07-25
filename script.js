@@ -33,6 +33,9 @@ const LOSS_MESSAGES = [
 //  ┌─────────────────────────────────────────────────────────────────────────┐
 //  | Gameplay Logic                                                          │
 //  └─────────────────────────────────────────────────────────────────────────┘
+
+let mode = 'arcade';
+
 let deck = [];
 let unusedCards = []; // Array to store unused cards
 let cardPile = [];
@@ -71,7 +74,7 @@ class Player {
     reset() {
         this.score = 0;
         this.scoreElement.textContent = this.score;
-        this.statusTextElement.textContent = "";
+        // this.statusTextElement.textContent = "";
     }
 
     updateStatusText(text) {
@@ -109,6 +112,8 @@ const finalScoreElement = document.getElementById('final-score');
 const finalScoreElement2 = document.getElementById('final-score-2');
 const roundNumberElement = document.getElementById('round-number');
 const roundNumberElement2 = document.getElementById('round-number-2');
+const summaryStatusText = document.getElementById('summary-status-text');
+const winningPlayerIcon = document.getElementById('winning-player-icon');
 const countdownBar = document.getElementById('countdown-bar');
 const newConditionCountdownBar = document.getElementById('new-condition-countdown-bar');
 const conditionEmojiLarge = document.querySelector('.condition-emoji-large');
@@ -1038,6 +1043,34 @@ async function drawCard() {
     }
 }
 
+function seeWhosWinning() {
+    let playingPlayers = players.filter(p => p.ready);
+    var currentWinner = playingPlayers[0].id;
+    var currentWinnerScore = playingPlayers[0].score;
+    var isTied = true;
+    for(let i = 0; i < playingPlayers.length; i++) {
+        if(playingPlayers[i].score > currentWinnerScore) {
+            currentWinner = playingPlayers[i].id;
+            currentWinnerScore = playingPlayers[i].score;
+            isTied = false;
+        } else if(playingPlayers[i].score < currentWinnerScore) {
+            isTied = false;
+        }
+    }
+    if(isTied) {
+        return 0;
+    } else {
+        return currentWinner;
+    }
+}
+
+function getPlayerIcon(player) {
+    let color = colorNames[player.colorIndex];
+    let imagepath = 'hand-' + color + '.png';
+    console.log(imagepath);
+    return imagepath;
+}
+
 // Update round start screen
 function updateRoundStartScreen() {
     // Duck background music for transition sound
@@ -1048,35 +1081,39 @@ function updateRoundStartScreen() {
     
     // Update round numbers for next round
     roundNumberElement.textContent = currentRound;
-    roundNumberElement2.textContent = currentRound;
+    // roundNumberElement2.textContent = currentRound;
+
+    const winner = seeWhosWinning();
     
     // Update status text based on game mode
-    if (player_count === 1) {
-        // Single player mode: show rounds left
-        const roundsLeft = SINGLE_PLAYER_TOTAL_ROUNDS - currentRound + 1;
-        if (roundsLeft === 1) {
-            players[1].updateStatusText("Final round!");
+    if (mode === 'arcade') {
+        if(currentRound === 1) {
+            summaryStatusText.textContent = "First to " + WINNING_SCORE + " points wins!";
         } else {
-            if(currentRound === 1) {
-                players[1].updateStatusText(`Earn as many points as you can in ${SINGLE_PLAYER_TOTAL_ROUNDS} rounds!`);
+            if(winner === 0) {  
+                summaryStatusText.textContent = "It's a tie!";
+                winningPlayerIcon.classList.add('hidden');
             } else {
-                players[1].updateStatusText(`${roundsLeft} rounds left`);
+                console.log(getPlayerIcon(players[winner - 1]));
+                console.log(getPlayerIcon(players[winner - 1]));
+                winningPlayerIcon.classList.remove('hidden');
+                winningPlayerIcon.src = getPlayerIcon(players[winner - 1]);
+                var winnerSummary = "Player " + (winner) + " is winning!";
+                summaryStatusText.textContent = winnerSummary;
             }
         }
-    } else {
-        // Two player mode: show score status
-        if (currentRound === 1) {
-            players[0].updateStatusText(`First to ${WINNING_SCORE} points wins`);
-            players[1].updateStatusText(`First to ${WINNING_SCORE} points wins`);
-        } else if (players[0].score > players[1].score) {
-            players[0].updateStatusText("you're winning");
-            players[1].updateStatusText("you're losing");
-        } else if (players[1].score > players[0].score) {
-            players[0].updateStatusText("you're losing");
-            players[1].updateStatusText("you're winning");
+    } else if(player_count === 1) {
+        // Single player mode: show rounds left
+        const roundsLeft = SINGLE_PLAYER_TOTAL_ROUNDS - currentRound + 1;
+        if(roundsLeft === 1) {
+            summaryStatusText.textContent = "Final round!";
         } else {
-            players[0].updateStatusText("you're tied");
-            players[1].updateStatusText("you're tied");
+            summaryStatusText.textContent = roundsLeft + " rounds left";
+        }
+    } else {
+        // Two player mode: show who's winning for each player
+        for (let i = 0; i < player_count; i++) {
+            players[i].updateStatusText(i === winner ? "You're winning!" : "You're losing!");
         }
     }
 }
@@ -1471,8 +1508,9 @@ function configureLobbyScreen() {
 }
 
 if(document.documentElement.classList.contains('arcade')) {
-    console.log('arcade mode');
+    mode = 'arcade';
 } else {
+    mode = 'touch';
     playerToggle.addEventListener('change', () => {
         playSound(interactSmallSound);
         player_count = playerToggle.checked ? 2 : 1;

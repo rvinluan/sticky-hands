@@ -16,6 +16,10 @@
     font-display: swap;
 }
 
+.hidden {
+    display: none !important;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -58,10 +62,6 @@ body {
     display: flex;
     flex-direction: column;
     position: relative;
-}
-
-.screen.hidden {
-    display: none;
 }
 
 h1 {
@@ -345,10 +345,6 @@ button {
     color: var(--palette-raspberry);
 }
 
-.card.hidden {
-    display: none;
-}
-
 #slap-button {
     background-color: #ff4444;
     color: white;
@@ -499,6 +495,24 @@ button {
     font-size: 1.5rem;
     color: black;
     font-family: 'Fragment Mono', monospace;
+}
+
+.round-summary-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#winning-player-icon {
+    width: 25px;
+    height: 25px;
+    display: inline-block;
+    margin-right: 15px;
+    transform: rotate(25deg)
+}
+
+#summary-status-text {
+    display: inline-block;
 }
 
 .countdown-container {
@@ -1484,9 +1498,6 @@ input:checked + .slider:before {
     min-width: 0;
     min-height: 0;
     text-align: center;
-}
-.player-join-status .join-text-container .hidden {
-    display: none;
 }
 .player-join-status .join-text-container p {
     margin: .5em;

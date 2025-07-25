@@ -85,7 +85,7 @@ document.addEventListener('keydown', (event) => {
         if(!players[0].joined) {
             players[0].joined = true;
             handleIntent('player-1-join');
-            playerPhysicsHands.push(manifestHand(players[0], window.innerWidth / 2 + X_POSITION_OFFSET, window.innerHeight - 15, false, 1));
+            playerPhysicsHands.push(manifestHand(players[0], window.innerWidth / 2 + X_POSITION_OFFSET, window.innerHeight - 15, false));
         } else {
             if(!players[0].ready) {
                 players[0].ready = true;
@@ -109,7 +109,7 @@ document.addEventListener('keydown', (event) => {
         if(!players[1].joined) {
             players[1].joined = true;
             handleIntent('player-2-join');
-            playerPhysicsHands.push(manifestHand(players[1], window.innerWidth / 2 - X_POSITION_OFFSET, linkHeight/2, true, 0));
+            playerPhysicsHands.push(manifestHand(players[1], window.innerWidth / 2 - X_POSITION_OFFSET, linkHeight/2, true));
         } else {
             if(!players[1].ready) {
                 players[1].ready = true;
@@ -133,7 +133,7 @@ document.addEventListener('keydown', (event) => {
         if(!players[2].joined) {
             players[2].joined = true;
             handleIntent('player-3-join');
-            playerPhysicsHands.push(manifestHand(players[2], window.innerWidth / 2 + X_POSITION_OFFSET, linkHeight/2, true, 2));
+            playerPhysicsHands.push(manifestHand(players[2], window.innerWidth / 2 + X_POSITION_OFFSET, linkHeight/2, true));
         } else {
             if(!players[2].ready) {
                 players[2].ready = true;
@@ -157,7 +157,7 @@ document.addEventListener('keydown', (event) => {
         if(!players[3].joined) {
             players[3].joined = true;
             handleIntent('player-4-join');
-            playerPhysicsHands.push(manifestHand(players[3], window.innerWidth / 2 - X_POSITION_OFFSET, window.innerHeight - 15, false, 3));
+            playerPhysicsHands.push(manifestHand(players[3], window.innerWidth / 2 - X_POSITION_OFFSET, window.innerHeight - 15, false));
         } else {
             if(!players[3].ready) {
                 players[3].ready = true;

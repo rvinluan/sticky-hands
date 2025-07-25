@@ -6,7 +6,6 @@ class ScreenLoader {
             'lobby-screen',
             'initial-conditions-screen',
             'gameplay-screen',
-            'round-start-screen',
             'new-condition-screen',
             'pause-screen',
             'end-screen'
@@ -15,8 +14,10 @@ class ScreenLoader {
         const htmlElement = document.documentElement;
         if (htmlElement.classList.contains('arcade')) {
             this.screens.push('welcome-screen-arcade');
+            this.screens.push('round-start-screen-arcade');
         } else {
             this.screens.push('welcome-screen');
+            this.screens.push('round-start-screen');
         }
         this.loadedScreens = 0;
         this.totalScreens = this.screens.length;
