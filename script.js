@@ -64,6 +64,7 @@ class Player {
         this.ready = false;
         this.hand = null;
         this.lastSlappedTimestamp = 0; // Track when player last slapped
+        this.isThumbsUp = false;
     }
 
     updateScore(points) {

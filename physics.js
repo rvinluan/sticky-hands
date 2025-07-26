@@ -243,6 +243,29 @@ function fling(player) {
     Body.applyForce(whichChain.ball, whichChain.ball.position, force);
 }
 
+function makeThumbsUp(player) {
+    if(!player.hand) return;
+    if(player.isThumbsUp) return;
+    fling(player);
+    setTimeout(() => {
+        Matter.Body.setAngle(player.hand.ball, 0);
+        engine.timing.timeScale = 0; // Pause physics
+        stopAllForces(player);
+    }, 20);
+    let textureString = player.hand.ball.render.sprite.texture;
+    player.hand.ball.render.sprite.texture = textureString.replace('.png', '-thumb.png');
+    player.isThumbsUp = true;
+}
+
+function putThumbsDown(player) {
+    if(!player.hand) return;
+    if(!player.isThumbsUp) return;
+    engine.timing.timeScale = 1; // Pause physics
+    let oldTex = player.hand.ball.render.sprite.texture.replace('-thumb', '');
+    player.hand.ball.render.sprite.texture = oldTex;
+    player.isThumbsUp = false;
+}
+
 function stopAllForces(player) {
     if (!player.hand) return;
     

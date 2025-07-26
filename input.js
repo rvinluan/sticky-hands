@@ -127,6 +127,12 @@ document.addEventListener('keydown', (event) => {
             removeHand(players[1]);
         }
     }
+    if(event.key == 'u') {
+        players.forEach(player => makeThumbsUp(player));
+    }
+    if(event.key == 'j') {
+        players.forEach(player => putThumbsDown(player));
+    }
 
     // Player 3
     if (event.key == PLAYER_KEYBINDS[3].primary) {
