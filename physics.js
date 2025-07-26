@@ -13,7 +13,13 @@ const linkCount = 6;
 // Physics engine variables
 let engine, world, render;
 let playerPhysicsHands = [];
-
+let tempConstraints = [];
+let centerBody = new Bodies.rectangle(window.innerWidth / 2, window.innerHeight / 2, 100, 100, {
+    isStatic: true,
+    render: {
+        visible: false
+    }
+});
 // Initialize physics after screens are loaded
 function initializePhysics() {
     // Create an engine
@@ -62,6 +68,9 @@ function initializePhysics() {
         }
     });
 
+    World.add(world, centerBody);
+    // World.add(world, tempConstraints);
+
     // Add constant downward force
     const gravityForce = Vector.create(0, 0.001); // Custom gravity force
     const reverseGravityForce = Vector.create(0, -0.001); // Upward gravity force
@@ -71,6 +80,7 @@ function initializePhysics() {
         playerPhysicsHands.forEach(hand => {
             // Skip gravity for thumbs up hands
             if (hand.ball.render.sprite.texture.indexOf('thumb') !== -1) {
+                Matter.Body.setAngle(hand.ball, Math.PI/4);
                 return;
             }
             Composite.allBodies(hand.composite).forEach(body => {
@@ -200,6 +210,7 @@ function createBallAndChain(x, y, anchorTop = false, colorIndex = 0) {
 function manifestHand(player, x, y, is_top) {
     let h = createBallAndChain(x, y, is_top, player.colorIndex);
     World.add(world, [h.composite]);
+    playerPhysicsHands.push(h);
     player.hand = h;
     player.position = h.composite.bodies[0].position;
     return h;
@@ -250,12 +261,34 @@ function fling(player) {
 function makeThumbsUp(player) {
     if(!player.hand) return;
     if(player.isThumbsUp) return;
-    fling(player);
-    setTimeout(() => {
-        Matter.Body.setAngle(player.hand.ball, 0);
-        Matter.Body.setStatic(player.hand.ball, true);
-        stopAllForces(player);
-    }, 30);
+
+    let squareEdge = 100;
+    let destX = 0;
+    let destY = 0;
+    if(player.position.y > window.innerHeight / 2) {
+        destY = squareEdge;
+    } else {
+        destY = -squareEdge;
+    }
+    if(player.position.x > window.innerWidth / 2) {
+        destX = squareEdge;
+    } else {
+        destX = -squareEdge;
+    }
+    // vectorToCenter = Vector.normalise(vectorToCenter);
+    let c = Constraint.create({
+        bodyA: player.hand.ball,
+        bodyB: centerBody,
+        pointA: { x: 0, y: 0 },
+        pointB: { x: destX, y: destY },
+        length: 100,
+        stiffness: 0,
+        render: {
+            visible: false
+        }
+    });
+    tempConstraints.push(c);
+    World.add(world, c);
     let textureString = player.hand.ball.render.sprite.texture;
     player.hand.ball.render.sprite.texture = textureString.replace('.png', '-thumb.png');
     player.isThumbsUp = true;
@@ -266,7 +299,7 @@ function putThumbsDown(player) {
     if(!player.isThumbsUp) return;
     let oldTex = player.hand.ball.render.sprite.texture.replace('-thumb', '');
     player.hand.ball.render.sprite.texture = oldTex;
-    Matter.Body.setStatic(player.hand.ball, false);
+    World.remove(world, tempConstraints);
     player.isThumbsUp = false;
 }
 

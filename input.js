@@ -82,10 +82,10 @@ document.addEventListener('keydown', (event) => {
 
     // Player 1
     if (event.key == PLAYER_KEYBINDS[1].primary) {
-        if(!players[0].joined) {
+        if(!players[0].joined && isScreenActive('welcome-screen')) {
             players[0].joined = true;
             handleIntent('player-1-join');
-            playerPhysicsHands.push(manifestHand(players[0], window.innerWidth / 2 + X_POSITION_OFFSET, window.innerHeight - 15, false));
+            manifestHand(players[0], window.innerWidth / 2 + X_POSITION_OFFSET, window.innerHeight - 15, false);
         } else {
             if(!players[0].ready && isScreenActive('initial-conditions-screen')) {
                 players[0].ready = true;
@@ -107,10 +107,10 @@ document.addEventListener('keydown', (event) => {
 
     // Player 2
     if (event.key == PLAYER_KEYBINDS[2].primary) {
-        if(!players[1].joined) {
+        if(!players[1].joined && isScreenActive('welcome-screen')) {
             players[1].joined = true;
             handleIntent('player-2-join');
-            playerPhysicsHands.push(manifestHand(players[1], window.innerWidth / 2 - X_POSITION_OFFSET, linkHeight/2, true));
+            manifestHand(players[1], window.innerWidth / 2 - X_POSITION_OFFSET, linkHeight/2, true);
         } else {
             if(!players[1].ready && isScreenActive('initial-conditions-screen')) {
                 players[1].ready = true;
@@ -138,10 +138,10 @@ document.addEventListener('keydown', (event) => {
 
     // Player 3
     if (event.key == PLAYER_KEYBINDS[3].primary) {
-        if(!players[2].joined) {
+        if(!players[2].joined && isScreenActive('welcome-screen')) {
             players[2].joined = true;
             handleIntent('player-3-join');
-            playerPhysicsHands.push(manifestHand(players[2], window.innerWidth / 2 + X_POSITION_OFFSET, linkHeight/2, true));
+            manifestHand(players[2], window.innerWidth / 2 + X_POSITION_OFFSET, linkHeight/2, true);
         } else {
             if(!players[2].ready && isScreenActive('initial-conditions-screen')) {
                 players[2].ready = true;
@@ -163,10 +163,10 @@ document.addEventListener('keydown', (event) => {
 
     // Player 4
     if (event.key == PLAYER_KEYBINDS[4].primary) {
-        if(!players[3].joined) {
+        if(!players[3].joined && isScreenActive('welcome-screen')) {
             players[3].joined = true;
             handleIntent('player-4-join');
-            playerPhysicsHands.push(manifestHand(players[3], window.innerWidth / 2 - X_POSITION_OFFSET, window.innerHeight - 15, false));
+            manifestHand(players[3], window.innerWidth / 2 - X_POSITION_OFFSET, window.innerHeight - 15, false);
         } else {
             if(!players[3].ready && isScreenActive('initial-conditions-screen')) {
                 players[3].ready = true;

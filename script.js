@@ -1252,8 +1252,44 @@ function animateCountdown(bar, duration = 3000) {
     });
 }
 
+function configureInitialConditionsScreen() {
+    // Clear active conditions from previous game
+    activeConditions.clear();
+    
+    // Get all conditions of simplicity 1 that are eligible for starting conditions
+    const simplicity1Conditions = Object.entries(conditionsObject)
+        .filter(([_, condition]) => condition.simplicity === 1 && condition.startingConditionEligible);
+    
+    // Get all conditions of simplicity 2 that are eligible for starting conditions
+    const simplicity2Conditions = Object.entries(conditionsObject)
+        .filter(([_, condition]) => condition.simplicity === 2 && condition.startingConditionEligible);
+    
+    // Randomly select 1 condition of simplicity 1
+    const randomSimplicity1 = simplicity1Conditions[Math.floor(Math.random() * simplicity1Conditions.length)];
+    
+    // Randomly select 2 conditions of simplicity 2
+    const randomSimplicity2 = shuffleArray(simplicity2Conditions).slice(0, 2);
+    
+    // Helper function to shuffle array
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // Add the selected conditions to activeConditions
+    activeConditions.add(randomSimplicity1[0]);
+    activeConditions.add(randomSimplicity2[0][0]);
+    activeConditions.add(randomSimplicity2[1][0]);
+    
+    // Update initial conditions screen with selected conditions
+    displayInitialConditions();
+}
+
 // Update initial conditions screen
-function updateInitialConditionsScreen() {
+function displayInitialConditions() {
     // Get both player's condition lists
     const bothConditionsList = document.querySelectorAll('.initial-conditions-list');
     
@@ -1318,40 +1354,8 @@ async function startGame() {
     // Calculate draw interval delta based on rounds to max speed
     drawIntervalDelta = (MAX_DRAW_INTERVAL - MIN_DRAW_INTERVAL) / (ROUNDS_TO_MAX_SPEED - 1);
     drawInterval = MAX_DRAW_INTERVAL; // Start at maximum interval (slowest speed)
-    
-    // Clear active conditions from previous game
-    activeConditions.clear();
-    
-    // Get all conditions of simplicity 1 that are eligible for starting conditions
-    const simplicity1Conditions = Object.entries(conditionsObject)
-        .filter(([_, condition]) => condition.simplicity === 1 && condition.startingConditionEligible);
-    
-    // Get all conditions of simplicity 2 that are eligible for starting conditions
-    const simplicity2Conditions = Object.entries(conditionsObject)
-        .filter(([_, condition]) => condition.simplicity === 2 && condition.startingConditionEligible);
-    
-    // Randomly select 1 condition of simplicity 1
-    const randomSimplicity1 = simplicity1Conditions[Math.floor(Math.random() * simplicity1Conditions.length)];
-    
-    // Randomly select 2 conditions of simplicity 2
-    const randomSimplicity2 = shuffleArray(simplicity2Conditions).slice(0, 2);
-    
-    // Helper function to shuffle array
-    function shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
-    }
 
-    // Add the selected conditions to activeConditions
-    activeConditions.add(randomSimplicity1[0]);
-    activeConditions.add(randomSimplicity2[0][0]);
-    activeConditions.add(randomSimplicity2[1][0]);
-    
-    // Update initial conditions screen with selected conditions
-    updateInitialConditionsScreen();
+    configureInitialConditionsScreen();
     
     // Initialize deck
     initializeDeck();
