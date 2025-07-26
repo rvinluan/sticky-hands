@@ -69,6 +69,10 @@ function initializePhysics() {
     function applyGravity() {
         // Apply force to chain depending on which side of the screen it is on
         playerPhysicsHands.forEach(hand => {
+            // Skip gravity for thumbs up hands
+            if (hand.ball.render.sprite.texture.indexOf('thumb') !== -1) {
+                return;
+            }
             Composite.allBodies(hand.composite).forEach(body => {
                 if(hand.composite.bodies[0].position.y <= window.innerHeight / 2) {
                     Body.applyForce(body, body.position, reverseGravityForce);
@@ -249,9 +253,9 @@ function makeThumbsUp(player) {
     fling(player);
     setTimeout(() => {
         Matter.Body.setAngle(player.hand.ball, 0);
-        engine.timing.timeScale = 0; // Pause physics
+        Matter.Body.setStatic(player.hand.ball, true);
         stopAllForces(player);
-    }, 20);
+    }, 30);
     let textureString = player.hand.ball.render.sprite.texture;
     player.hand.ball.render.sprite.texture = textureString.replace('.png', '-thumb.png');
     player.isThumbsUp = true;
@@ -260,9 +264,9 @@ function makeThumbsUp(player) {
 function putThumbsDown(player) {
     if(!player.hand) return;
     if(!player.isThumbsUp) return;
-    engine.timing.timeScale = 1; // Pause physics
     let oldTex = player.hand.ball.render.sprite.texture.replace('-thumb', '');
     player.hand.ball.render.sprite.texture = oldTex;
+    Matter.Body.setStatic(player.hand.ball, false);
     player.isThumbsUp = false;
 }
 

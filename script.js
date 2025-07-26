@@ -383,6 +383,10 @@ function getPlayerArea(x, y, playerCount=4) {
     }   
 }
 
+function isScreenActive(screenName) {
+    return !document.getElementById(screenName).classList.contains('hidden');
+}
+
 
 //  ┌─────────────────────────────────────────────────────────────────────────┐
 //  | Pause Screen Logic                                                      │
@@ -1428,6 +1432,7 @@ async function startGame() {
                 gameplayScreen.classList.remove('hidden');
                 physicsCanvas.style.display = 'block';
                 gameInterval = setInterval(drawCard, drawInterval);
+                players.forEach(player => putThumbsDown(player));
             });
         }
     };
@@ -1782,13 +1787,13 @@ function updateJoinMessage(playerNum, state) {
         const unjoinText = joinDiv.querySelector('.unjoin-text');
         const readyText = joinDiv.querySelector('.ready-text');
         if (state === 'join') {
-            joinText.textContent = `Press `;
-            const keySpan = document.createElement('span');
-            keySpan.className = 'key-code';
-            keySpan.textContent = keyMap[playerNum].primary;
-            joinText.appendChild(keySpan);
-            joinText.appendChild(document.createTextNode(' to ready!'));
-            joinText.classList.remove('hidden');
+            // joinText.textContent = `Press `;
+            // const keySpan = document.createElement('span');
+            // keySpan.className = 'key-code';
+            // keySpan.textContent = keyMap[playerNum].primary;
+            // joinText.appendChild(keySpan);
+            // joinText.appendChild(document.createTextNode(' to ready!'));
+            joinText.classList.add('hidden');
             unjoinText.innerHTML = `Press <span class="key-code">${keyMap[playerNum].secondary}</span> to un-join`;
             unjoinText.classList.remove('hidden');
             readyText.classList.add('hidden');

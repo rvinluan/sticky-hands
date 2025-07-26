@@ -859,6 +859,14 @@ html.arcade #physics-canvas {
     pointer-events: auto;
 }
 
+.arcade #initial-conditions-screen {
+    background-color: transparent;
+}
+
+.arcade #initial-conditions-screen .mirrored {
+    display: none;
+}
+
 .initial-conditions-list {
     display: flex;
     flex-direction: column;
