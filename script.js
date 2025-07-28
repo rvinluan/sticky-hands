@@ -1,9 +1,9 @@
 //  ┌─────────────────────────────────────────────────────────────────────────┐
 //  | Configuration Variables                                                 │
 //  └─────────────────────────────────────────────────────────────────────────┘
-const CARDS_PER_ROUND = 6; // Cards to add each round
+const CARDS_PER_ROUND = 0; // Cards to add each round
 const INITIAL_DECK_SIZE = 10; // Starting deck size
-const WINNING_SCORE = 30; // Score needed to win the game
+const WINNING_SCORE = 2; // Score needed to win the game
 const SINGLE_PLAYER_TOTAL_ROUNDS = 5; // Total rounds for single player mode
 const INCORRECT_SLAP_PENALTY = 2; // Points deducted for incorrect slaps
 //Computer difficulty settings
@@ -75,6 +75,8 @@ class Player {
     reset() {
         this.score = 0;
         this.scoreElement.textContent = this.score;
+        this.ready = false;
+        this.lastSlappedTimestamp = 0;
         // this.statusTextElement.textContent = "";
     }
 
@@ -873,7 +875,14 @@ async function handleSlap(player) {
                 triggerPhysicsHitstop(player);
             }, 150);
             setTimeout(() => {
-                progressToLobbyScreen();
+                if(!welcomeScreen.classList.contains('hidden')) {
+                    progressToLobbyScreen();
+                } else if (!endScreen.classList.contains('hidden')) {
+                    endScreen.classList.add('hidden');
+                    welcomeScreen.classList.remove('hidden');
+                    resetPlayers();
+                    resetGame();
+                }
             }, 500);
             return;
         }
@@ -1103,7 +1112,6 @@ function updateRoundStartScreen() {
                 summaryStatusText.textContent = "It's a tie!";
                 winningPlayerIcon.classList.add('hidden');
             } else {
-                console.log(getPlayerIcon(players[winner - 1]));
                 console.log(getPlayerIcon(players[winner - 1]));
                 winningPlayerIcon.classList.remove('hidden');
                 winningPlayerIcon.src = getPlayerIcon(players[winner - 1]);
@@ -1420,22 +1428,35 @@ function flipInitialConditionCards() {
     });
 }
 
-// Start game
-async function startGame() {    
-        // Reset game state
-    if (gameInterval) {
-        clearInterval(gameInterval);
-    }
-    player_count = players.filter(p => p.ready).length;
+function resetPlayers() {
     players[0].reset();
     players[1].reset();
     players[2].reset();
     players[3].reset();
+}
+
+function resetGame() {
+    // Reset game state
+    if (gameInterval) {
+        clearInterval(gameInterval);
+    }
     cardPile = [];
-    isGameActive = true;
+    isGameActive = false;
     isPaused = false;
     isDebugPaused = false;
+    justSlapped = false;
     currentRound = 1;
+
+    // Clear only the cards, not the overlay
+    const cards = cardPileElement.querySelectorAll('.card');
+    cards.forEach(card => card.remove());        
+}
+
+// Start game
+async function startGame() {    
+    resetGame();
+    
+    isGameActive = true;
     
     // Set difficulty
     if (DIFFICULTY === 1) {
@@ -1493,10 +1514,6 @@ async function startGame() {
             }
         }
     });
-    
-    // Clear only the cards, not the overlay
-    const cards = cardPileElement.querySelectorAll('.card');
-    cards.forEach(card => card.remove());        
 }
 
 function beginRoundOne() {
@@ -1533,36 +1550,44 @@ function endGame() {
     duckBackgroundMusicForSound(winSound);
     playSound(winSound);
     
-    if (player_count === 1) {
-        // Single player mode: show final score
-        endScreen.classList.add('player2-won'); // Always show player 2 side
-        endScreen.classList.remove('player1-won');
-        winnerScoreElement.textContent = players[1].score;
-        winnerTitle.textContent = 'Game Complete!';
-        loserMessage.textContent = '';
+    if(mode === 'arcade') {
+        let winner = seeWhosWinning();
+        let winnerPlayerTextElement = endScreen.querySelector('#winner-player');
+        let winnerPlayerIcon = endScreen.querySelector('#winner-player-icon');
+        winnerPlayerTextElement.textContent = winner;
+        winnerPlayerIcon.src = getPlayerIcon(players[winner - 1]);
     } else {
-        // Two player mode: determine the winner
-        const player1Won = players[0].score > players[1].score;
-        
-        // Set appropriate class for positioning
-        if (player1Won) {
-            endScreen.classList.add('player1-won');
-            endScreen.classList.remove('player2-won');
-            winnerScoreElement.textContent = players[0].score;
-            
-            winnerTitle.textContent = 'You Win!';
-            // Get random loss message
-            const randomMessage = LOSS_MESSAGES[Math.floor(Math.random() * LOSS_MESSAGES.length)];
-            loserMessage.textContent = randomMessage + players[1].score + ' points.';
-        } else {
-            endScreen.classList.add('player2-won');
+        if (player_count === 1) {
+            // Single player mode: show final score
+            endScreen.classList.add('player2-won'); // Always show player 2 side
             endScreen.classList.remove('player1-won');
             winnerScoreElement.textContent = players[1].score;
+            winnerTitle.textContent = 'Game Complete!';
+            loserMessage.textContent = '';
+        } else {
+            // Two player mode: determine the winner
+            const player1Won = players[0].score > players[1].score;
             
-            winnerTitle.textContent = 'You Win!';
-            // Get random loss message
-            const randomMessage = LOSS_MESSAGES[Math.floor(Math.random() * LOSS_MESSAGES.length)];
-            loserMessage.textContent = randomMessage + players[0].score + ' points.';
+            // Set appropriate class for positioning
+            if (player1Won) {
+                endScreen.classList.add('player1-won');
+                endScreen.classList.remove('player2-won');
+                winnerScoreElement.textContent = players[0].score;
+                
+                winnerTitle.textContent = 'You Win!';
+                // Get random loss message
+                const randomMessage = LOSS_MESSAGES[Math.floor(Math.random() * LOSS_MESSAGES.length)];
+                loserMessage.textContent = randomMessage + players[1].score + ' points.';
+            } else {
+                endScreen.classList.add('player2-won');
+                endScreen.classList.remove('player1-won');
+                winnerScoreElement.textContent = players[1].score;
+                
+                winnerTitle.textContent = 'You Win!';
+                // Get random loss message
+                const randomMessage = LOSS_MESSAGES[Math.floor(Math.random() * LOSS_MESSAGES.length)];
+                loserMessage.textContent = randomMessage + players[0].score + ' points.';
+            }
         }
     }
     
@@ -1578,6 +1603,7 @@ function endGame() {
     gameplayScreen.classList.add('hidden');
     roundStartScreen.classList.add('hidden');
     endScreen.classList.remove('hidden');
+    justSlapped = false;
 }
 
 //  ┌─────────────────────────────────────────────────────────────────────────┐
@@ -1588,6 +1614,7 @@ function progressToLobbyScreen() {
     welcomeScreen.classList.add('hidden');
     if(mode === 'arcade') {
         lobbyScreen.classList.add('hidden');
+        player_count = players.filter(p => p.ready).length;
         configureInitialConditionsScreen();
         startGame();
     } else {
@@ -1618,11 +1645,11 @@ function configureLobbyScreen() {
     }
 }
 
-replayButton.addEventListener('click', (event) => {
-    playSound(interactBigSound);
-    event.stopPropagation();
-    startGame();
-});
+// replayButton.addEventListener('click', (event) => {
+//     playSound(interactBigSound);
+//     event.stopPropagation();
+//     startGame();
+// });
 
 document.querySelectorAll('.color-change-instruction').forEach(instruction => {
     instruction.addEventListener('click', () => {
@@ -1779,7 +1806,7 @@ document.getElementById('difficulty-hard').addEventListener('change', (event) =>
 //  └─────────────────────────────────────────────────────────────────────────┘
 
 function isCurrentScreenSwipeable() {
-    const swipeableScreens = [gameplayScreen, lobbyScreen, welcomeScreen];
+    const swipeableScreens = [gameplayScreen, lobbyScreen, welcomeScreen, endScreen];
     return swipeableScreens.some(screen => !screen.classList.contains('hidden'));
 }
 
@@ -1954,6 +1981,13 @@ function initializeGame() {
             playSound(interactBigSound);
             event.stopPropagation();
             lobbyScreen.classList.add('hidden');
+            configureInitialConditionsScreen();
+            startGame();
+        });
+        replayButton.addEventListener('click', (event) => {
+            playSound(interactBigSound);
+            event.stopPropagation();
+            endScreen.classList.add('hidden');
             configureInitialConditionsScreen();
             startGame();
         });
