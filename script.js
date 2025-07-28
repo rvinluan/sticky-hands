@@ -1358,6 +1358,19 @@ function displayInitialConditions() {
             conditionElement.className = 'initial-condition';
             conditionElement.classList.add('card-style');
 
+            // Add face-down class in arcade mode
+            if (document.documentElement.classList.contains('arcade')) {
+                conditionElement.classList.add('face-down');
+            }
+
+            // Create card back face
+            const cardBack = document.createElement('div');
+            cardBack.className = 'card-face back';
+            
+            // Create card front face
+            const cardFront = document.createElement('div');
+            cardFront.className = 'card-face front';
+
             // Create title span
             const titleSpan = document.createElement('h4');
             titleSpan.className = 'condition-title';
@@ -1372,10 +1385,14 @@ function displayInitialConditions() {
             const descriptionP = document.createElement('p');
             descriptionP.textContent = condition.description;
             
-            // Add elements to condition element
-            conditionElement.appendChild(titleSpan);
-            conditionElement.appendChild(emojiSpan);
-            conditionElement.appendChild(descriptionP);
+            // Add elements to front face
+            cardFront.appendChild(titleSpan);
+            cardFront.appendChild(emojiSpan);
+            cardFront.appendChild(descriptionP);
+            
+            // Add both faces to condition element
+            conditionElement.appendChild(cardBack);
+            conditionElement.appendChild(cardFront);
             
             // Add condition element to both players' lists
             list.appendChild(conditionElement.cloneNode(true));
@@ -1383,6 +1400,24 @@ function displayInitialConditions() {
     });
 
     initialConditionsScreen.classList.remove('hidden');
+    
+    // Start card flipping animation in arcade mode after 1 second
+    if (document.documentElement.classList.contains('arcade')) {
+        setTimeout(() => {
+            flipInitialConditionCards();
+        }, 1000);
+    }
+}
+
+// Function to flip initial condition cards one by one
+function flipInitialConditionCards() {
+    const cardElements = document.querySelectorAll('.initial-condition.card-style.face-down');
+    
+    cardElements.forEach((card, index) => {
+        setTimeout(() => {
+            card.classList.remove('face-down');
+        }, index * 300); // Flip each card 300ms apart
+    });
 }
 
 // Start game
