@@ -4,7 +4,6 @@ class ScreenLoader {
         this.screens = [
             'about-screen', 
             'lobby-screen',
-            'initial-conditions-screen',
             'gameplay-screen',
             'new-condition-screen',
             'pause-screen',
@@ -15,9 +14,11 @@ class ScreenLoader {
         if (htmlElement.classList.contains('arcade')) {
             this.screens.push('welcome-screen-arcade');
             this.screens.push('round-start-screen-arcade');
+            this.screens.push('initial-conditions-screen-arcade');
         } else {
             this.screens.push('welcome-screen');
             this.screens.push('round-start-screen');
+            this.screens.push('initial-conditions-screen');
         }
         this.loadedScreens = 0;
         this.totalScreens = this.screens.length;
@@ -54,7 +55,7 @@ class ScreenLoader {
             if (screenElement) {
                 screenElement.innerHTML = content;
                 this.loadedScreens++;
-                console.log(`Loaded ${screenName} (${this.loadedScreens}/${this.totalScreens})`);
+                // console.log(`Loaded ${screenName} (${this.loadedScreens}/${this.totalScreens})`);
             } else {
                 console.warn(`Screen element with id "${screenName}" not found`);
             }

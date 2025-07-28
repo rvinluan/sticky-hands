@@ -873,8 +873,7 @@ async function handleSlap(player) {
                 triggerPhysicsHitstop(player);
             }, 150);
             setTimeout(() => {
-                player_count = players.filter(p => p.ready).length;
-                startGame();
+                progressToLobbyScreen();
             }, 500);
             return;
         }
@@ -1286,8 +1285,64 @@ function configureInitialConditionsScreen() {
     
     // Update initial conditions screen with selected conditions
     displayInitialConditions();
+    
+    // Add click event listener
+    if(mode === 'touch') {
+        // Handle tap interactions
+        let tapCount = 0;
+        let tapText = document.querySelector('.tap-text');
+        const handleTap = () => {
+            tapCount++;
+            playSound(interactSmallSound);
+            if (tapCount === 1) {
+                tapText.textContent = 'tap once to advance';
+            } else if (tapCount === 2) {
+                beginRoundOne();
+            }
+        };
+        initialConditionsScreen.addEventListener('click', handleTap);
+    } else {
+        // let playerReadyCount = 0;
+    }
+    
 }
 
+function checkForAllPlayersReady() {
+    let allPlayersReady = true;
+    players.forEach(player => {
+        if (player.joined && !player.ready) {
+            allPlayersReady = false;
+        }
+    });
+    if(allPlayersReady) {
+        startCountdown();
+    }
+}
+
+function startCountdown() {
+    let countdown = 5;
+    const tapText = document.querySelector('.tap-text');
+    
+    // Update text to show countdown starting
+    tapText.textContent = 'Game starting in 5...';
+    
+    const countdownInterval = setInterval(() => {
+        countdown--;
+        
+        if (countdown > 0) {
+            tapText.textContent = `Game starting in ${countdown}...`;
+        } else {
+            // Countdown finished
+            clearInterval(countdownInterval);
+            tapText.textContent = 'Game starting...';
+            
+            // Start the game after a brief pause
+            setTimeout(() => {
+                beginRoundOne();
+            }, 500);
+        }
+    }, 1000);
+}
 // Update initial conditions screen
 function displayInitialConditions() {
     // Get both player's condition lists
@@ -1320,6 +1375,8 @@ function displayInitialConditions() {
             list.appendChild(conditionElement.cloneNode(true));
         }
     });
+
+    initialConditionsScreen.classList.remove('hidden');
 }
 
 // Start game
@@ -1328,8 +1385,11 @@ async function startGame() {
     if (gameInterval) {
         clearInterval(gameInterval);
     }
+    player_count = players.filter(p => p.ready).length;
     players[0].reset();
     players[1].reset();
+    players[2].reset();
+    players[3].reset();
     cardPile = [];
     isGameActive = true;
     isPaused = false;
@@ -1354,8 +1414,6 @@ async function startGame() {
     // Calculate draw interval delta based on rounds to max speed
     drawIntervalDelta = (MAX_DRAW_INTERVAL - MIN_DRAW_INTERVAL) / (ROUNDS_TO_MAX_SPEED - 1);
     drawInterval = MAX_DRAW_INTERVAL; // Start at maximum interval (slowest speed)
-
-    configureInitialConditionsScreen();
     
     // Initialize deck
     initializeDeck();
@@ -1373,78 +1431,46 @@ async function startGame() {
         shuffleDeck();
     }
 
-    // Update UI
+    // display the conditions on the gameplay screen
     displayConditions();
     
-    // Hide all score elements initially
-    for (let i = 1; i <= 4; i++) {
-        const scoreElement = document.getElementById(`player${i}-score`);
+    // Show score elements for joined players
+    players.forEach(player => {
+        const scoreElement = document.getElementById(`player${player.id}-score`);
         if (scoreElement) {
-            scoreElement.classList.add('hidden');
+            if (player.joined) {
+                scoreElement.classList.remove('hidden');
+            } else {
+                scoreElement.classList.add('hidden');
+            }
         }
-    }
+    });
     
     // Clear only the cards, not the overlay
     const cards = cardPileElement.querySelectorAll('.card');
-    cards.forEach(card => card.remove());
-    
-    // Hide all screens except initial conditions
-    welcomeScreen.classList.add('hidden');
-    lobbyScreen.classList.add('hidden');
-    gameplayScreen.classList.add('hidden');
-    endScreen.classList.add('hidden');
-    roundStartScreen.classList.add('hidden');
-    
-    // Show initial conditions screen
-    const tapText = document.querySelector('.tap-text');
-    tapText.textContent = 'tap twice to advance';
-    initialConditionsScreen.classList.remove('hidden');
-    
-    // Handle tap interactions
-    let tapCount = 0;
-    const handleTap = () => {
-        tapCount++;
-        playSound(interactSmallSound);
-        if (tapCount === 1) {
-            tapText.textContent = 'tap once to advance';
-        } else if (tapCount === 2) {
-            // Remove event listener and proceed to round start
-            initialConditionsScreen.removeEventListener('click', handleTap);
-            initialConditionsScreen.classList.add('hidden');
-            
-            // Show round start screen
-            roundStartScreen.classList.remove('hidden');
-            updateRoundStartScreen();
-            countdownBar.style.width = '350px';
-            
-            // Animate countdown and then start game
-            animateCountdown(countdownBar).then(() => {
-                // Show score elements for ready players
-                players.forEach(player => {
-                    const scoreElement = document.getElementById(`player${player.id}-score`);
-                    if (scoreElement) {
-                        if (player.ready) {
-                            scoreElement.classList.remove('hidden');
-                        } else {
-                            scoreElement.classList.add('hidden');
-                        }
-                    }
-                });
-                
-                playBackgroundMusic();
-                roundStartScreen.classList.add('hidden');
-                gameplayScreen.classList.remove('hidden');
-                physicsCanvas.style.display = 'block';
-                gameInterval = setInterval(drawCard, drawInterval);
-                players.forEach(player => putThumbsDown(player));
-            });
-        }
-    };
-    
-    // Add click event listener
-    initialConditionsScreen.addEventListener('click', handleTap);
+    cards.forEach(card => card.remove());        
 }
 
+function beginRoundOne() {
+    // Remove event listener and proceed to round start
+    // initialConditionsScreen.removeEventListener('click', handleTap);
+    initialConditionsScreen.classList.add('hidden');
+    
+    // Show round start screen
+    roundStartScreen.classList.remove('hidden');
+    updateRoundStartScreen();
+    countdownBar.style.width = '350px';
+    
+    // Animate countdown and then start game
+    animateCountdown(countdownBar).then(() => {                
+        playBackgroundMusic();
+        roundStartScreen.classList.add('hidden');
+        gameplayScreen.classList.remove('hidden');
+        physicsCanvas.style.display = 'block';
+        gameInterval = setInterval(drawCard, drawInterval);
+        players.forEach(player => putThumbsDown(player));
+    });
+}
 // End game
 function endGame() {
     isGameActive = false;
@@ -1510,10 +1536,32 @@ function endGame() {
 //  | Lobby Functionality                                                     │
 //  └─────────────────────────────────────────────────────────────────────────┘
 
+function progressToLobbyScreen() {
+    welcomeScreen.classList.add('hidden');
+    if(mode === 'arcade') {
+        lobbyScreen.classList.add('hidden');
+        configureInitialConditionsScreen();
+        startGame();
+    } else {
+        lobbyScreen.classList.remove('hidden');
+        // playerToggle.addEventListener('change', () => {
+        //     playSound(interactSmallSound);
+        //     player_count = playerToggle.checked ? 2 : 1;
+        // });
+    
+        // continueButton.addEventListener('click', () => {
+        //     playSound(interactBigSound);
+        //     welcomeScreen.classList.add('hidden');
+        //     lobbyScreen.classList.remove('hidden');
+        //     physicsCanvas.style.display = 'block';
+        //     configureLobbyScreen();
+        // });
+    }
+}
 
 function configureLobbyScreen() {
     // Update lobby screen based on player count
-    const player2Tutorial = document.querySelector('.tutorial.player1');
+    const player2Tutorial = document.querySelector('.tutorial.mirrored');
     if (player_count === 1) {
         player2Tutorial.style.visibility = 'hidden';
         document.querySelector('.color-change-instruction.mirrored').style.visibility = 'hidden';
@@ -1521,30 +1569,6 @@ function configureLobbyScreen() {
         player2Tutorial.style.visibility = 'visible';
     }
 }
-
-if(document.documentElement.classList.contains('arcade')) {
-    mode = 'arcade';
-} else {
-    mode = 'touch';
-    playerToggle.addEventListener('change', () => {
-        playSound(interactSmallSound);
-        player_count = playerToggle.checked ? 2 : 1;
-    });
-
-    continueButton.addEventListener('click', () => {
-        playSound(interactBigSound);
-        welcomeScreen.classList.add('hidden');
-        lobbyScreen.classList.remove('hidden');
-        physicsCanvas.style.display = 'block';
-        configureLobbyScreen();
-    });
-}
-
-playButton.addEventListener('click', (event) => {
-    playSound(interactBigSound);
-    event.stopPropagation();
-    startGame();
-});
 
 replayButton.addEventListener('click', (event) => {
     playSound(interactBigSound);
@@ -1739,15 +1763,19 @@ function handleIntent(intent) {
             break;
         case 'player-1-ready':
             updateJoinMessage(1, 'ready');
+            checkForAllPlayersReady();
             break;
         case 'player-2-ready':
             updateJoinMessage(2, 'ready');
+            checkForAllPlayersReady();
             break;
         case 'player-3-ready':
             updateJoinMessage(3, 'ready');
+            checkForAllPlayersReady();
             break;
         case 'player-4-ready':
             updateJoinMessage(4, 'ready');
+            checkForAllPlayersReady();
             break;
         case 'player-1-slap':
         case 'player-2-slap':
@@ -1776,6 +1804,7 @@ function handleIntent(intent) {
 }
 
 function updateJoinMessage(playerNum, state) {
+    console.log("player did something");
     // Map playerNum to class
     const classMap = {1: 'player1', 2: 'player2', 3: 'player3', 4: 'player4'};
     // Use PLAYER_KEYBINDS from input.js
@@ -1785,11 +1814,10 @@ function updateJoinMessage(playerNum, state) {
         3: { primary: 'o', secondary: 'p' },
         4: { primary: 'd', secondary: 's' }
     };
-    const joinDiv = document.querySelector(`.player-join-status .${classMap[playerNum]}`);
+    const joinDiv = document.querySelector(`.screen:not(.hidden) .player-join-status .${classMap[playerNum]}`);
     if (joinDiv) {
         const joinText = joinDiv.querySelector('.join-text');
         const unjoinText = joinDiv.querySelector('.unjoin-text');
-        const readyText = joinDiv.querySelector('.ready-text');
         if (state === 'join') {
             // joinText.textContent = `Press `;
             // const keySpan = document.createElement('span');
@@ -1800,7 +1828,6 @@ function updateJoinMessage(playerNum, state) {
             joinText.classList.add('hidden');
             unjoinText.innerHTML = `Press <span class="key-code">${keyMap[playerNum].secondary}</span> to un-join`;
             unjoinText.classList.remove('hidden');
-            readyText.classList.add('hidden');
         } else if (state === 'unjoin') {
             joinText.textContent = `Press `;
             const keySpan = document.createElement('span');
@@ -1811,10 +1838,9 @@ function updateJoinMessage(playerNum, state) {
             joinText.classList.remove('hidden');
             unjoinText.innerHTML = `Press <span class="key-code">${keyMap[playerNum].secondary}</span> to un-join`;
             unjoinText.classList.add('hidden');
-            readyText.classList.add('hidden');
         } else if (state === 'ready') {
-            joinText.classList.add('hidden');
-            unjoinText.classList.add('hidden');
+            const readyText = joinDiv.querySelector('.ready-text');
+
             readyText.classList.remove('hidden');
         }
     }
@@ -1833,6 +1859,21 @@ function updatePlayerSelectionText() {
             playerSelectionDiv.textContent = 'Waiting for players to join...';
         }
     }
+}
+
+function configureWelcomeScreen() {
+    playerToggle.addEventListener('change', () => {
+        playSound(interactSmallSound);
+        player_count = playerToggle.checked ? 2 : 1;
+    });
+
+    continueButton.addEventListener('click', () => {
+        playSound(interactBigSound);
+        welcomeScreen.classList.add('hidden');
+        lobbyScreen.classList.remove('hidden');
+        physicsCanvas.style.display = 'block';
+        configureLobbyScreen();
+    });   
 }
 
 //  ┌─────────────────────────────────────────────────────────────────────────┐
@@ -1856,6 +1897,20 @@ function initializeGame() {
     
     // Initialize player selection text
     updatePlayerSelectionText();
+
+    if(document.documentElement.classList.contains('arcade')) {
+        mode = 'arcade';
+    } else {
+        mode = 'touch';
+        configureWelcomeScreen();
+        playButton.addEventListener('click', (event) => {
+            playSound(interactBigSound);
+            event.stopPropagation();
+            lobbyScreen.classList.add('hidden');
+            configureInitialConditionsScreen();
+            startGame();
+        });
+    }
 }
 
 initializeGame();
