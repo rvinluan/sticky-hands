@@ -5,7 +5,6 @@ class ScreenLoader {
             'about-screen', 
             'lobby-screen',
             'gameplay-screen',
-            'new-condition-screen',
             'pause-screen'
         ];
         // Check if HTML has 'arcade' class and set welcome screen accordingly
@@ -15,11 +14,13 @@ class ScreenLoader {
             this.screens.push('round-start-screen-arcade');
             this.screens.push('initial-conditions-screen-arcade');
             this.screens.push('end-screen-arcade');
+            this.screens.push('new-condition-screen-arcade');
         } else {
             this.screens.push('welcome-screen');
             this.screens.push('round-start-screen');
             this.screens.push('initial-conditions-screen');
             this.screens.push('end-screen');
+            this.screens.push('new-condition-screen');
         }
         this.loadedScreens = 0;
         this.totalScreens = this.screens.length;
