@@ -2,8 +2,8 @@
 //  | Configuration Variables                                                 │
 //  └─────────────────────────────────────────────────────────────────────────┘
 const CARDS_PER_ROUND = 5; // Cards to add each round
-const INITIAL_DECK_SIZE = 1; // Starting deck size
-const WINNING_SCORE = 1; // Score needed to win the game
+const INITIAL_DECK_SIZE = 10; // Starting deck size
+const WINNING_SCORE = 20; // Score needed to win the game
 const SINGLE_PLAYER_TOTAL_ROUNDS = 5; // Total rounds for single player mode
 const INCORRECT_SLAP_PENALTY = 2; // Points deducted for incorrect slaps
 //Computer difficulty settings
@@ -1353,7 +1353,7 @@ async function startNewRound() {
     drawInterval = Math.max(MIN_DRAW_INTERVAL, drawInterval - drawIntervalDelta);
     
     // Add a new random condition if there are still inactive ones
-    const newConditionRounds = [2, 3, 5, 7];
+    const newConditionRounds = [3, 5, 7];
     if (newConditionRounds.includes(currentRound)) {
         const inactiveConditions = Object.keys(conditions).filter(key => !activeConditions.has(key));
         if (inactiveConditions.length > 0) {
