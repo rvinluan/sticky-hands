@@ -214,13 +214,11 @@ button {
 #player2-score {
     top: 0;
     left: 0;
-    transform: rotate(180deg);
 }
 
 #player3-score {
     top: 0;
     right: 0;
-    transform: rotate(180deg);
 }
 
 #player4-score {

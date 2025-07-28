@@ -1481,6 +1481,13 @@ async function startGame() {
         if (scoreElement) {
             if (player.joined) {
                 scoreElement.classList.remove('hidden');
+                if(player.id == 2 || player.id == 3) {
+                    if(mode === 'arcade') {
+                        scoreElement.classList.remove('mirrored');
+                    } else {
+                        scoreElement.classList.add('mirrored');
+                    }
+                }
             } else {
                 scoreElement.classList.add('hidden');
             }
