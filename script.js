@@ -1810,46 +1810,32 @@ function isCurrentScreenSwipeable() {
 }
 
 function handleIntent(intent) {
+    let whichPlayer = players[intent.split('-')[1] - 1];
     switch(intent) {
         case 'player-1-join':
-            updateJoinMessage(1, 'join');
-            break;
         case 'player-2-join':
-            updateJoinMessage(2, 'join');
-            break;
         case 'player-3-join':
-            updateJoinMessage(3, 'join');
-            break;
         case 'player-4-join':
-            updateJoinMessage(4, 'join');
+            if(!welcomeScreen.classList.contains('hidden')) {
+                updateJoinMessage(whichPlayer.id, 'join');
+            }
             break;
         case 'player-1-unjoin':
-            updateJoinMessage(1, 'unjoin');
-            break;
         case 'player-2-unjoin':
-            updateJoinMessage(2, 'unjoin');
-            break;
         case 'player-3-unjoin':
-            updateJoinMessage(3, 'unjoin');
-            break;
         case 'player-4-unjoin':
-            updateJoinMessage(4, 'unjoin');
+            if(!welcomeScreen.classList.contains('hidden')) {
+                updateJoinMessage(whichPlayer.id, 'unjoin');
+            }
             break;
         case 'player-1-ready':
-            updateJoinMessage(1, 'ready');
-            checkForAllPlayersReady();
-            break;
         case 'player-2-ready':
-            updateJoinMessage(2, 'ready');
-            checkForAllPlayersReady();
-            break;
         case 'player-3-ready':
-            updateJoinMessage(3, 'ready');
-            checkForAllPlayersReady();
-            break;
         case 'player-4-ready':
-            updateJoinMessage(4, 'ready');
-            checkForAllPlayersReady();
+            if(!initialConditionsScreen.classList.contains('hidden') && whichPlayer.joined) {
+                updateJoinMessage(whichPlayer.id, 'ready');
+                checkForAllPlayersReady();
+            }
             break;
         case 'player-1-slap':
         case 'player-2-slap':
@@ -1859,7 +1845,9 @@ function handleIntent(intent) {
                 return;
             }
             console.log(intent);
-            handleSlap(players[intent.split('-')[1] - 1]);
+            if(whichPlayer.joined) {
+                handleSlap(whichPlayer);
+            }
             break;
         case 'pause-card-draw':
             if(!gameplayScreen.classList.contains('hidden')) {
