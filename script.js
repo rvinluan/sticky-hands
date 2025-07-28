@@ -89,6 +89,12 @@ let players = [new Player(1, 0), new Player(2, 1), new Player(3, 2), new Player(
 // players[0].joined = true;
 // players[0].ready = true;
 // handleIntent('player-1-ready');
+const PLAYER_START_POSITIONS = [
+    {x: window.innerWidth / 2 + X_POSITION_OFFSET, y: window.innerHeight - 15}, //bottom right
+    {x: window.innerWidth / 2 - X_POSITION_OFFSET, y: 15}, //top left
+    {x: window.innerWidth / 2 + X_POSITION_OFFSET, y: 15}, //top right
+    {x: window.innerWidth / 2 - X_POSITION_OFFSET, y: window.innerHeight - 15} //bottom left
+]
 
 let lastSlapTime = 0;
 let justSlapped = false;// Track recent slaps from both players
@@ -1811,44 +1817,47 @@ function isCurrentScreenSwipeable() {
 
 function handleIntent(intent) {
     let whichPlayer = players[intent.split('-')[1] - 1];
+    let psx = PLAYER_START_POSITIONS[whichPlayer.id - 1].x;
+    let psy = PLAYER_START_POSITIONS[whichPlayer.id - 1].y;
+    let isTop = whichPlayer.id == 3 || whichPlayer.id == 2;
     switch(intent) {
-        case 'player-1-join':
-        case 'player-2-join':
-        case 'player-3-join':
-        case 'player-4-join':
-            if(!welcomeScreen.classList.contains('hidden')) {
+        case 'player-1-primary':
+        case 'player-2-primary':
+        case 'player-3-primary':
+        case 'player-4-primary':
+            if(!whichPlayer.joined && isScreenActive('welcome-screen')) {
+                //JOIN
+                whichPlayer.joined = true;
+                manifestHand(whichPlayer, psx, psy, isTop);
                 updateJoinMessage(whichPlayer.id, 'join');
+            } else {
+                //READY
+                if(whichPlayer.joined && !whichPlayer.ready && isScreenActive('initial-conditions-screen')) {
+                    whichPlayer.ready = true;
+                    makeThumbsUp(whichPlayer);
+                    updateJoinMessage(whichPlayer.id, 'ready');
+                    checkForAllPlayersReady();    
+                } else {
+                    //SLAP
+                    if(!isCurrentScreenSwipeable()) {
+                        return;
+                    }
+                    if(whichPlayer.joined) {
+                        handleSlap(whichPlayer);
+                    }
+                }
             }
-            break;
-        case 'player-1-unjoin':
-        case 'player-2-unjoin':
-        case 'player-3-unjoin':
-        case 'player-4-unjoin':
-            if(!welcomeScreen.classList.contains('hidden')) {
+        break;
+        case 'player-1-secondary':
+        case 'player-2-secondary':
+        case 'player-3-secondary':
+        case 'player-4-secondary':
+            if(whichPlayer.joined && isScreenActive('welcome-screen')) {
                 updateJoinMessage(whichPlayer.id, 'unjoin');
+                whichPlayer.joined = false;
+                removeHand(whichPlayer);
             }
-            break;
-        case 'player-1-ready':
-        case 'player-2-ready':
-        case 'player-3-ready':
-        case 'player-4-ready':
-            if(!initialConditionsScreen.classList.contains('hidden') && whichPlayer.joined) {
-                updateJoinMessage(whichPlayer.id, 'ready');
-                checkForAllPlayersReady();
-            }
-            break;
-        case 'player-1-slap':
-        case 'player-2-slap':
-        case 'player-3-slap':
-        case 'player-4-slap':
-            if(!isCurrentScreenSwipeable()) {
-                return;
-            }
-            console.log(intent);
-            if(whichPlayer.joined) {
-                handleSlap(whichPlayer);
-            }
-            break;
+        break;
         case 'pause-card-draw':
             if(!gameplayScreen.classList.contains('hidden')) {
                 isDebugPaused = !isDebugPaused;
@@ -1866,7 +1875,6 @@ function handleIntent(intent) {
 }
 
 function updateJoinMessage(playerNum, state) {
-    console.log("player did something");
     // Map playerNum to class
     const classMap = {1: 'player1', 2: 'player2', 3: 'player3', 4: 'player4'};
     // Use PLAYER_KEYBINDS from input.js
@@ -1890,6 +1898,7 @@ function updateJoinMessage(playerNum, state) {
             joinText.classList.add('hidden');
             unjoinText.innerHTML = `Press <span class="key-code">${keyMap[playerNum].secondary}</span> to un-join`;
             unjoinText.classList.remove('hidden');
+            console.log("player " + playerNum + " joined");
         } else if (state === 'unjoin') {
             joinText.textContent = `Press `;
             const keySpan = document.createElement('span');
@@ -1900,6 +1909,7 @@ function updateJoinMessage(playerNum, state) {
             joinText.classList.remove('hidden');
             unjoinText.innerHTML = `Press <span class="key-code">${keyMap[playerNum].secondary}</span> to un-join`;
             unjoinText.classList.add('hidden');
+            console.log("player " + playerNum + " unjoined");
         } else if (state === 'ready') {
             // const readyText = joinDiv.querySelector('.ready-text');
             // readyText.classList.remove('hidden');
