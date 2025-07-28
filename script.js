@@ -1302,7 +1302,7 @@ function configureInitialConditionsScreen() {
         };
         initialConditionsScreen.addEventListener('click', handleTap);
     } else {
-        // let playerReadyCount = 0;
+        //the logic for checking if all players are ready lives in handleIntent()
     }
     
 }
@@ -1320,11 +1320,15 @@ function checkForAllPlayersReady() {
 }
 
 function startCountdown() {
-    let countdown = 5;
+    const COUNTDOWN_TOTAL = 5;
+    let countdown = COUNTDOWN_TOTAL;
     const tapText = document.querySelector('.tap-text');
     
     // Update text to show countdown starting
-    tapText.textContent = 'Game starting in 5...';
+    tapText.textContent = 'Game starting in ' + COUNTDOWN_TOTAL + '...';
+    initialConditionsScreen.querySelector('.countdown-bar').classList.remove('hidden');
+    animateCountdown(initialConditionsScreen.querySelector('.countdown-bar'), COUNTDOWN_TOTAL * 1000);
+    initialConditionsScreen.querySelector('h3').classList.add('hidden');
     
     const countdownInterval = setInterval(() => {
         countdown--;
@@ -1334,12 +1338,7 @@ function startCountdown() {
         } else {
             // Countdown finished
             clearInterval(countdownInterval);
-            tapText.textContent = 'Game starting...';
-            
-            // Start the game after a brief pause
-            setTimeout(() => {
-                beginRoundOne();
-            }, 500);
+            beginRoundOne();
         }
     }, 1000);
 }
@@ -1357,6 +1356,12 @@ function displayInitialConditions() {
             // Create condition element
             const conditionElement = document.createElement('div');
             conditionElement.className = 'initial-condition';
+            conditionElement.classList.add('card-style');
+
+            // Create title span
+            const titleSpan = document.createElement('h4');
+            titleSpan.className = 'condition-title';
+            titleSpan.textContent = condition.name;
             
             // Create emoji span
             const emojiSpan = document.createElement('span');
@@ -1368,6 +1373,7 @@ function displayInitialConditions() {
             descriptionP.textContent = condition.description;
             
             // Add elements to condition element
+            conditionElement.appendChild(titleSpan);
             conditionElement.appendChild(emojiSpan);
             conditionElement.appendChild(descriptionP);
             
@@ -1839,9 +1845,8 @@ function updateJoinMessage(playerNum, state) {
             unjoinText.innerHTML = `Press <span class="key-code">${keyMap[playerNum].secondary}</span> to un-join`;
             unjoinText.classList.add('hidden');
         } else if (state === 'ready') {
-            const readyText = joinDiv.querySelector('.ready-text');
-
-            readyText.classList.remove('hidden');
+            // const readyText = joinDiv.querySelector('.ready-text');
+            // readyText.classList.remove('hidden');
         }
     }
     

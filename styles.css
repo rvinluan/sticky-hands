@@ -867,6 +867,12 @@ html.arcade #physics-canvas {
     display: none;
 }
 
+.arcade #initial-conditions-screen .initial-conditions-list {
+    flex-direction: row;
+    justify-content: space-around;
+    margin-top: 25px;
+}
+
 .initial-conditions-list {
     display: flex;
     flex-direction: column;
@@ -903,6 +909,30 @@ html.arcade #physics-canvas {
     max-width: none;
 }
 
+.initial-condition.card-style {
+    --scale-factor: 1.5;
+    padding: 10px;
+    background-color: white;
+    border-radius: 10px;
+    /* normal card scale but bigger */
+    width: calc(140px * var(--scale-factor));
+    height: calc(200px * var(--scale-factor));
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.initial-condition.card-style .condition-title {
+    font-size: 1.5em;
+}
+
+.initial-condition.card-style .condition-emoji {
+    height: 100px;
+    width: 100px;
+    font-size: 3em;
+    align-self: center;
+}
+
 .tap-instructions {
     text-align: center;
     margin: 1rem;
@@ -910,7 +940,8 @@ html.arcade #physics-canvas {
 
 .tap-text {
     font-size: 1rem;
-    color: rgba(0,0,0,0.3);
+    /* color: rgba(0,0,0,0.3); */
+    color: black;
     font-family: 'Fragment Mono', monospace;
     display: inline-block;
     cursor: pointer;

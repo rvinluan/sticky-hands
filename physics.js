@@ -262,7 +262,7 @@ function makeThumbsUp(player) {
     if(!player.hand) return;
     if(player.isThumbsUp) return;
 
-    let squareEdge = 100;
+    let squareEdge = 180;
     let destX = 0;
     let destY = 0;
     if(player.position.y > window.innerHeight / 2) {
@@ -281,7 +281,7 @@ function makeThumbsUp(player) {
         bodyB: centerBody,
         pointA: { x: 0, y: 0 },
         pointB: { x: destX, y: destY },
-        length: 100,
+        length: 50,
         stiffness: 0,
         render: {
             visible: false
