@@ -3,7 +3,7 @@
 //  └─────────────────────────────────────────────────────────────────────────┘
 const CARDS_PER_ROUND = 5; // Cards to add each round
 const INITIAL_DECK_SIZE = 10; // Starting deck size
-const WINNING_SCORE = 20; // Score needed to win the game
+const WINNING_SCORE = 1; // Score needed to win the game
 const SINGLE_PLAYER_TOTAL_ROUNDS = 5; // Total rounds for single player mode
 const INCORRECT_SLAP_PENALTY = 2; // Points deducted for incorrect slaps
 //Computer difficulty settings
@@ -16,6 +16,16 @@ const ROUNDS_TO_MAX_SPEED = 9; // Number of rounds until max speed is reached
 const SWIPE_THRESHOLD = 70; // Minimum distance for a swipe in pixels
 const X_POSITION_OFFSET = 200; // Position offset for player hands
 const SIMULTANEOUS_SLAP_THRESHOLD = 100; // Time threshold for simultaneous slaps in ms
+
+// Confetti settings
+const CONFETTI_COUNT = 1500; // Number of confetti pieces
+const CONFETTI_GRAVITY = 0.01; // Gravity effect on confetti
+const CONFETTI_WIND = 0.1; // Wind effect on confetti
+const CONFETTI_ROTATION_SPEED = 0.02; // Rotation speed of confetti
+
+// Color palette array (matching physics.js)
+// const colors = ['#614EF1', '#FF7252', '#D03291', '#FFEC3D', '#C0FF52', '#90EDFF', '#462D08', '#FF3232'];
+// const colorNames = ['indigo', 'orange', 'raspberry', 'yellow', 'green', 'sky', 'brown', 'red'];
 
 // Array of hand pun loss messages
 const LOSS_MESSAGES = [
@@ -48,6 +58,13 @@ let drawInterval = MAX_DRAW_INTERVAL; // Start at maximum interval (slowest spee
 let drawIntervalDelta = 0; // Amount to reduce draw interval each round
 let currentDeckSize = 0; // Track current deck size
 let activeConditions = new Set(); // Track which conditions are active
+
+// Confetti variables
+let confettiCanvas = null;
+let confettiCtx = null;
+let confettiPieces = [];
+let confettiAnimationId = null;
+let confettiColor = '#614EF1'; // Default color
 
 let player_count = 1; // Default to 1 player
 
@@ -394,6 +411,141 @@ function isScreenActive(screenName) {
     return !document.getElementById(screenName).classList.contains('hidden');
 }
 
+//  ┌─────────────────────────────────────────────────────────────────────────┐
+//  | Confetti Functions                                                      │
+//  └─────────────────────────────────────────────────────────────────────────┘
+
+// Initialize confetti canvas
+function initializeConfetti() {
+    confettiCanvas = document.getElementById('confetti-canvas');
+    if (!confettiCanvas) return;
+    
+    confettiCtx = confettiCanvas.getContext('2d');
+    
+    // Set canvas size to full screen
+    confettiCanvas.width = window.innerWidth;
+    confettiCanvas.height = window.innerHeight;
+}
+
+// Create a single confetti piece
+function createConfettiPiece() {
+    return {
+        x: Math.random() * window.innerWidth,
+        y: -10 - Math.random() * 1000, // Start above screen
+        vx: (Math.random() - 0.5) * 3, // Random horizontal velocity
+        vy: Math.random() * 2 + 1, // Downward velocity
+        rotation: Math.random() * Math.PI * 2,
+        rotationSpeed: (Math.random() - 0.5) * CONFETTI_ROTATION_SPEED,
+        size: Math.random() * 8 + 4, // Random size between 4-12px
+        color: confettiColor,
+        opacity: Math.random() * 0.5 + 0.5, // Random opacity between 0.5-1
+        shape: Math.random() < 0.5 ? 'square' : 'circle' // Random shape
+    };
+}
+
+// Initialize confetti pieces
+function createConfetti(color) {
+    confettiColor = color;
+    confettiPieces = [];
+    
+    for (let i = 0; i < CONFETTI_COUNT; i++) {
+        confettiPieces.push(createConfettiPiece());
+    }
+}
+
+// Update confetti physics
+function updateConfetti() {
+    confettiPieces.forEach(piece => {
+        // Apply gravity
+        piece.vy += CONFETTI_GRAVITY;
+        
+        // Apply wind
+        piece.vx += (Math.random() - 0.5) * CONFETTI_WIND;
+        
+        // Update position
+        piece.x += piece.vx;
+        piece.y += piece.vy;
+        
+        // Update rotation
+        piece.rotation += piece.rotationSpeed;
+        
+        // Reset piece if it goes off screen
+        if (piece.y > window.innerHeight + 50) {
+            piece.x = Math.random() * window.innerWidth;
+            piece.y = -10 - Math.random() * 100;
+            piece.vy = Math.random() * 2 + 1;
+            piece.vx = (Math.random() - 0.5) * 3;
+        }
+        
+        // Keep pieces within horizontal bounds
+        if (piece.x < -10) piece.x = window.innerWidth + 10;
+        if (piece.x > window.innerWidth + 10) piece.x = -10;
+    });
+}
+
+// Draw confetti
+function drawConfetti() {
+    if (!confettiCtx) return;
+    
+    // Clear canvas
+    confettiCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    
+    // Draw each confetti piece
+    confettiPieces.forEach(piece => {
+        confettiCtx.save();
+        confettiCtx.globalAlpha = piece.opacity;
+        confettiCtx.fillStyle = piece.color;
+        confettiCtx.translate(piece.x, piece.y);
+        confettiCtx.rotate(piece.rotation);
+        
+        if (piece.shape === 'square') {
+            confettiCtx.fillRect(-piece.size/2, -piece.size/2, piece.size, piece.size);
+        } else {
+            confettiCtx.beginPath();
+            confettiCtx.arc(0, 0, piece.size/2, 0, Math.PI * 2);
+            confettiCtx.fill();
+        }
+        
+        confettiCtx.restore();
+    });
+}
+
+// Start confetti animation
+function startConfetti(color) {
+    if (confettiAnimationId) {
+        cancelAnimationFrame(confettiAnimationId);
+    }
+    
+    createConfetti(color);
+    
+    function animateConfetti() {
+        updateConfetti();
+        drawConfetti();
+        confettiAnimationId = requestAnimationFrame(animateConfetti);
+    }
+    
+    animateConfetti();
+}
+
+// Stop confetti animation
+function stopConfetti() {
+    if (confettiAnimationId) {
+        cancelAnimationFrame(confettiAnimationId);
+        confettiAnimationId = null;
+    }
+    
+    if (confettiCtx) {
+        confettiCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    }
+}
+
+// Handle window resize for confetti
+function resizeConfetti() {
+    if (confettiCanvas) {
+        confettiCanvas.width = window.innerWidth;
+        confettiCanvas.height = window.innerHeight;
+    }
+}
 
 //  ┌─────────────────────────────────────────────────────────────────────────┐
 //  | Pause Screen Logic                                                      │
@@ -1454,7 +1606,10 @@ function resetGame() {
 
     // Clear only the cards, not the overlay
     const cards = cardPileElement.querySelectorAll('.card');
-    cards.forEach(card => card.remove());        
+    cards.forEach(card => card.remove());
+    
+    // Stop confetti
+    stopConfetti();
 }
 
 // Start game
@@ -1555,12 +1710,17 @@ function endGame() {
     duckBackgroundMusicForSound(winSound);
     playSound(winSound);
     
+    let winningPlayerColor = '#614EF1'; // Default color
+    
     if(mode === 'arcade') {
         let winner = seeWhosWinning();
         let winnerPlayerTextElement = endScreen.querySelector('#winner-player');
         let winnerPlayerIcon = endScreen.querySelector('#winner-player-icon');
         winnerPlayerTextElement.textContent = winner;
         winnerPlayerIcon.src = getPlayerIcon(players[winner - 1]);
+        
+        // Get winning player's color
+        winningPlayerColor = colors[players[winner - 1].colorIndex];
     } else {
         if (player_count === 1) {
             // Single player mode: show final score
@@ -1569,6 +1729,7 @@ function endGame() {
             winnerScoreElement.textContent = players[1].score;
             winnerTitle.textContent = 'Game Complete!';
             loserMessage.textContent = '';
+            winningPlayerColor = colors[players[1].colorIndex];
         } else {
             // Two player mode: determine the winner
             const player1Won = players[0].score > players[1].score;
@@ -1583,6 +1744,7 @@ function endGame() {
                 // Get random loss message
                 const randomMessage = LOSS_MESSAGES[Math.floor(Math.random() * LOSS_MESSAGES.length)];
                 loserMessage.textContent = randomMessage + players[1].score + ' points.';
+                winningPlayerColor = colors[players[0].colorIndex];
             } else {
                 endScreen.classList.add('player2-won');
                 endScreen.classList.remove('player1-won');
@@ -1592,6 +1754,7 @@ function endGame() {
                 // Get random loss message
                 const randomMessage = LOSS_MESSAGES[Math.floor(Math.random() * LOSS_MESSAGES.length)];
                 loserMessage.textContent = randomMessage + players[0].score + ' points.';
+                winningPlayerColor = colors[players[1].colorIndex];
             }
         }
     }
@@ -1609,6 +1772,9 @@ function endGame() {
     roundStartScreen.classList.add('hidden');
     endScreen.classList.remove('hidden');
     justSlapped = false;
+    
+    // Start confetti with winning player's color
+    startConfetti(winningPlayerColor);
 }
 
 //  ┌─────────────────────────────────────────────────────────────────────────┐
@@ -1618,6 +1784,7 @@ function endGame() {
 function progressToLobbyScreen() {
     welcomeScreen.classList.add('hidden');
     if(mode === 'arcade') {
+        stopConfetti(); // Stop confetti when starting new game in arcade mode
         lobbyScreen.classList.add('hidden');
         player_count = players.filter(p => p.ready).length;
         configureInitialConditionsScreen();
@@ -1963,8 +2130,14 @@ function initializeGame() {
     // Initialize debug stats
     updateDebugStats();
 
-    // Add window resize event listener for debug stats
-    window.addEventListener('resize', updateDebugStats);
+    // Initialize confetti
+    initializeConfetti();
+
+    // Add window resize event listener for debug stats and confetti
+    window.addEventListener('resize', () => {
+        updateDebugStats();
+        resizeConfetti();
+    });
     
     // Initialize player selection text
     updatePlayerSelectionText();
@@ -1984,6 +2157,7 @@ function initializeGame() {
         replayButton.addEventListener('click', (event) => {
             playSound(interactBigSound);
             event.stopPropagation();
+            stopConfetti(); // Stop confetti when starting new game
             endScreen.classList.add('hidden');
             configureInitialConditionsScreen();
             startGame();
