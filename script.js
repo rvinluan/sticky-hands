@@ -13,7 +13,6 @@ var COMPUTER_SLAP_DELAY = 600; // Delay before computer slaps in ms
 var MIN_DRAW_INTERVAL = 800; // Minimum draw interval in ms (fastest speed)
 var MAX_DRAW_INTERVAL = 1400; // Maximum draw interval in ms (slowest speed)
 const ROUNDS_TO_MAX_SPEED = 9; // Number of rounds until max speed is reached
-const MIN_SLAP_INTERVAL = 300; // Minimum time between slaps in ms
 const SWIPE_THRESHOLD = 70; // Minimum distance for a swipe in pixels
 const X_POSITION_OFFSET = 200; // Position offset for player hands
 const SIMULTANEOUS_SLAP_THRESHOLD = 100; // Time threshold for simultaneous slaps in ms
