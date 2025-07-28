@@ -1604,6 +1604,8 @@ function resetGame() {
     justSlapped = false;
     currentRound = 1;
 
+    document.querySelector('.tap-text').textContent = 'All players must acknowledge the rules before advancing';
+
     // Clear only the cards, not the overlay
     const cards = cardPileElement.querySelectorAll('.card');
     cards.forEach(card => card.remove());
