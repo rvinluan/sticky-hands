@@ -78,10 +78,8 @@ function initializePhysics() {
     function applyGravity() {
         // Apply force to chain depending on which side of the screen it is on
         playerPhysicsHands.forEach(hand => {
-            // Skip gravity for thumbs up hands
             if (hand.ball.render.sprite.texture.indexOf('thumb') !== -1) {
                 Matter.Body.setAngle(hand.ball, Math.PI/4);
-                return;
             }
             Composite.allBodies(hand.composite).forEach(body => {
                 if(hand.composite.bodies[0].position.y <= window.innerHeight / 2) {
@@ -262,7 +260,7 @@ function makeThumbsUp(player) {
     if(!player.hand) return;
     if(player.isThumbsUp) return;
 
-    let squareEdge = 180;
+    let squareEdge = 220;
     let destX = 0;
     let destY = 0;
     if(player.position.y > window.innerHeight / 2) {
@@ -281,7 +279,7 @@ function makeThumbsUp(player) {
         bodyB: centerBody,
         pointA: { x: 0, y: 0 },
         pointB: { x: destX, y: destY },
-        length: 50,
+        length: 30,
         stiffness: 0,
         render: {
             visible: false
