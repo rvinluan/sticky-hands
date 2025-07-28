@@ -1,6 +1,5 @@
 var originalTouches = [];
 var originalMousePosition = null;
-alert("input.js loaded");
 
 // Handle both touch and mouse start events
 function handleStartEvent(e) {
@@ -72,29 +71,44 @@ const PLAYER_KEYBINDS = {
 };
 
 // Gamepad input handling
-// window.addEventListener("gamepadconnected", (e) => {
-//     console.log("Gamepad connected:", e.gamepad);
-// });
+window.addEventListener("gamepadconnected", (e) => {
+    console.log("Gamepad connected:", e.gamepad);
+    // Start checking for gamepad input
+    gamepadStatesLast[e.gamepad.index] = e.gamepad;
+    // p2GamepadOld = navigator.getGamepads()[1];
+    checkGamepadInput();
+});
 
-// function checkGamepadInput() {
-//     const gamepads = navigator.getGamepads();
-//     console.log("checking....");
-//     for (const gamepad of gamepads) {
-//         if (!gamepad) continue;
-        
-//         // Check face buttons (A B X Y)
-//         if (gamepad.buttons[0].pressed) console.log("A button pressed"); 
-//         if (gamepad.buttons[1].pressed) console.log("B button pressed");
-//         if (gamepad.buttons[2].pressed) console.log("X button pressed");
-//         if (gamepad.buttons[3].pressed) console.log("Y button pressed");
-//     }
-//     requestAnimationFrame(checkGamepadInput);
-// }
+let gamepadStatesLast = [];
 
-// Start checking for gamepad input
-// checkGamepadInput();
-console.log("starting to check for input");
+function wasButtonJustPressed(gamepad, buttonIndex) {
+    return gamepad.buttons[buttonIndex].pressed && !gamepadStatesLast[gamepad.index].buttons[buttonIndex].pressed;
+}
 
+function checkAllButtons(gamepad) {
+    for(let i = 0; i < gamepad.buttons.length; i++) {
+        if(wasButtonJustPressed(gamepad, i)) {
+            console.log("player " + (gamepad.index + 1) + " just pressed " + i);
+        }
+    }
+}
+
+function checkGamepadInput() {
+    navigator.getGamepads().forEach((gamepad) => {
+        if(!gamepad) return;
+        if(gamepad.index == 0) {
+            if(wasButtonJustPressed(gamepad, 1)) {
+                console.log("player 1 just pressed A");
+            }
+        } else if(gamepad.index == 1) {
+            if(wasButtonJustPressed(gamepad, 14)) {
+                console.log("player 2 just pressed A");
+            }
+        }
+        gamepadStatesLast[gamepad.index] = gamepad;
+    });
+    requestAnimationFrame(checkGamepadInput);
+}
 //keyboard input
 document.addEventListener('keydown', (event) => {
     if (event.key === '9') {
