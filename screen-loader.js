@@ -69,24 +69,25 @@ class ScreenLoader {
 
     onAllScreensLoaded() {
         console.log('Loading game scripts...');
-        
-        // Load Matter.js first (if not already loaded)
-        if (typeof Matter === 'undefined') {
-            this.loadScript('https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js')
-                .then(() => this.loadGameScripts())
-                .catch(error => {
-                    console.error('Failed to load Matter.js:', error);
-                    // Try to load game scripts anyway
-                    this.loadGameScripts();
-                });
-        } else {
-            this.loadGameScripts();
-        }
+        this.loadGameScripts();
+        // // Load Matter.js first (if not already loaded)
+        // if (typeof Matter === 'undefined') {
+        //     this.loadScript('https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js')
+        //         .then(() => this.loadGameScripts())
+        //         .catch(error => {
+        //             console.error('Failed to load Matter.js:', error);
+        //             // Try to load game scripts anyway
+        //             this.loadGameScripts();
+        //         });
+        // } else {
+        //     this.loadGameScripts();
+        // }
     }
 
     async loadGameScripts() {
         try {
             // Load scripts in order
+            await this.loadScript('matter.min.js');
             await this.loadScript('conditions.js');
             await this.loadScript('physics.js');
             await this.loadScript('script.js');
