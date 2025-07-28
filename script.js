@@ -1,9 +1,9 @@
 //  ┌─────────────────────────────────────────────────────────────────────────┐
 //  | Configuration Variables                                                 │
 //  └─────────────────────────────────────────────────────────────────────────┘
-const CARDS_PER_ROUND = 0; // Cards to add each round
+const CARDS_PER_ROUND = 5; // Cards to add each round
 const INITIAL_DECK_SIZE = 10; // Starting deck size
-const WINNING_SCORE = 2; // Score needed to win the game
+const WINNING_SCORE = 20; // Score needed to win the game
 const SINGLE_PLAYER_TOTAL_ROUNDS = 5; // Total rounds for single player mode
 const INCORRECT_SLAP_PENALTY = 2; // Points deducted for incorrect slaps
 //Computer difficulty settings
