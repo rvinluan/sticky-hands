@@ -16,6 +16,24 @@
     font-display: swap;
 }
 
+@font-face {
+    font-family: 'Fragment Mono';
+    src: url('FragmentMono-Regular.woff2') format('woff2'),
+         url('FragmentMono-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Chakra Petch';
+    src: url('ChakraPetch-Regular.woff2') format('woff2'),
+         url('ChakraPetch-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
 .hidden {
     display: none !important;
 }
