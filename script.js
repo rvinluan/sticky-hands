@@ -2021,6 +2021,7 @@ function handleIntent(intent) {
                 whichPlayer.joined = true;
                 manifestHand(whichPlayer, psx, psy, isTop);
                 updateJoinMessage(whichPlayer.id, 'join');
+                playSound(changeSound);
             } else {
                 //READY
                 if(whichPlayer.joined && !whichPlayer.ready && isScreenActive('initial-conditions-screen')) {
