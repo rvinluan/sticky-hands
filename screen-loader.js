@@ -90,7 +90,7 @@ class ScreenLoader {
             // Load scripts in order
             await this.loadScript('matter.min.js');
             await this.loadScript('conditions.js');
-            await this.loadScript('physics.js');
+            await this.loadScript('physics.js?v=1');
             await this.loadScript('script.js');
             await this.loadScript('input.js');
             
