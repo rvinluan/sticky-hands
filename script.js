@@ -1220,23 +1220,13 @@ async function drawCard() {
 
 function seeWhosWinning() {
     let playingPlayers = players.filter(p => p.ready);
-    var currentWinner = playingPlayers[0].id;
-    var currentWinnerScore = playingPlayers[0].score;
-    var isTied = true;
-    for(let i = 0; i < playingPlayers.length; i++) {
-        if(playingPlayers[i].score > currentWinnerScore) {
-            currentWinner = playingPlayers[i].id;
-            currentWinnerScore = playingPlayers[i].score;
-            isTied = false;
-        } else if(playingPlayers[i].score < currentWinnerScore) {
-            isTied = false;
-        }
-    }
-    if(isTied) {
-        return 0;
-    } else {
-        return currentWinner;
-    }
+    if (playingPlayers.length === 0) return [];
+    
+    // Find the highest score
+    const highestScore = Math.max(...playingPlayers.map(p => p.score));
+    
+    // Return all players with the highest score
+    return playingPlayers.filter(p => p.score === highestScore);
 }
 
 function getPlayerIcon(player) {
@@ -1258,21 +1248,52 @@ function updateRoundStartScreen() {
     roundNumberElement.textContent = currentRound;
     // roundNumberElement2.textContent = currentRound;
 
-    const winner = seeWhosWinning();
+    const winners = seeWhosWinning();
     
     // Update status text based on game mode
     if (mode === 'arcade') {
         if(currentRound === 1) {
             summaryStatusText.textContent = "First to " + WINNING_SCORE + " points wins!";
         } else {
-            if(winner === 0) {  
+            if(winners.length === 0) {  
+                summaryStatusText.textContent = "No players ready!";
+                winningPlayerIcon.classList.add('hidden');
+            } else if(winners.length > 1) {
+                // Handle tie - show multiple player icons and names
                 summaryStatusText.textContent = "It's a tie!";
                 winningPlayerIcon.classList.add('hidden');
+                
+                // Clear any existing cloned icons
+                const existingClones = document.querySelectorAll('.winning-player-icon-clone');
+                existingClones.forEach(clone => clone.remove());
+                
+                // Create icons for all tied players
+                const roundSummaryContainer = document.querySelector('.round-summary-container');
+                winners.forEach((winner, index) => {
+                    const clonedIcon = winningPlayerIcon.cloneNode(true);
+                    clonedIcon.classList.remove('hidden');
+                    clonedIcon.classList.add('winning-player-icon-clone');
+                    clonedIcon.src = getPlayerIcon(winner);
+                    
+                    // Position icons horizontally with some spacing
+                    clonedIcon.style.marginRight = '10px';
+                    clonedIcon.style.marginLeft = index === 0 ? '0' : '10px';
+                    
+                    roundSummaryContainer.insertBefore(clonedIcon, summaryStatusText);
+                });
+                
+                // Create text showing all tied players
+                const playerNames = winners.map(winner => `Player ${winner.id}`).join(' & ');
+                summaryStatusText.textContent = `${playerNames} are tied!`;
             } else {
-                console.log(getPlayerIcon(players[winner - 1]));
+                // Clear any existing cloned icons
+                const existingClones = document.querySelectorAll('.winning-player-icon-clone');
+                existingClones.forEach(clone => clone.remove());
+                
+                console.log(getPlayerIcon(winners[0]));
                 winningPlayerIcon.classList.remove('hidden');
-                winningPlayerIcon.src = getPlayerIcon(players[winner - 1]);
-                var winnerSummary = "Player " + (winner) + " is winning!";
+                winningPlayerIcon.src = getPlayerIcon(winners[0]);
+                var winnerSummary = "Player " + (winners[0].id) + " is winning!";
                 summaryStatusText.textContent = winnerSummary;
             }
         }
@@ -1287,7 +1308,8 @@ function updateRoundStartScreen() {
     } else {
         // Two player mode: show who's winning for each player
         for (let i = 0; i < player_count; i++) {
-            players[i].updateStatusText(i === winner ? "You're winning!" : "You're losing!");
+            const isWinning = winners.some(winner => winner.id === players[i].id);
+            players[i].updateStatusText(isWinning ? "You're winning!" : "You're losing!");
         }
     }
 }
