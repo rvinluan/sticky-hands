@@ -79,7 +79,8 @@ function initializePhysics() {
         // Apply force to chain depending on which side of the screen it is on
         playerPhysicsHands.forEach(hand => {
             if (hand.ball.render.sprite.texture.indexOf('thumb') !== -1) {
-                Matter.Body.setAngle(hand.ball, Math.PI/4);
+                console.log("setting angle");
+                Matter.Body.setAngle(hand.ball, Math.PI*0.5);
             }
             Composite.allBodies(hand.composite).forEach(body => {
                 if(hand.composite.bodies[0].position.y <= window.innerHeight / 2) {

@@ -83,7 +83,7 @@ body {
 }
 
 h1 {
-    font-size: 4rem;
+    font-size: 8rem;
     line-height: .8;
     margin-bottom: 2rem;
     color: var(--palette-green);
