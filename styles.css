@@ -765,7 +765,7 @@ html.arcade #physics-canvas {
     font-family: 'Gooper';
 }
 
-.arcade .condition-info h3 {
+.condition-info.card-style h3 {
     font-size: 1.5rem;
     font-family: 'Fragment Mono', monospace;
 }
