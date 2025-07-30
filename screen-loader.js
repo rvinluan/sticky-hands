@@ -2,6 +2,7 @@
 class ScreenLoader {
     constructor() {
         this.screens = [
+            'loading-screen',
             'about-screen', 
             'lobby-screen',
             'gameplay-screen',
@@ -87,6 +88,9 @@ class ScreenLoader {
 
     async loadGameScripts() {
         try {
+            // Load asset loader first
+            await this.loadScript('asset-loader.js');
+            
             // Load scripts in order
             await this.loadScript('matter.min.js');
             await this.loadScript('conditions.js');
@@ -96,14 +100,45 @@ class ScreenLoader {
             
             console.log('All game scripts loaded successfully');
             
-            // Dispatch event for any remaining initialization
-            const event = new CustomEvent('screensLoaded');
-            document.dispatchEvent(event);
-            // Show welcome screen
-            const welcomeScreen = document.getElementById('welcome-screen');
-            welcomeScreen.classList.remove('hidden');
+            // Start asset loading process
+            this.startAssetLoading();
         } catch (error) {
             console.error('Failed to load game scripts:', error);
+            // Even if scripts fail, try to start asset loading
+            this.startAssetLoading();
+        }
+    }
+
+    startAssetLoading() {
+        // Show loading screen
+        const loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) {
+            loadingScreen.classList.remove('hidden');
+        }
+        
+        // Hide welcome screen initially
+        const welcomeScreen = document.getElementById('welcome-screen');
+        if (welcomeScreen) {
+            welcomeScreen.classList.add('hidden');
+        }
+        
+        // Start asset loading
+        if (window.AssetLoader) {
+            const assetLoader = new AssetLoader();
+            assetLoader.loadAllAssets().then(() => {
+                // Dispatch event for any remaining initialization
+                const event = new CustomEvent('screensLoaded');
+                document.dispatchEvent(event);
+            });
+        } else {
+            console.error('AssetLoader not available');
+            // Fallback: show welcome screen anyway
+            if (loadingScreen) {
+                loadingScreen.classList.add('hidden');
+            }
+            if (welcomeScreen) {
+                welcomeScreen.classList.remove('hidden');
+            }
         }
     }
 

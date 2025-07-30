@@ -2143,8 +2143,8 @@ function configureWelcomeScreen() {
 //  | Initialize Game                                                         │
 //  └─────────────────────────────────────────────────────────────────────────┘
 function initializeGame() {
-    // Preload sounds
-    preloadSounds();
+    // Sounds are now preloaded by the asset loader
+    // preloadSounds();
 
     // Initialize settings
     initializeSettings();
@@ -2190,4 +2190,5 @@ function initializeGame() {
     }
 }
 
-initializeGame();
+// Game initialization is now handled by the asset loader after assets are loaded
+// initializeGame();
