@@ -3,7 +3,7 @@
 //  └─────────────────────────────────────────────────────────────────────────┘
 const CARDS_PER_ROUND = 5; // Cards to add each round
 const INITIAL_DECK_SIZE = 10; // Starting deck size
-const WINNING_SCORE = 2; // Score needed to win the game
+const WINNING_SCORE = 20; // Score needed to win the game
 const SINGLE_PLAYER_TOTAL_ROUNDS = 5; // Total rounds for single player mode
 const INCORRECT_SLAP_PENALTY = 2; // Points deducted for incorrect slaps
 //Computer difficulty settings
@@ -15,7 +15,7 @@ var MAX_DRAW_INTERVAL = 1400; // Maximum draw interval in ms (slowest speed)
 const ROUNDS_TO_MAX_SPEED = 9; // Number of rounds until max speed is reached
 const SWIPE_THRESHOLD = 70; // Minimum distance for a swipe in pixels
 const X_POSITION_OFFSET = 200; // Position offset for player hands
-const SIMULTANEOUS_SLAP_THRESHOLD = 100; // Time threshold for simultaneous slaps in ms
+const SIMULTANEOUS_SLAP_THRESHOLD = 150; // Time threshold for simultaneous slaps in ms
 
 // Confetti settings
 const CONFETTI_COUNT = 1500; // Number of confetti pieces
@@ -1024,6 +1024,10 @@ async function handleSlap(player) {
         const currentTime = Date.now();
         player.lastSlappedTimestamp = currentTime;
         if (checkForSimultaneousSlaps(player)) {
+            //no single player mode for now
+            if(players.filter(p => p.joined).length === 1) {
+                return;
+            }
             // Wait 500ms before starting the game
             isGameActive = true;
             playSound(slapSound);
@@ -1257,6 +1261,12 @@ function updateRoundStartScreen() {
         } else {
             if(winners.length === 0) {  
                 summaryStatusText.textContent = "No players ready!";
+                winningPlayerIcon.classList.add('hidden');
+            } else if(winners.length === 4) {
+                summaryStatusText.textContent = "It's a 4-way tie!";
+                winningPlayerIcon.classList.add('hidden');
+            } else if (winners.length === 3 && player_count === 3) {
+                summaryStatusText.textContent = "It's a 3-way tie!";
                 winningPlayerIcon.classList.add('hidden');
             } else if(winners.length > 1) {
                 // Handle tie - show multiple player icons and names
@@ -1698,6 +1708,8 @@ async function startGame() {
             }
         }
     });
+    player_count = players.filter(p => p.joined).length;
+    // console.log("player_count", player_count);
 }
 
 function beginRoundOne() {

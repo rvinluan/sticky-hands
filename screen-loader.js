@@ -95,7 +95,7 @@ class ScreenLoader {
             await this.loadScript('matter.min.js');
             await this.loadScript('conditions.js');
             await this.loadScript('physics.js?v=1');
-            await this.loadScript('script.js?v=3');
+            await this.loadScript('script.js?v=4');
             await this.loadScript('input.js');
             
             console.log('All game scripts loaded successfully');
