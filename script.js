@@ -1359,10 +1359,12 @@ async function showNewConditionScreen(condition) {
     const conditionEmojiLargeElements = document.querySelectorAll('.condition-emoji');
     const conditionNameElements = document.querySelectorAll('.condition-name');
     const conditionDescriptionElements = document.querySelectorAll('.condition-description');
+    const conditionExampleElements = document.querySelectorAll('.condition-example');
     
     conditionEmojiLargeElements.forEach(el => el.textContent = condition.emoji);
     conditionNameElements.forEach(el => el.textContent = condition.name);
     conditionDescriptionElements.forEach(el => el.textContent = condition.description);
+    conditionExampleElements.forEach(el => el.innerHTML = `E.g. ${condition.example}`);
     
     // Show new condition screen
     gameplayScreen.classList.add('hidden');
@@ -1582,10 +1584,16 @@ function displayInitialConditions() {
             const descriptionP = document.createElement('p');
             descriptionP.textContent = condition.description;
             
+            // Create example paragraph
+            const exampleP = document.createElement('p');
+            exampleP.className = 'condition-example';
+            exampleP.innerHTML = `E.g. ${condition.example}`;
+            
             // Add elements to front face
             cardFront.appendChild(titleSpan);
             cardFront.appendChild(emojiSpan);
             cardFront.appendChild(descriptionP);
+            cardFront.appendChild(exampleP);
             
             // Add both faces to condition element
             conditionElement.appendChild(cardBack);

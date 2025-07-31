@@ -844,6 +844,18 @@ html.arcade #physics-canvas {
     margin: auto;
 }
 
+.condition-example {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 0.5rem;
+    text-align: center;
+    font-family: 'Fragment Mono', monospace;
+}
+
+.condition-example span {
+    font-style: normal;
+}
+
 .arcade .condition-info p {
     margin: 0;
 }
