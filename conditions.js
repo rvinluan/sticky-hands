@@ -21,7 +21,7 @@ const conditionsObject = {
         },
         name: 'Blackjack',
         description: 'Slap when a black Jack appears',
-        emoji: '⚫️',
+        emoji: '🐼',
         simplicity: 1,
         startingConditionEligible: true,
         example: 'J♠ or J♣'
@@ -190,7 +190,7 @@ const conditionsObject = {
         },
         name: 'Dig It',
         description: 'Slap when two cards in a row are spades',
-        emoji: '🪏',
+        emoji: '🕳️',
         simplicity: 2,
         startingConditionEligible: true,
         example: 'K♠, 3♠'
@@ -204,7 +204,7 @@ const conditionsObject = {
         },
         name: 'Party Night',
         description: 'Slap when two cards in a row are clubs',
-        emoji: '🪩',
+        emoji: '🕺',
         simplicity: 2,
         startingConditionEligible: true,
         example: 'A♣, 8♣'
