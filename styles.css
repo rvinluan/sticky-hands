@@ -369,15 +369,15 @@ button {
 
 .card {
     position: absolute;
-    width: 140px;
-    height: 200px;
+    width: 196px;
+    height: 280px;
     background: white;
-    border-radius: 10px;
+    border-radius: 14px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    padding: 14px;
+    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.2);
     transform: translateX(100vw) rotate(var(--rotation, 0deg));
     transition: margin-top 0.5s ease-out;
 }
@@ -634,7 +634,7 @@ button {
 }
 
 .card-rank, .card-suit {
-    font-size: 1.5em;
+    font-size: 2.1em;
     font-weight: bold;
     display: inline-block;
 }
@@ -648,7 +648,7 @@ button {
     font-family: 'Departure Mono', monospace;
     font-weight: 700;
     letter-spacing: 3px;
-    font-size: 2.2em;
+    font-size: 3.1em;
     text-transform: uppercase;
 }
 
@@ -663,13 +663,13 @@ button {
 }
 
 .card-corner.top-left {
-    top: 5px;
-    left: 5px;
+    top: 7px;
+    left: 7px;
 }
 
 .card-corner.bottom-right {
-    bottom: 5px;
-    right: 5px;
+    bottom: 7px;
+    right: 7px;
     transform: rotate(180deg);
 }
 
@@ -760,11 +760,11 @@ html.arcade #physics-canvas {
 }
 
 .joker-emoji {
-    font-size: 3rem;
+    font-size: 4.2rem;
 }
 
 .joker-text {
-    font-size: 1.5rem;
+    font-size: 2.1rem;
     font-weight: bold;
     color: #ff0000;
     text-transform: uppercase;
