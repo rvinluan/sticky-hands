@@ -1257,6 +1257,7 @@ function updateRoundStartScreen() {
     // Update status text based on game mode
     if (mode === 'arcade') {
         if(currentRound === 1) {
+            winningPlayerIcon.classList.add('hidden');
             summaryStatusText.textContent = "First to " + WINNING_SCORE + " points wins!";
         } else {
             if(winners.length === 0) {  

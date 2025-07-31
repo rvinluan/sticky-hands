@@ -13,13 +13,13 @@ const conditionsObject = {
         startingConditionEligible: true,
         example: 'Joker'
     },
-    blackjack: {
+    jackblack: {
         check: (pile) => {
             if (pile.length < 1) return false;
             const lastCard = pile[pile.length - 1];
             return lastCard.rank === 'J' && (lastCard.suit === '♠' || lastCard.suit === '♣');
         },
-        name: 'Blackjack',
+        name: 'Jack Black',
         description: 'Slap when a black Jack appears',
         emoji: '🐼',
         simplicity: 1,
