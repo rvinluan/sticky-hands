@@ -9,6 +9,7 @@ const conditionsObject = {
         name: 'Joker',
         description: 'Slap when a joker appears',
         emoji: '🤡',
+        chipImage: 'chips/joker.png',
         simplicity: 1,
         startingConditionEligible: true,
         example: 'Joker'
@@ -22,6 +23,7 @@ const conditionsObject = {
         name: 'Jack Black',
         description: 'Slap when a black Jack appears',
         emoji: '🐼',
+        chipImage: 'chips/blackjack.png',
         simplicity: 1,
         startingConditionEligible: true,
         example: 'J♠ or J♣'
@@ -35,6 +37,7 @@ const conditionsObject = {
         name: 'Lucky 7',
         description: 'Slap when a 7 appears',
         emoji: '🍀',
+        chipImage: 'chips/seven.png',
         simplicity: 1,
         startingConditionEligible: true,
         example: '7<span style="color: red;">♥</span>, 7<span style="color: red;">♦</span>, 7♣, or 7♠'
@@ -48,6 +51,7 @@ const conditionsObject = {
         name: 'Spiders!',
         description: 'Slap when an 8 appears',
         emoji: '🕷️',
+        chipImage: 'chips/eight.png',
         simplicity: 1,
         startingConditionEligible: true,
         example: '8<span style="color: red;">♥</span>, 8<span style="color: red;">♦</span>, 8♣, or 8♠'
@@ -61,6 +65,7 @@ const conditionsObject = {
         name: 'Six!',
         description: 'Slap when a 6 appears',
         emoji: '🎲',
+        chipImage: 'chips/six.png',
         simplicity: 1,
         startingConditionEligible: true,
         example: '6<span style="color: red;">♥</span>, 6<span style="color: red;">♦</span>, 6♣, or 6♠'
@@ -74,6 +79,7 @@ const conditionsObject = {
         name: 'High Five',
         description: 'Slap when a 5 appears',
         emoji: '✋',
+        chipImage: 'chips/five.png',
         simplicity: 1,
         startingConditionEligible: true,
         example: '5<span style="color: red;">♥</span>, 5<span style="color: red;">♦</span>, 5♣, or 5♠'
@@ -87,6 +93,7 @@ const conditionsObject = {
         name: 'Red Queen',
         description: 'Slap when a red Queen appears',
         emoji: '👑',
+        chipImage: 'chips/redqueen.png',
         simplicity: 1,
         startingConditionEligible: true,
         example: 'Q<span style="color: red;">♥</span> or Q<span style="color: red;">♦</span>'
@@ -101,6 +108,7 @@ const conditionsObject = {
         name: 'Nice',
         description: 'Slap when a 6 is followed by a 9',
         emoji: '😏',
+        chipImage: 'chips/nice.png',
         simplicity: 2,
         startingConditionEligible: false,
         example: '6<span style="color: red;">♥</span>, 9♠'
@@ -115,6 +123,7 @@ const conditionsObject = {
         name: 'Double',
         description: 'Slap when two cards in a row are equal rank',
         emoji: '👯‍♀️',
+        chipImage: 'chips/doubles.png',
         simplicity: 2,
         startingConditionEligible: true,
         example: '7<span style="color: red;">♥</span>, 7♠'
@@ -135,6 +144,7 @@ const conditionsObject = {
         name: 'Sum to 12',
         description: 'Slap when two cards in a row sum to 12 (face cards are 0)',
         emoji: '🕛',
+        chipImage: 'chips/twelve.png',
         simplicity: 2,
         startingConditionEligible: false,
         example: '5<span style="color: red;">♥</span>, 7♠ (5+7=12)'
@@ -149,6 +159,7 @@ const conditionsObject = {
         name: 'Consecutive',
         description: 'Slap when two cards in a row are consecutive',
         emoji: '➡️',
+        chipImage: 'chips/consecutive.png',
         simplicity: 2,
         startingConditionEligible: true,
         example: '4<span style="color: red;">♥</span>, 5♠ or J<span style="color: red;">♥</span>, 10♠'
@@ -163,6 +174,7 @@ const conditionsObject = {
         name: 'Radio',
         description: 'Slap when a 10 is followed by a 4',
         emoji: '📻',
+        chipImage: 'chips/radio.png',
         simplicity: 2,
         startingConditionEligible: false,
         example: '10<span style="color: red;">♥</span>, 4♠'
@@ -177,6 +189,7 @@ const conditionsObject = {
         name: 'Lovers',
         description: 'Slap when two cards in a row are hearts',
         emoji: '💕',
+        chipImage: 'chips/hearts.png',
         simplicity: 2,
         startingConditionEligible: true,
         example: '7<span style="color: red;">♥</span>, 2<span style="color: red;">♥</span>'
@@ -191,6 +204,7 @@ const conditionsObject = {
         name: 'Dig It',
         description: 'Slap when two cards in a row are spades',
         emoji: '🕳️',
+        chipImage: 'chips/spades.png',
         simplicity: 2,
         startingConditionEligible: true,
         example: 'K♠, 3♠'
@@ -205,6 +219,7 @@ const conditionsObject = {
         name: 'Party Night',
         description: 'Slap when two cards in a row are clubs',
         emoji: '🕺',
+        chipImage: 'chips/clubs.png',
         simplicity: 2,
         startingConditionEligible: true,
         example: 'A♣, 8♣'
@@ -219,6 +234,7 @@ const conditionsObject = {
         name: 'Rich Vein',
         description: 'Slap when two cards in a row are diamonds',
         emoji: '💎',
+        chipImage: 'chips/diamonds.png',
         simplicity: 2,
         startingConditionEligible: true,
         example: 'Q<span style="color: red;">♦</span>, 6<span style="color: red;">♦</span>'
@@ -238,6 +254,7 @@ const conditionsObject = {
         name: 'Even Steven',
         description: 'Slap when 2 number cards in a row are both even',
         emoji: '👱‍♂️',
+        chipImage: 'chips/evensteven.png',
         simplicity: 2,
         startingConditionEligible: true,
         example: '4<span style="color: red;">♥</span>, 8♠'
@@ -257,6 +274,7 @@ const conditionsObject = {
         name: 'Odd Todd',
         description: 'Slap when 2 number cards in a row are both odd',
         emoji: '👨‍🦰',
+        chipImage: 'chips/oddtodd.png',
         simplicity: 2,
         startingConditionEligible: false,
         example: '3<span style="color: red;">♥</span>, 7♠'
@@ -275,6 +293,7 @@ const conditionsObject = {
         name: 'Paper Sizes',
         description: 'Slap when an Ace is followed by any number',
         emoji: '📄',
+        chipImage: 'chips/papersizes.png',
         simplicity: 2,
         startingConditionEligible: false,
         example: 'A<span style="color: red;">♥</span>, 5♠'
@@ -293,6 +312,7 @@ const conditionsObject = {
         name: 'Best Decade',
         description: 'Slap when a 9 is followed by any number',
         emoji: '🎵',
+        chipImage: 'chips/bestdecade.png',
         simplicity: 2,
         startingConditionEligible: false,
         example: '9<span style="color: red;">♥</span>, 3♠'
@@ -308,6 +328,7 @@ const conditionsObject = {
         name: 'Sandwich',
         description: 'Slap when two of the same card sandwich another',
         emoji: '🥪',
+        chipImage: 'chips/sandwich.png',
         simplicity: 3,
         startingConditionEligible: false,
         example: '4<span style="color: red;">♥</span>, 7♠, 4♣'
@@ -324,6 +345,7 @@ const conditionsObject = {
         name: 'Flush',
         description: 'Slap when 3 cards in a row are the same suit',
         emoji: '🚽',
+        chipImage: 'chips/flush.png',
         simplicity: 3,
         startingConditionEligible: true,
         example: '2<span style="color: red;">♥</span>, 7<span style="color: red;">♥</span>, K<span style="color: red;">♥</span>'
@@ -344,6 +366,7 @@ const conditionsObject = {
         name: 'Deserted',
         description: 'Slap when 4 cards in a row are not face cards',
         emoji: '🌵',
+        chipImage: 'chips/faceless.png',
         simplicity: 4,
         startingConditionEligible: false,
         example: '2<span style="color: red;">♥</span>, 5♠, 8<span style="color: red;">♦</span>, 3♣'

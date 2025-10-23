@@ -726,13 +726,13 @@ html.arcade #physics-canvas {
     transform: scale(0.95);
 }
 
-.condition-emoji {
+.condition-chip {
     width: 3rem;
     height: 3rem;
-    font-size: 1.5rem;
-    background: var(--palette-green);
+    object-fit: cover;
     border-radius: 50%;
-    padding: 0.5rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border: 3px solid var(--palette-dark-green);
     transform: rotate(-90deg);
     animation: spin 4s linear infinite;
 }
@@ -805,9 +805,15 @@ html.arcade #physics-canvas {
     margin: 2em 0;
 }
 
-.arcade #new-condition-screen .condition-info.card-style .condition-emoji {
-    font-size: 4rem;
-    text-align: center;
+.arcade #new-condition-screen .condition-info.card-style .condition-chip {
+    width: 4rem;
+    height: 4rem;
+    object-fit: cover;
+    border-radius: 50%;
+    margin: 0 auto;
+    display: block;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border: 3px solid var(--palette-dark-green);
 }
 
 .condition-header {
@@ -815,10 +821,15 @@ html.arcade #physics-canvas {
     width: 100%;
 }
 
-.condition-emoji-large {
-    font-size: 8rem;
-    margin: 2rem 0;
-    text-align: center;
+.condition-chip-large {
+    width: 8rem;
+    height: 8rem;
+    object-fit: cover;
+    border-radius: 50%;
+    margin: 2rem auto;
+    display: block;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    border: 6px solid var(--palette-dark-green);
     animation: spin 4s linear infinite;
 }
 
@@ -1057,7 +1068,7 @@ html.arcade #physics-canvas {
     width: 100%;
 }
 
-.initial-condition .condition-emoji {
+.initial-condition .condition-chip {
     width: 3rem;
     height: 3rem;
     min-width: 3rem;
@@ -1144,12 +1155,15 @@ html.arcade #physics-canvas {
     font-size: 1.5em;
 }
 
-.initial-condition.card-style .condition-emoji,
-#new-condition-screen .condition-info.card-style .condition-emoji {
+.initial-condition.card-style .condition-chip,
+#new-condition-screen .condition-info.card-style .condition-chip {
     height: 100px;
     width: 100px;
-    font-size: 3em;
+    object-fit: cover;
+    border-radius: 50%;
     align-self: center;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    border: 4px solid var(--palette-dark-green);
 }
 
 .tap-instructions {
@@ -1677,7 +1691,7 @@ input:checked + .slider:before {
     gap: 1rem;
 }
 
-#pause-screen .initial-condition .condition-emoji {
+#pause-screen .initial-condition .condition-chip {
     width: 2.5rem;
     height: 2.5rem;
     min-width: 2.5rem;

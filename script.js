@@ -141,7 +141,7 @@ const summaryStatusText = document.getElementById('summary-status-text');
 const winningPlayerIcon = document.getElementById('winning-player-icon');
 const countdownBar = document.getElementById('countdown-bar');
 const newConditionCountdownBar = document.getElementById('new-condition-countdown-bar');
-const conditionEmojiLarge = document.querySelector('.condition-emoji-large');
+const conditionChipLarge = document.querySelector('.condition-chip-large');
 const conditionName = document.querySelector('.condition-name');
 const conditionDescription = document.querySelector('.condition-description');
 const burstEffect = document.getElementById('burst-effect');
@@ -562,11 +562,12 @@ function displayConditions() {
             const conditionItem = document.createElement('div');
             conditionItem.className = 'condition-item';
             
-            const emojiSpan = document.createElement('span');
-            emojiSpan.className = 'condition-emoji';
-            emojiSpan.textContent = condition.emoji;
+            const chipImg = document.createElement('img');
+            chipImg.className = 'condition-chip';
+            chipImg.src = condition.chipImage;
+            chipImg.alt = condition.name;
             
-            conditionItem.appendChild(emojiSpan);
+            conditionItem.appendChild(chipImg);
             conditionsDisplay.appendChild(conditionItem);
 
             // Add click handler to pause game
@@ -598,10 +599,11 @@ function pauseGame() {
         const conditionElement = document.createElement('div');
         conditionElement.className = 'initial-condition';
         
-        // Create emoji span
-        const emojiSpan = document.createElement('span');
-        emojiSpan.className = 'condition-emoji';
-        emojiSpan.textContent = condition.emoji;
+        // Create chip image
+        const chipImg = document.createElement('img');
+        chipImg.className = 'condition-chip';
+        chipImg.src = condition.chipImage;
+        chipImg.alt = condition.name;
         
         // Create content container
         const contentDiv = document.createElement('div');
@@ -621,7 +623,7 @@ function pauseGame() {
         contentDiv.appendChild(descriptionP);
         
         // Add elements to condition element
-        conditionElement.appendChild(emojiSpan);
+        conditionElement.appendChild(chipImg);
         conditionElement.appendChild(contentDiv);
         
         // Add condition element to the list
@@ -1357,12 +1359,15 @@ function endRound() {
 // Show new condition screen
 async function showNewConditionScreen(condition) {
     // Update condition info for both players
-    const conditionEmojiLargeElements = document.querySelectorAll('.condition-emoji');
+    const conditionChipElements = document.querySelectorAll('.condition-chip');
     const conditionNameElements = document.querySelectorAll('.condition-name');
     const conditionDescriptionElements = document.querySelectorAll('.condition-description');
     const conditionExampleElements = document.querySelectorAll('.condition-example');
     
-    conditionEmojiLargeElements.forEach(el => el.textContent = condition.emoji);
+    conditionChipElements.forEach(el => {
+        el.src = condition.chipImage;
+        el.alt = condition.name;
+    });
     conditionNameElements.forEach(el => el.textContent = condition.name);
     conditionDescriptionElements.forEach(el => el.textContent = condition.description);
     conditionExampleElements.forEach(el => el.innerHTML = `E.g. ${condition.example}`);
@@ -1576,10 +1581,11 @@ function displayInitialConditions() {
             titleSpan.className = 'condition-title';
             titleSpan.textContent = condition.name;
             
-            // Create emoji span
-            const emojiSpan = document.createElement('span');
-            emojiSpan.className = 'condition-emoji';
-            emojiSpan.textContent = condition.emoji;
+            // Create chip image
+            const chipImg = document.createElement('img');
+            chipImg.className = 'condition-chip';
+            chipImg.src = condition.chipImage;
+            chipImg.alt = condition.name;
             
             // Create description paragraph
             const descriptionP = document.createElement('p');
@@ -1592,7 +1598,7 @@ function displayInitialConditions() {
             
             // Add elements to front face
             cardFront.appendChild(titleSpan);
-            cardFront.appendChild(emojiSpan);
+            cardFront.appendChild(chipImg);
             cardFront.appendChild(descriptionP);
             cardFront.appendChild(exampleP);
             
