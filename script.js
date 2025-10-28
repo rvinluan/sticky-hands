@@ -608,6 +608,9 @@ function pauseGame() {
     // Clear existing conditions
     conditionsList.innerHTML = '';
     
+    // Check if we're in arcade mode
+    const isArcade = document.documentElement.classList.contains('arcade');
+    
     // Add each active condition to the list
     for (const conditionKey of activeConditions) {
         const condition = conditions[conditionKey];
@@ -616,32 +619,64 @@ function pauseGame() {
         const conditionElement = document.createElement('div');
         conditionElement.className = 'initial-condition';
         
-        // Create chip image
-        const chipImg = document.createElement('img');
-        chipImg.className = 'condition-chip';
-        chipImg.src = condition.chipImage;
-        chipImg.alt = condition.name;
-        
-        // Create content container
-        const contentDiv = document.createElement('div');
-        contentDiv.className = 'condition-content';
-        
-        // Create title span
-        const titleSpan = document.createElement('span');
-        titleSpan.className = 'condition-title';
-        titleSpan.textContent = condition.name;
-        
-        // Create description paragraph
-        const descriptionP = document.createElement('p');
-        descriptionP.textContent = condition.description;
-        
-        // Add title and description to content container
-        contentDiv.appendChild(titleSpan);
-        contentDiv.appendChild(descriptionP);
-        
-        // Add elements to condition element
-        conditionElement.appendChild(chipImg);
-        conditionElement.appendChild(contentDiv);
+        if (isArcade) {
+            // Arcade mode: use card-style layout with examples
+            conditionElement.classList.add('card-style');
+            
+            // Create chip image
+            const chipImg = document.createElement('img');
+            chipImg.className = 'condition-chip';
+            chipImg.src = condition.chipImage;
+            chipImg.alt = condition.name;
+            
+            // Create title
+            const titleH4 = document.createElement('h4');
+            titleH4.className = 'condition-title';
+            titleH4.textContent = condition.name;
+            
+            // Create description paragraph
+            const descriptionP = document.createElement('p');
+            descriptionP.textContent = condition.description;
+            
+            // Create example paragraph
+            const exampleP = document.createElement('p');
+            exampleP.className = 'condition-example';
+            exampleP.innerHTML = `E.g. ${condition.example}`;
+            
+            // Add elements to condition element
+            conditionElement.appendChild(titleH4);
+            conditionElement.appendChild(chipImg);
+            conditionElement.appendChild(descriptionP);
+            conditionElement.appendChild(exampleP);
+        } else {
+            // Non-arcade mode: use original layout
+            // Create chip image
+            const chipImg = document.createElement('img');
+            chipImg.className = 'condition-chip';
+            chipImg.src = condition.chipImage;
+            chipImg.alt = condition.name;
+            
+            // Create content container
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'condition-content';
+            
+            // Create title span
+            const titleSpan = document.createElement('span');
+            titleSpan.className = 'condition-title';
+            titleSpan.textContent = condition.name;
+            
+            // Create description paragraph
+            const descriptionP = document.createElement('p');
+            descriptionP.textContent = condition.description;
+            
+            // Add title and description to content container
+            contentDiv.appendChild(titleSpan);
+            contentDiv.appendChild(descriptionP);
+            
+            // Add elements to condition element
+            conditionElement.appendChild(chipImg);
+            conditionElement.appendChild(contentDiv);
+        }
         
         // Add condition element to the list
         conditionsList.appendChild(conditionElement);

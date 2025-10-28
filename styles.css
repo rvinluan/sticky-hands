@@ -1769,7 +1769,7 @@ input:checked + .slider:before {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.7);
     z-index: 9;
     opacity: 0;
     pointer-events: none;
@@ -1904,6 +1904,107 @@ input:checked + .slider:before {
 .pause-button-container {
     margin-top: 2rem;
     padding: 2rem;
+}
+
+/* Arcade-specific pause screen styles */
+.arcade #pause-screen .rotate-button {
+    display: none;
+}
+
+.arcade #pause-screen {
+    background-color: transparent;
+    backdrop-filter: none;
+    width: 70%;
+    left: 50%;
+    right: auto;
+    padding: 3rem 2rem;
+    justify-content: center;
+    transform: translateX(-50%) translateX(100vw);
+}
+
+.arcade #pause-screen:not(.hidden) {
+    transform: translateX(-50%);
+}
+
+.arcade #pause-screen.hidden {
+    transform: translateX(-50%) translateX(100vw) !important;
+}
+
+.arcade #pause-screen .condition-info {
+    width: 100%;
+}
+
+.arcade #pause-screen .condition-info h3 {
+    color: white;
+}
+
+.arcade #pause-screen .initial-conditions-list {
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 0;
+    flex-wrap: nowrap;
+}
+
+.arcade #pause-screen .initial-condition.card-style {
+    --scale-factor: 1.5;
+    display: flex;
+    text-align: left;
+    padding: 10px;
+    background-color: white;
+    border-radius: 10px;
+    width: calc(140px * var(--scale-factor));
+    height: calc(200px * var(--scale-factor));
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.arcade #pause-screen .initial-condition.card-style .condition-chip {
+    height: 100px;
+    width: 100px;
+    min-width: 100px;
+    min-height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+    align-self: center;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    border: 4px solid var(--palette-dark-green);
+    background: transparent;
+    padding: 0;
+}
+
+.arcade #pause-screen .initial-condition.card-style .condition-title {
+    font-size: 1.5em;
+    font-family: 'Gooper';
+    color: black;
+    margin: 0;
+}
+
+.arcade #pause-screen .initial-condition.card-style p {
+    font-size: 1rem;
+    font-family: 'Fragment Mono', monospace;
+    color: black;
+    margin: 0;
+    text-align: left;
+}
+
+.arcade #pause-screen .initial-condition.card-style .condition-example {
+    font-size: 1rem;
+    color: rgba(0, 0, 0, 0.7);
+    margin: 0;
+}
+
+.pause-instructions {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.pause-instructions p {
+    font-family: 'Fragment Mono', monospace;
+    font-size: 1.5rem;
+    color: white;
+    margin: 0;
 }
 
 .debug-stats {
