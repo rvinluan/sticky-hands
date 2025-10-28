@@ -1622,29 +1622,61 @@ input:checked + .slider:before {
     text-decoration: underline;
 }
 
-#pause-screen {
+#pause-screen-scrim {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 9;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    display: block !important; /* Override .hidden display: none */
+}
+
+#pause-screen-scrim:not(.hidden) {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#pause-screen {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 50%;
     height: 100%;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
     background-color: var(--palette-grey1);
     z-index: 10;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
+    transform: translateX(100%);
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     padding: 3rem;
     padding-top: calc(3rem + 20px);
-    transition: transform 0.3s ease;
+    display: flex; /* Override .hidden display: none */
+}
+
+/* Override .hidden display: none for pause screen to allow transitions */
+#pause-screen.hidden {
+    display: flex !important;
+    pointer-events: none;
+    transform: translateX(100%);
 }
 
 #pause-screen:not(.hidden) {
-    opacity: 1;
+    transform: translateX(0);
     pointer-events: auto;
 }
 
-#pause-screen.rotated {
-    transform: rotate(180deg);
+#pause-screen.hidden.rotated {
+    transform: translateX(100%) rotate(180deg);
+}
+
+#pause-screen:not(.hidden).rotated {
+    transform: translateX(0) rotate(180deg);
 }
 
 .rotate-button {

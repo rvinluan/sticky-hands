@@ -128,6 +128,7 @@ const newConditionScreen = document.getElementById('new-condition-screen');
 const initialConditionsScreen = document.getElementById('initial-conditions-screen');
 const endScreen = document.getElementById('end-screen');
 const pauseScreen = document.getElementById('pause-screen');
+const pauseScreenScrim = document.getElementById('pause-screen-scrim');
 const playButton = document.getElementById('play-button');
 const replayButton = document.getElementById('replay-button');
 const resumeButton = document.getElementById('resume-button');
@@ -572,9 +573,7 @@ function displayConditions() {
 
             // Add click handler to pause game
             conditionItem.addEventListener('click', () => {
-                if (isGameActive && !isPaused) {
-                    handleIntent('pause-game');
-                }
+                handleIntent('pause-game');
             });
         }
     });
@@ -630,8 +629,8 @@ function pauseGame() {
         conditionsList.appendChild(conditionElement);
     }
     
-    // Show pause screen
-    gameplayScreen.classList.add('hidden');
+    // Show pause screen scrim and pause screen (without hiding gameplay screen)
+    pauseScreenScrim.classList.remove('hidden');
     pauseScreen.classList.remove('hidden');
 }
 
@@ -639,7 +638,7 @@ function pauseGame() {
 function resumeGame() {
     isPaused = false;
     pauseScreen.classList.add('hidden');
-    gameplayScreen.classList.remove('hidden');
+    pauseScreenScrim.classList.add('hidden');
     gameInterval = setInterval(drawCard, drawInterval);
 }
 
@@ -2092,12 +2091,9 @@ function handleIntent(intent) {
             break;
         case 'pause-game':
             // Toggle pause state - pause if active and not paused, resume if paused
-            if (!gameplayScreen.classList.contains('hidden')) {
-                console.log('game pausing');
-                if (!isPaused && isGameActive) {
-                    pauseGame();
-                }
-            } else if (isPaused && !pauseScreen.classList.contains('hidden')) {
+            if (!isPaused && isGameActive) {
+                pauseGame();
+            } else if (isPaused) {
                 playSound(interactBigSound);
                 resumeGame();
             }
