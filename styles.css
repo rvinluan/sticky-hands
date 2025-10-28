@@ -711,22 +711,10 @@ html.arcade #physics-canvas {
     padding-right: 10px;
 }
 
-.conditions-display::before {
-    content: '';
-    position: absolute;
-    right: -30px;
-    top: 50%;
-    transform: translateY(-50%) rotate(-8deg);
-    width: 100px;
-    height: 450px;
-    background-color: var(--palette-green);
-    border-radius: 12px 0 0 12px;
-    z-index: -1;
-}
 
 .conditions-display-arrow {
     position: absolute;
-    left: -20px;
+    left: -60px;
     top: 50%;
     transform: translateY(-50%);
     font-size: 3rem;
@@ -735,19 +723,18 @@ html.arcade #physics-canvas {
     z-index: 2;
     pointer-events: none;
     background-color: var(--palette-green);
-    padding: 15px;
+    padding: 15px 100px 15px 15px;
     border-radius: 12px 0 0 12px;
 }
 
 .conditions-display-text {
     position: absolute;
-    left: -50px;
-    top: 150px;
+    left: -80px;
+    top: calc(50% + 60px);
     font-family: 'Fragment Mono', monospace;
-    font-size: 0.9rem;
+    font-size: .8rem;
     color: black;
-    transform: rotate(-8deg);
-    line-height: 1.4;
+    line-height: 1.2;
     text-align: right;
     white-space: nowrap;
     pointer-events: none;
@@ -758,9 +745,8 @@ html.arcade #physics-canvas {
     flex-direction: column;
     gap: 0;
     position: relative;
-    margin-right: 10px;
+    margin-right: -5px;
     margin-left: auto;
-    margin-top: -300px;
     z-index: 3;
 }
 
@@ -807,6 +793,8 @@ html.arcade #physics-canvas {
 .conditions-display .condition-chip {
     animation: none;
     transform: none;
+    width: 4em;
+    height: 4em;
 }
 
 /* Override spin with bob for initial conditions screen chips */
