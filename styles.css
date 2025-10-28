@@ -1914,24 +1914,30 @@ input:checked + .slider:before {
 .arcade #pause-screen {
     background-color: transparent;
     backdrop-filter: none;
-    width: 70%;
-    left: 50%;
+    width: 100vw;
+    left: auto;
     right: auto;
     padding: 3rem 2rem;
     justify-content: center;
-    transform: translateX(-50%) translateX(100vw);
-}
-
-.arcade #pause-screen:not(.hidden) {
-    transform: translateX(-50%);
+    align-items: center;
 }
 
 .arcade #pause-screen.hidden {
-    transform: translateX(-50%) translateX(100vw) !important;
+    transform: translateX(100vw) !important;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.arcade #pause-screen:not(.hidden) {
+    transform: translateX(0) !important;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .arcade #pause-screen .condition-info {
     width: 100%;
+    max-width: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .arcade #pause-screen .condition-info h3 {
@@ -1940,9 +1946,10 @@ input:checked + .slider:before {
 
 .arcade #pause-screen .initial-conditions-list {
     flex-direction: row;
-    justify-content: space-around;
-    gap: 0;
-    flex-wrap: nowrap;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    width: 1200px;
 }
 
 .arcade #pause-screen .initial-condition.card-style {
@@ -1953,11 +1960,13 @@ input:checked + .slider:before {
     background-color: white;
     border-radius: 10px;
     width: calc(140px * var(--scale-factor));
+    min-width: calc(140px * var(--scale-factor));
     height: calc(200px * var(--scale-factor));
     flex-direction: column;
     align-items: flex-start;
     justify-content: space-between;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    flex-shrink: 0;
 }
 
 .arcade #pause-screen .initial-condition.card-style .condition-chip {
