@@ -557,6 +557,22 @@ function displayConditions() {
     const conditionsDisplay = document.getElementById('conditions-display');
     conditionsDisplay.innerHTML = '';
     
+    // Create arrow element
+    const arrow = document.createElement('div');
+    arrow.className = 'conditions-display-arrow';
+    arrow.innerHTML = '&#10094;'; // Left arrow character
+    conditionsDisplay.appendChild(arrow);
+    
+    // Create text element
+    const text = document.createElement('div');
+    text.className = 'conditions-display-text';
+    text.innerHTML = 'press<br>LEFT<br>to view<br>rules';
+    conditionsDisplay.appendChild(text);
+    
+    // Create chips container
+    const chipsContainer = document.createElement('div');
+    chipsContainer.className = 'conditions-chips-container';
+    
     // Only show active conditions
     Object.entries(conditions).forEach(([key, condition]) => {
         if (activeConditions.has(key)) {
@@ -569,7 +585,7 @@ function displayConditions() {
             chipImg.alt = condition.name;
             
             conditionItem.appendChild(chipImg);
-            conditionsDisplay.appendChild(conditionItem);
+            chipsContainer.appendChild(conditionItem);
 
             // Add click handler to pause game
             conditionItem.addEventListener('click', () => {
@@ -577,6 +593,8 @@ function displayConditions() {
             });
         }
     });
+    
+    conditionsDisplay.appendChild(chipsContainer);
 }
 
 // Pause game

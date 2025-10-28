@@ -700,13 +700,67 @@ html.arcade #physics-canvas {
 }
 
 .conditions-display {
-    position: absolute;
-    left: 20px;
+    position: fixed;
+    right: 0;
     top: 50%;
     transform: translateY(-50%);
     display: flex;
+    flex-direction: row;
+    align-items: center;
+    z-index: 3;
+    padding-right: 10px;
+}
+
+.conditions-display::before {
+    content: '';
+    position: absolute;
+    right: -30px;
+    top: 50%;
+    transform: translateY(-50%) rotate(-8deg);
+    width: 100px;
+    height: 450px;
+    background-color: var(--palette-green);
+    border-radius: 12px 0 0 12px;
+    z-index: -1;
+}
+
+.conditions-display-arrow {
+    position: absolute;
+    left: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 3rem;
+    font-weight: bold;
+    color: black;
+    z-index: 2;
+    pointer-events: none;
+    background-color: var(--palette-green);
+    padding: 15px;
+    border-radius: 12px 0 0 12px;
+}
+
+.conditions-display-text {
+    position: absolute;
+    left: -50px;
+    top: 150px;
+    font-family: 'Fragment Mono', monospace;
+    font-size: 0.9rem;
+    color: black;
+    transform: rotate(-8deg);
+    line-height: 1.4;
+    text-align: right;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.conditions-chips-container {
+    display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 0;
+    position: relative;
+    margin-right: 10px;
+    margin-left: auto;
+    margin-top: -300px;
     z-index: 3;
 }
 
@@ -716,14 +770,28 @@ html.arcade #physics-canvas {
     justify-content: center;
     cursor: pointer;
     transition: transform 0.2s ease;
+    position: relative;
+}
+
+.condition-item:not(:first-child) {
+    margin-top: -15px;
+}
+
+.condition-item:nth-child(even) {
+    transform: translateX(-5px);
+}
+
+.condition-item:nth-child(odd) {
+    transform: translateX(5px);
 }
 
 .condition-item:hover {
-    transform: scale(1.1);
+    transform: scale(1.1) translateX(0) !important;
+    z-index: 10;
 }
 
 .condition-item:active {
-    transform: scale(0.95);
+    transform: scale(0.95) translateX(0) !important;
 }
 
 .condition-chip {
@@ -733,13 +801,34 @@ html.arcade #physics-canvas {
     border-radius: 50%;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     border: 3px solid var(--palette-dark-green);
-    transform: rotate(-90deg);
-    animation: spin 4s linear infinite;
+}
+
+/* Remove spin animation from gameplay screen condition chips */
+.conditions-display .condition-chip {
+    animation: none;
+    transform: none;
+}
+
+/* Override spin with bob for initial conditions screen chips */
+#initial-conditions-screen .condition-chip,
+#initial-conditions-screen img.condition-chip {
+    animation: bob 1.5s ease-in-out infinite !important;
+}
+
+/* Ensure no rotation on initial conditions chips - let bob animation handle transform */
+#initial-conditions-screen .initial-condition .condition-chip,
+#initial-conditions-screen .initial-condition img.condition-chip {
+    transform: translateY(0);
 }
 
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+@keyframes bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
 }
 
 .condition-name {
@@ -1080,6 +1169,23 @@ html.arcade #physics-canvas {
     display: flex;
     align-items: center;
     justify-content: center;
+    animation: bob 1.5s ease-in-out infinite;
+}
+
+/* Stagger the bob animation for each chip */
+#initial-conditions-screen .initial-conditions-list .initial-condition:nth-child(1) .condition-chip,
+#initial-conditions-screen .initial-conditions-list .initial-condition:nth-child(1) img.condition-chip {
+    animation-delay: 0s !important;
+}
+
+#initial-conditions-screen .initial-conditions-list .initial-condition:nth-child(2) .condition-chip,
+#initial-conditions-screen .initial-conditions-list .initial-condition:nth-child(2) img.condition-chip {
+    animation-delay: 0.2s !important;
+}
+
+#initial-conditions-screen .initial-conditions-list .initial-condition:nth-child(3) .condition-chip,
+#initial-conditions-screen .initial-conditions-list .initial-condition:nth-child(3) img.condition-chip {
+    animation-delay: 0.4s !important;
 }
 
 .initial-condition p {
@@ -1164,6 +1270,41 @@ html.arcade #physics-canvas {
     align-self: center;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
     border: 4px solid var(--palette-dark-green);
+    animation: bob 1.5s ease-in-out infinite !important;
+}
+
+#initial-conditions-screen .initial-condition.card-style .condition-chip {
+    animation: bob 1.5s ease-in-out infinite !important;
+}
+
+/* Stagger the bob animation for card-style chips */
+#initial-conditions-screen .initial-conditions-list .initial-condition.card-style:nth-child(1) .condition-chip {
+    animation-delay: 0s;
+}
+
+#initial-conditions-screen .initial-conditions-list .initial-condition.card-style:nth-child(2) .condition-chip {
+    animation-delay: 0.2s;
+}
+
+#initial-conditions-screen .initial-conditions-list .initial-condition.card-style:nth-child(3) .condition-chip {
+    animation-delay: 0.4s;
+}
+
+/* Also handle card face chips */
+#initial-conditions-screen .initial-condition.card-style .card-face img.condition-chip {
+    animation: bob 1.5s ease-in-out infinite !important;
+}
+
+#initial-conditions-screen .initial-condition.card-style:nth-child(1) .card-face img.condition-chip {
+    animation-delay: 0s !important;
+}
+
+#initial-conditions-screen .initial-condition.card-style:nth-child(2) .card-face img.condition-chip {
+    animation-delay: 0.2s !important;
+}
+
+#initial-conditions-screen .initial-condition.card-style:nth-child(3) .card-face img.condition-chip {
+    animation-delay: 0.4s !important;
 }
 
 .tap-instructions {
