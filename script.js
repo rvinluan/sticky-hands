@@ -573,7 +573,7 @@ function displayConditions() {
             // Add click handler to pause game
             conditionItem.addEventListener('click', () => {
                 if (isGameActive && !isPaused) {
-                    pauseGame();
+                    handleIntent('pause-game');
                 }
             });
         }
@@ -2035,9 +2035,12 @@ function isCurrentScreenSwipeable() {
 
 function handleIntent(intent) {
     let whichPlayer = players[intent.split('-')[1] - 1];
-    let psx = PLAYER_START_POSITIONS[whichPlayer.id - 1].x;
-    let psy = PLAYER_START_POSITIONS[whichPlayer.id - 1].y;
-    let isTop = whichPlayer.id == 3 || whichPlayer.id == 2;
+    let psx, psy, isTop;
+    if(whichPlayer) {
+        psx = PLAYER_START_POSITIONS[whichPlayer.id - 1].x;
+        psy = PLAYER_START_POSITIONS[whichPlayer.id - 1].y;
+        isTop = whichPlayer.id == 3 || whichPlayer.id == 2;
+    }
     switch(intent) {
         case 'player-1-primary':
         case 'player-2-primary':
@@ -2085,6 +2088,18 @@ function handleIntent(intent) {
                 } else {
                     console.log('Debug: Game timer resumed');
                 }
+            }
+            break;
+        case 'pause-game':
+            // Toggle pause state - pause if active and not paused, resume if paused
+            if (!gameplayScreen.classList.contains('hidden')) {
+                console.log('game pausing');
+                if (!isPaused && isGameActive) {
+                    pauseGame();
+                }
+            } else if (isPaused && !pauseScreen.classList.contains('hidden')) {
+                playSound(interactBigSound);
+                resumeGame();
             }
             break;
         default:

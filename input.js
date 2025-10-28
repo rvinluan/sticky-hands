@@ -117,6 +117,9 @@ document.addEventListener('keydown', (event) => {
         debugger;
     }
 
+    if(event.key === 'ArrowLeft') {
+        handleIntent('pause-game');
+    }
     if(event.key === '1') {
         handleIntent('pause-card-draw');
     }
