@@ -366,6 +366,79 @@ function duckBackgroundMusicForSound(soundEffect, duckVolume = 0.01, duckDuratio
 //  | Helper Functions                                                        │
 //  └─────────────────────────────────────────────────────────────────────────┘
 
+// Screenshake effect
+function screenShake(strength = 10, duration = 300) {
+    const startTime = performance.now();
+    const documentElement = document.documentElement;
+    
+    function shake(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = elapsed / duration;
+        
+        if (progress < 1) {
+            // Calculate shake intensity that decreases over time
+            const intensity = strength * (1 - progress);
+            
+            // Generate random offsets
+            const offsetX = (Math.random() - 0.5) * intensity * 2;
+            const offsetY = (Math.random() - 0.5) * intensity * 2;
+            const rotation = (Math.random() - 0.5) * (intensity / 10);
+            
+            // Apply transform
+            documentElement.style.transform = `translate(${offsetX}px, ${offsetY}px) rotate(${rotation}deg)`;
+            
+            requestAnimationFrame(shake);
+        } else {
+            // Reset transform when done
+            documentElement.style.transform = '';
+        }
+    }
+    
+    requestAnimationFrame(shake);
+}
+
+// Continuous shake for an element (returns a stop function)
+function startContinuousShake(element, strength = 5) {
+    let animationId = null;
+    let currentScale = 1;
+    let isActive = true;
+    
+    function shake() {
+        if (!isActive) return;
+        
+        // Generate random offsets
+        const offsetX = (Math.random() - 0.5) * strength * 2;
+        const offsetY = (Math.random() - 0.5) * strength * 2;
+        const rotation = (Math.random() - 0.5) * (strength / 5);
+        
+        // Apply transform with shake and current scale
+        element.style.transform = `translate(${offsetX}px, ${offsetY}px) rotate(${rotation}deg) scale(${currentScale})`;
+        
+        animationId = requestAnimationFrame(shake);
+    }
+    
+    shake();
+    
+    // Return control object
+    return {
+        setScale: (scale) => {
+            currentScale = scale;
+        },
+        stop: () => {
+            isActive = false;
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+            // Smoothly transition back to normal
+            element.style.transition = 'transform 0.2s ease-out';
+            element.style.transform = '';
+            setTimeout(() => {
+                element.style.transition = '';
+            }, 200);
+        }
+    };
+}
+
 /*
 Player Areas Diagram Depending on Player Count:
 2 Players:          3 Players:          4 Players:
@@ -1069,6 +1142,27 @@ async function animateCardsFlyOff(player) {
         targetX = -viewportWidth * 0.25;
     }
     
+    // Start continuous shake on score element
+    const scoreShaker = startContinuousShake(player.scoreElement, 4);
+    
+    // Track points scored for scaling
+    let pointsScored = 0;
+    
+    // Function to update scale based on points
+    function updateScaleForPoints(points) {
+        let scale = 1;
+        if (points >= 11) {
+            scale = 2.5;
+        } else if (points >= 8) {
+            scale = 2.0;
+        } else if (points >= 5) {
+            scale = 1.5;
+        } else if (points >= 2) {
+            scale = 1.1;
+        }
+        scoreShaker.setScale(scale);
+    }
+    
     // Create and apply the animation to each card
     const animations = Array.from(cardElements).map((card, index) => {
         return new Promise(resolve => {
@@ -1099,6 +1193,11 @@ async function animateCardsFlyOff(player) {
                 // Update score for the correct player
                 playSound(pointSound);
                 player.updateScore(1);
+                
+                // Update points counter and scale
+                pointsScored++;
+                updateScaleForPoints(pointsScored);
+                
                 if(player.score >= WINNING_SCORE) {
                     endGame();
                     resolve();
@@ -1111,6 +1210,9 @@ async function animateCardsFlyOff(player) {
     // Wait for all animations to complete
     await Promise.all(animations);
     console.log('cards are done flying off screen');
+    
+    // Stop shaking and reset scale
+    scoreShaker.stop();
 }
 
 function checkForSimultaneousSlaps(player) {    
@@ -1141,6 +1243,7 @@ async function handleSlap(player) {
             isGameActive = true;
             playSound(slapSound);
             playSound(correctSound);
+            screenShake(12, 500);
             setTimeout(() => {
                 triggerPhysicsHitstop(player);
             }, 150);
@@ -1246,6 +1349,7 @@ async function resolveSuccessfulSlap(conditionsMet, player) {
         triggerPhysicsHitstop(player);
         playSound(slapSound);
         playSound(correctSound); // Play correct sound
+        screenShake(10, 400);
     }, 100);
 
     // Show success message with points
@@ -1271,6 +1375,9 @@ async function resolveIncorrectSlap(player) {
     
     // Show incorrect slap message with penalty
     showToast('Incorrect Slap', 'error', 1000, player, -INCORRECT_SLAP_PENALTY);
+    
+    // Trigger screenshake effect (more intense and slower for incorrect slaps)
+    screenShake(15, 600);
     
     // Play incorrect sound
     playSound(slapSound);
@@ -2146,6 +2253,7 @@ function handleIntent(intent) {
                 manifestHand(whichPlayer, psx, psy, isTop);
                 updateJoinMessage(whichPlayer.id, 'join');
                 playSound(changeSound);
+                screenShake(8, 400);
             } else {
                 //READY
                 if(whichPlayer.joined && !whichPlayer.ready && isScreenActive('initial-conditions-screen')) {
