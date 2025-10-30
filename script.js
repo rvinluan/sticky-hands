@@ -1326,23 +1326,79 @@ async function resolveSuccessfulSlap(conditionsMet, player) {
         card.style.animationPlayState = 'paused';
     });
 
-    // Show burst effect at the target card's position
-    burstEffect.style.transform = `translate(calc(-50% + ${targetCardOffset}px), -50%)`;
+    // Show burst effect at the target card's position with scale animation
     burstEffect.classList.remove('hidden');
     burstEffect.classList.add('show');
-
-    // Hide burst effect after 500ms
-    setTimeout(() => {
-        burstEffect.classList.remove('show');
-        burstEffect.classList.add('hidden');
-        // Reset transform
-        burstEffect.style.transform = 'translate(-50%, -50%)';
+    
+    // Start with scale 0 and position
+    burstEffect.style.transform = `translate(calc(-50% + ${targetCardOffset}px), -50%) scale(0) rotate(0deg)`;
+    
+    // Force reflow to ensure initial state is applied
+    burstEffect.offsetHeight;
+    
+    // Start continuous rotation animation
+    let rotationAngle = 0;
+    let rotationAnimationId = null;
+    let currentScale = 0;
+    let isRotating = true;
+    
+    function rotateBurst() {
+        if (!isRotating) return;
         
-        // Resume all card animations
-        cardElements.forEach(card => {
-            card.style.animationPlayState = 'running';
-        });
-    }, 500);
+        rotationAngle -= 0.5; // Rotate left (counter-clockwise) by 2 degrees per frame
+        burstEffect.style.transform = `translate(calc(-50% + ${targetCardOffset}px), -50%) scale(${currentScale}) rotate(${rotationAngle}deg)`;
+        
+        rotationAnimationId = requestAnimationFrame(rotateBurst);
+    }
+    
+    rotateBurst();
+    
+    // Animate scale up very fast (150ms)
+    burstEffect.style.transition = 'transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1)'; // Elastic ease out
+    requestAnimationFrame(() => {
+        currentScale = 1;
+        // Temporarily stop rotation animation to let CSS transition handle scale
+        isRotating = false;
+        if (rotationAnimationId) {
+            cancelAnimationFrame(rotationAnimationId);
+        }
+        
+        burstEffect.style.transform = `translate(calc(-50% + ${targetCardOffset}px), -50%) scale(1) rotate(${rotationAngle}deg)`;
+        
+        // Resume rotation after scale animation
+        setTimeout(() => {
+            burstEffect.style.transition = '';
+            isRotating = true;
+            currentScale = 1;
+            rotateBurst();
+        }, 150);
+    });
+
+    // Hide burst effect after 1200ms
+    setTimeout(() => {
+        // Stop rotation and animate scale down (200ms)
+        isRotating = false;
+        if (rotationAnimationId) {
+            cancelAnimationFrame(rotationAnimationId);
+        }
+        
+        burstEffect.style.transition = 'transform 0.2s ease-in';
+        burstEffect.style.transform = `translate(calc(-50% + ${targetCardOffset}px), -50%) scale(0) rotate(${rotationAngle}deg)`;
+        
+        // After scale down animation, hide and reset
+        setTimeout(() => {
+            burstEffect.classList.remove('show');
+            burstEffect.classList.add('hidden');
+            // Reset transform and transition
+            burstEffect.style.transition = '';
+            burstEffect.style.transform = 'translate(-50%, -50%)';
+            
+            // Resume all card animations
+            cardElements.forEach(card => {
+                card.style.animationPlayState = 'running';
+            });
+        }, 200);
+    }, 1200);
 
     // Physics hitstop AFTER a small delay to allow fling
     setTimeout(() => {
