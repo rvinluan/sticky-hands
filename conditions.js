@@ -12,7 +12,8 @@ const conditionsObject = {
         chipImage: 'chips/joker.png',
         simplicity: 1,
         startingConditionEligible: true,
-        example: 'Joker'
+        example: 'Joker',
+        cardsToAdd: [{ rank: 'joker' }, { rank: 'joker' }]
     },
     jackblack: {
         check: (pile) => {
@@ -26,7 +27,8 @@ const conditionsObject = {
         chipImage: 'chips/blackjack.png',
         simplicity: 1,
         startingConditionEligible: true,
-        example: 'J♠ or J♣'
+        example: 'J♠ or J♣',
+        cardsToAdd: [{ suit: '♠', rank: 'J' }, { suit: '♣', rank: 'J' }]
     },
     lucky7: {
         check: (pile) => {
@@ -40,7 +42,8 @@ const conditionsObject = {
         chipImage: 'chips/seven.png',
         simplicity: 1,
         startingConditionEligible: true,
-        example: '7<span style="color: red;">♥</span>, 7<span style="color: red;">♦</span>, 7♣, or 7♠'
+        example: '7<span style="color: red;">♥</span>, 7<span style="color: red;">♦</span>, 7♣, or 7♠',
+        cardsToAdd: [{ suit: '♥', rank: '7' }, { suit: '♦', rank: '7' }]
     },
     spiders: {
         check: (pile) => {
@@ -54,7 +57,8 @@ const conditionsObject = {
         chipImage: 'chips/eight.png',
         simplicity: 1,
         startingConditionEligible: true,
-        example: '8<span style="color: red;">♥</span>, 8<span style="color: red;">♦</span>, 8♣, or 8♠'
+        example: '8<span style="color: red;">♥</span>, 8<span style="color: red;">♦</span>, 8♣, or 8♠',
+        cardsToAdd: [{ suit: '♥', rank: '8' }, { suit: '♦', rank: '8' }]
     },
     six: {
         check: (pile) => {
@@ -68,7 +72,8 @@ const conditionsObject = {
         chipImage: 'chips/six.png',
         simplicity: 1,
         startingConditionEligible: true,
-        example: '6<span style="color: red;">♥</span>, 6<span style="color: red;">♦</span>, 6♣, or 6♠'
+        example: '6<span style="color: red;">♥</span>, 6<span style="color: red;">♦</span>, 6♣, or 6♠',
+        cardsToAdd: [{ suit: '♥', rank: '6' }, { suit: '♦', rank: '6' }]
     },
     highFive: {
         check: (pile) => {
@@ -82,7 +87,8 @@ const conditionsObject = {
         chipImage: 'chips/five.png',
         simplicity: 1,
         startingConditionEligible: true,
-        example: '5<span style="color: red;">♥</span>, 5<span style="color: red;">♦</span>, 5♣, or 5♠'
+        example: '5<span style="color: red;">♥</span>, 5<span style="color: red;">♦</span>, 5♣, or 5♠',
+        cardsToAdd: [{ suit: '♥', rank: '5' }, { suit: '♦', rank: '5' }]
     },
     redQueen: {
         check: (pile) => {
@@ -96,7 +102,8 @@ const conditionsObject = {
         chipImage: 'chips/redqueen.png',
         simplicity: 1,
         startingConditionEligible: true,
-        example: 'Q<span style="color: red;">♥</span> or Q<span style="color: red;">♦</span>'
+        example: 'Q<span style="color: red;">♥</span> or Q<span style="color: red;">♦</span>',
+        cardsToAdd: [{ suit: '♥', rank: 'Q' }, { suit: '♦', rank: 'Q' }]
     },
     nice: {
         check: (pile) => {
@@ -111,7 +118,8 @@ const conditionsObject = {
         chipImage: 'chips/nice.png',
         simplicity: 2,
         startingConditionEligible: false,
-        example: '6<span style="color: red;">♥</span>, 9♠'
+        example: '6<span style="color: red;">♥</span>, 9♠',
+        cardsToAdd: [{ suit: '♥', rank: '6' }, { suit: '♦', rank: '9' }]
     },
     double: {
         check: (pile) => {
@@ -126,7 +134,8 @@ const conditionsObject = {
         chipImage: 'chips/doubles.png',
         simplicity: 2,
         startingConditionEligible: true,
-        example: '7<span style="color: red;">♥</span>, 7♠'
+        example: '7<span style="color: red;">♥</span>, 7♠',
+        cardsToAdd: [{ suit: '♥', rank: '7' }, { suit: '♦', rank: '7' }]
     },
     sumTo12: {
         check: (pile) => {
@@ -147,7 +156,8 @@ const conditionsObject = {
         chipImage: 'chips/twelve.png',
         simplicity: 2,
         startingConditionEligible: false,
-        example: '5<span style="color: red;">♥</span>, 7♠ (5+7=12)'
+        example: '5<span style="color: red;">♥</span>, 7♠ (5+7=12)',
+        cardsToAdd: [{ suit: '♥', rank: '5' }, { suit: '♦', rank: '7' }]
     },
     consecutive: {
         check: (pile) => {
@@ -162,7 +172,8 @@ const conditionsObject = {
         chipImage: 'chips/consecutive.png',
         simplicity: 2,
         startingConditionEligible: true,
-        example: '4<span style="color: red;">♥</span>, 5♠ or J<span style="color: red;">♥</span>, 10♠'
+        example: '4<span style="color: red;">♥</span>, 5♠ or J<span style="color: red;">♥</span>, 10♠',
+        cardsToAdd: [{ suit: '♥', rank: '4' }, { suit: '♦', rank: '5' }]
     },
     radio: {
         check: (pile) => {
@@ -177,7 +188,8 @@ const conditionsObject = {
         chipImage: 'chips/radio.png',
         simplicity: 2,
         startingConditionEligible: false,
-        example: '10<span style="color: red;">♥</span>, 4♠'
+        example: '10<span style="color: red;">♥</span>, 4♠',
+        cardsToAdd: [{ suit: '♥', rank: '10' }, { suit: '♦', rank: '4' }]
     },
     lovers: {
         check: (pile) => {
@@ -192,7 +204,8 @@ const conditionsObject = {
         chipImage: 'chips/hearts.png',
         simplicity: 2,
         startingConditionEligible: true,
-        example: '7<span style="color: red;">♥</span>, 2<span style="color: red;">♥</span>'
+        example: '7<span style="color: red;">♥</span>, 2<span style="color: red;">♥</span>',
+        cardsToAdd: [{ suit: '♥', rank: '7' }, { suit: '♥', rank: '2' }]
     },
     spades: {
         check: (pile) => {
@@ -207,7 +220,8 @@ const conditionsObject = {
         chipImage: 'chips/spades.png',
         simplicity: 2,
         startingConditionEligible: true,
-        example: 'K♠, 3♠'
+        example: 'K♠, 3♠',
+        cardsToAdd: [{ suit: '♠', rank: 'K' }, { suit: '♠', rank: '3' }]
     },
     clubs: {
         check: (pile) => {
@@ -222,7 +236,8 @@ const conditionsObject = {
         chipImage: 'chips/clubs.png',
         simplicity: 2,
         startingConditionEligible: true,
-        example: 'A♣, 8♣'
+        example: 'A♣, 8♣',
+        cardsToAdd: [{ suit: '♣', rank: 'A' }, { suit: '♣', rank: '8' }]
     },
     diamonds: {
         check: (pile) => {
@@ -237,7 +252,8 @@ const conditionsObject = {
         chipImage: 'chips/diamonds.png',
         simplicity: 2,
         startingConditionEligible: true,
-        example: 'Q<span style="color: red;">♦</span>, 6<span style="color: red;">♦</span>'
+        example: 'Q<span style="color: red;">♦</span>, 6<span style="color: red;">♦</span>',
+        cardsToAdd: [{ suit: '♦', rank: 'Q' }, { suit: '♦', rank: '6' }]
     },
     evenSteven: {
         check: (pile) => {
@@ -257,7 +273,8 @@ const conditionsObject = {
         chipImage: 'chips/evensteven.png',
         simplicity: 2,
         startingConditionEligible: true,
-        example: '4<span style="color: red;">♥</span>, 8♠'
+        example: '4<span style="color: red;">♥</span>, 8♠',
+        cardsToAdd: [{ suit: '♥', rank: '4' }, { suit: '♦', rank: '8' }]
     },
     oddTodd: {
         check: (pile) => {
@@ -277,7 +294,8 @@ const conditionsObject = {
         chipImage: 'chips/oddtodd.png',
         simplicity: 2,
         startingConditionEligible: false,
-        example: '3<span style="color: red;">♥</span>, 7♠'
+        example: '3<span style="color: red;">♥</span>, 7♠',
+        cardsToAdd: [{ suit: '♥', rank: '3' }, { suit: '♦', rank: '7' }]
     },
     paperSizes: {
         check: (pile) => {
@@ -296,7 +314,8 @@ const conditionsObject = {
         chipImage: 'chips/papersizes.png',
         simplicity: 2,
         startingConditionEligible: false,
-        example: 'A<span style="color: red;">♥</span>, 5♠'
+        example: 'A<span style="color: red;">♥</span>, 5♠',
+        cardsToAdd: [{ suit: '♥', rank: 'A' }, { suit: '♦', rank: '5' }]
     },
     bestDecade: {
         check: (pile) => {
@@ -315,7 +334,8 @@ const conditionsObject = {
         chipImage: 'chips/bestdecade.png',
         simplicity: 2,
         startingConditionEligible: false,
-        example: '9<span style="color: red;">♥</span>, 3♠'
+        example: '9<span style="color: red;">♥</span>, 3♠',
+        cardsToAdd: [{ suit: '♥', rank: '9' }, { suit: '♦', rank: '3' }]
     },
     sandwich: {
         check: (pile) => {

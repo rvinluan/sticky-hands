@@ -777,6 +777,40 @@ function shuffleDeck(deckToShuffle = deck) {
     }
 }
 
+// Add condition-relevant cards to the deck
+function addConditionRelevantCards() {
+    // Iterate through active conditions
+    for (const conditionKey of activeConditions) {
+        const condition = conditions[conditionKey];
+        
+        // Only add cards for conditions of simplicity 1 or 2 that have cardsToAdd defined
+        if ((condition.simplicity === 1 || condition.simplicity === 2) && condition.cardsToAdd) {
+            // For each card to add, check if it's already in the deck to avoid duplicates
+            for (const cardToAdd of condition.cardsToAdd) {
+                const isDuplicate = deck.some(card => {
+                    // For jokers, only check rank
+                    if (cardToAdd.rank === 'joker') {
+                        return card.rank === 'joker';
+                    }
+                    // For regular cards, check both suit and rank
+                    return card.suit === cardToAdd.suit && card.rank === cardToAdd.rank;
+                });
+                
+                // If not a duplicate, remove a random card and add the new card
+                if (!isDuplicate) {
+                    // Remove a random card from the deck to maintain deck size
+                    deck.splice(Math.floor(Math.random() * deck.length), 1);
+                    // Add the new card
+                    deck.push(cardToAdd);
+                }
+            }
+        }
+    }
+    
+    // Shuffle deck after adding all condition-relevant cards
+    shuffleDeck();
+}
+
 // Create card element
 function createCardElement(card, index) {
     const cardElement = document.createElement('div');
@@ -1740,19 +1774,9 @@ async function startGame() {
     
     // Initialize deck
     initializeDeck();
-    // Add jokers if joker condition is active
-    if (activeConditions.has('joker')) {
-        // Remove two random cards from the deck
-        deck.splice(Math.floor(Math.random() * deck.length), 1);
-        deck.splice(Math.floor(Math.random() * deck.length), 1);
-        
-        // Add two jokers to the deck
-        deck.push({ rank: 'joker' });
-        deck.push({ rank: 'joker' });
-        
-        // Shuffle deck again after adding jokers
-        shuffleDeck();
-    }
+    
+    // Add condition-relevant cards for active conditions
+    addConditionRelevantCards();
 
     // display the conditions on the gameplay screen
     displayConditions();
