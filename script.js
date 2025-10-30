@@ -720,14 +720,37 @@ function initializeDeck() {
             }
         }
         
+        // Get condition-relevant cards to add to deck
+        const conditionCards = getConditionRelevantCards();
+        
+        // Add condition-relevant cards to the deck first
+        deck.push(...conditionCards);
+        
+        // Remove condition-relevant cards from unusedCards to avoid duplicates
+        for (const condCard of conditionCards) {
+            const index = unusedCards.findIndex(card => {
+                // For jokers, only check rank (and skip removal since jokers aren't in unusedCards)
+                if (condCard.rank === 'joker') {
+                    return false; // Jokers are not in the standard deck
+                }
+                // For regular cards, check both suit and rank
+                return card.suit === condCard.suit && card.rank === condCard.rank;
+            });
+            if (index !== -1) {
+                unusedCards.splice(index, 1);
+            }
+        }
+        
         // Shuffle unused cards
         shuffleDeck(unusedCards);
         
-        // Take initial cards for the deck
-        deck = unusedCards.splice(0, INITIAL_DECK_SIZE);
-        // // Add jokers to deck
-        // deck.push({ rank: 'joker' });
-        // deck.push({ rank: 'joker' });   
+        // Calculate how many more cards we need to reach INITIAL_DECK_SIZE
+        const remainingCardsNeeded = INITIAL_DECK_SIZE - deck.length;
+        
+        // Take remaining cards for the deck from unused cards
+        const additionalCards = unusedCards.splice(0, remainingCardsNeeded);
+        deck.push(...additionalCards);
+        
         // Shuffle deck
         shuffleDeck(deck);   
         currentDeckSize = deck.length;
@@ -777,17 +800,19 @@ function shuffleDeck(deckToShuffle = deck) {
     }
 }
 
-// Add condition-relevant cards to the deck
-function addConditionRelevantCards() {
+// Get all condition-relevant cards to add to the deck
+function getConditionRelevantCards() {
+    const cardsToAdd = [];
+    
     // Iterate through active conditions
     for (const conditionKey of activeConditions) {
         const condition = conditions[conditionKey];
         
-        // Only add cards for conditions of simplicity 1 or 2 that have cardsToAdd defined
+        // Only collect cards for conditions of simplicity 1 or 2 that have cardsToAdd defined
         if ((condition.simplicity === 1 || condition.simplicity === 2) && condition.cardsToAdd) {
-            // For each card to add, check if it's already in the deck to avoid duplicates
+            // For each card to add, check if it's already in our collection to avoid duplicates
             for (const cardToAdd of condition.cardsToAdd) {
-                const isDuplicate = deck.some(card => {
+                const isDuplicate = cardsToAdd.some(card => {
                     // For jokers, only check rank
                     if (cardToAdd.rank === 'joker') {
                         return card.rank === 'joker';
@@ -796,19 +821,15 @@ function addConditionRelevantCards() {
                     return card.suit === cardToAdd.suit && card.rank === cardToAdd.rank;
                 });
                 
-                // If not a duplicate, remove a random card and add the new card
+                // If not a duplicate, add it to our collection
                 if (!isDuplicate) {
-                    // Remove a random card from the deck to maintain deck size
-                    deck.splice(Math.floor(Math.random() * deck.length), 1);
-                    // Add the new card
-                    deck.push(cardToAdd);
+                    cardsToAdd.push(cardToAdd);
                 }
             }
         }
     }
     
-    // Shuffle deck after adding all condition-relevant cards
-    shuffleDeck();
+    return cardsToAdd;
 }
 
 // Create card element
@@ -1772,11 +1793,8 @@ async function startGame() {
     drawIntervalDelta = (MAX_DRAW_INTERVAL - MIN_DRAW_INTERVAL) / (ROUNDS_TO_MAX_SPEED - 1);
     drawInterval = MAX_DRAW_INTERVAL; // Start at maximum interval (slowest speed)
     
-    // Initialize deck
+    // Initialize deck (includes condition-relevant cards)
     initializeDeck();
-    
-    // Add condition-relevant cards for active conditions
-    addConditionRelevantCards();
 
     // display the conditions on the gameplay screen
     displayConditions();
