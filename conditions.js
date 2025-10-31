@@ -15,13 +15,13 @@ const conditionsObject = {
         example: 'Joker',
         cardsToAdd: [{ rank: 'joker' }, { rank: 'joker' }]
     },
-    jackblack: {
+    blackjack: {
         check: (pile) => {
             if (pile.length < 1) return false;
             const lastCard = pile[pile.length - 1];
             return lastCard.rank === 'J' && (lastCard.suit === '♠' || lastCard.suit === '♣');
         },
-        name: 'Jack Black',
+        name: 'Black Jack',
         description: 'Slap when a black Jack appears',
         emoji: '🐼',
         chipImage: 'chips/blackjack.png',
@@ -370,7 +370,7 @@ const conditionsObject = {
         startingConditionEligible: true,
         example: '2<span style="color: red;">♥</span>, 7<span style="color: red;">♥</span>, K<span style="color: red;">♥</span>'
     },
-    deserted: {
+    noface: {
         check: (pile) => {
             if (pile.length < 4) return false;
             const lastCard = pile[pile.length - 1];
@@ -383,7 +383,7 @@ const conditionsObject = {
             return ![lastCard, secondLastCard, thirdLastCard, fourthLastCard]
                 .some(card => faceCards.includes(card.rank));
         },
-        name: 'Deserted',
+        name: 'No Face',
         description: 'Slap when 4 cards in a row are not face cards',
         emoji: '🌵',
         chipImage: 'chips/faceless.png',

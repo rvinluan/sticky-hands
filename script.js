@@ -1,13 +1,14 @@
 //  ┌─────────────────────────────────────────────────────────────────────────┐
 //  | Configuration Variables                                                 │
 //  └─────────────────────────────────────────────────────────────────────────┘
-const CARDS_PER_ROUND = 5; // Cards to add each round
-const INITIAL_DECK_SIZE = 10; // Starting deck size
-const WINNING_SCORE = 20; // Score needed to win the game
-const SINGLE_PLAYER_TOTAL_ROUNDS = 5; // Total rounds for single player mode
-const INCORRECT_SLAP_PENALTY = 2; // Points deducted for incorrect slaps
+const CARDS_PER_ROUND = 5; // Cards to add each round [default 5]
+const INITIAL_DECK_SIZE = 10; // Starting deck size [default 10]    
+const WINNING_SCORE = 20; // Score needed to win the game [default 20]
+const SINGLE_PLAYER_TOTAL_ROUNDS = 5; // Total rounds for single player mode [default 5]
+const INCORRECT_SLAP_PENALTY = 2; // Points deducted for incorrect slaps [default 2]
+const NEW_CONDITION_ROUNDS = [3, 5, 7]; //Which rounds to add a new condition [default [3, 5, 7]]
 //Computer difficulty settings
-var DIFFICULTY = 2; // 1 = easy, 2 = medium, 3 = hard
+var DIFFICULTY = 2; // 1 = easy, 2 = medium, 3 = hard [default 2]
 var COMPUTER_SLAP_CHANCE = 0.5; // Chance for computer to slap
 var COMPUTER_SLAP_DELAY = 600; // Delay before computer slaps in ms
 var MIN_DRAW_INTERVAL = 800; // Minimum draw interval in ms (fastest speed)
@@ -16,6 +17,12 @@ const ROUNDS_TO_MAX_SPEED = 9; // Number of rounds until max speed is reached
 const SWIPE_THRESHOLD = 70; // Minimum distance for a swipe in pixels
 const X_POSITION_OFFSET = 200; // Position offset for player hands
 const SIMULTANEOUS_SLAP_THRESHOLD = 150; // Time threshold for simultaneous slaps in ms
+
+// Debug: Override initial conditions for testing
+// Set this array to force specific starting conditions instead of random selection
+// Example: ['double', 'spades', 'six'] will force these as starting conditions
+// Leave empty [] for normal random selection
+const INITIAL_CONDITIONS_OVERRIDES = [];
 
 // Confetti settings
 const CONFETTI_COUNT = 1500; // Number of confetti pieces
@@ -1715,9 +1722,7 @@ async function startNewRound() {
     // Reduce draw interval by the calculated delta for faster speed
     drawInterval = Math.max(MIN_DRAW_INTERVAL, drawInterval - drawIntervalDelta);
     
-    // Add a new random condition if there are still inactive ones
-    const newConditionRounds = [2, 3, 4, 5, 7];
-    if (newConditionRounds.includes(currentRound)) {
+    if (NEW_CONDITION_ROUNDS.includes(currentRound)) {
         const inactiveConditions = Object.keys(conditions).filter(key => !activeConditions.has(key));
         if (inactiveConditions.length > 0) {
             const randomIndex = Math.floor(Math.random() * inactiveConditions.length);
@@ -1783,33 +1788,47 @@ function configureInitialConditionsScreen() {
     // Clear active conditions from previous game
     activeConditions.clear();
     
-    // Get all conditions of simplicity 1 that are eligible for starting conditions
-    const simplicity1Conditions = Object.entries(conditionsObject)
-        .filter(([_, condition]) => condition.simplicity === 1 && condition.startingConditionEligible);
-    
-    // Get all conditions of simplicity 2 that are eligible for starting conditions
-    const simplicity2Conditions = Object.entries(conditionsObject)
-        .filter(([_, condition]) => condition.simplicity === 2 && condition.startingConditionEligible);
-    
-    // Randomly select 1 condition of simplicity 1
-    const randomSimplicity1 = simplicity1Conditions[Math.floor(Math.random() * simplicity1Conditions.length)];
-    
-    // Randomly select 2 conditions of simplicity 2
-    const randomSimplicity2 = shuffleArray(simplicity2Conditions).slice(0, 2);
-    
-    // Helper function to shuffle array
-    function shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
+    // Check for debug overrides first
+    if (INITIAL_CONDITIONS_OVERRIDES.length > 0) {
+        // Use override conditions
+        console.log('Using initial conditions overrides:', INITIAL_CONDITIONS_OVERRIDES);
+        INITIAL_CONDITIONS_OVERRIDES.forEach(conditionKey => {
+            if (conditions[conditionKey]) {
+                activeConditions.add(conditionKey);
+            } else {
+                console.warn(`Override condition "${conditionKey}" not found in conditions`);
+            }
+        });
+    } else {
+        // Normal random selection
+        // Get all conditions of simplicity 1 that are eligible for starting conditions
+        const simplicity1Conditions = Object.entries(conditions)
+            .filter(([_, condition]) => condition.simplicity === 1 && condition.startingConditionEligible);
+        
+        // Get all conditions of simplicity 2 that are eligible for starting conditions
+        const simplicity2Conditions = Object.entries(conditions)
+            .filter(([_, condition]) => condition.simplicity === 2 && condition.startingConditionEligible);
+        
+        // Randomly select 1 condition of simplicity 1
+        const randomSimplicity1 = simplicity1Conditions[Math.floor(Math.random() * simplicity1Conditions.length)];
+        
+        // Randomly select 2 conditions of simplicity 2
+        const randomSimplicity2 = shuffleArray(simplicity2Conditions).slice(0, 2);
+        
+        // Helper function to shuffle array
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
         }
-        return array;
-    }
 
-    // Add the selected conditions to activeConditions
-    activeConditions.add(randomSimplicity1[0]);
-    activeConditions.add(randomSimplicity2[0][0]);
-    activeConditions.add(randomSimplicity2[1][0]);
+        // Add the selected conditions to activeConditions
+        activeConditions.add(randomSimplicity1[0]);
+        activeConditions.add(randomSimplicity2[0][0]);
+        activeConditions.add(randomSimplicity2[1][0]);
+    }
     
     // Update initial conditions screen with selected conditions
     displayInitialConditions();
