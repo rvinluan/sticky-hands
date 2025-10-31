@@ -837,8 +837,10 @@ html.arcade #physics-canvas {
     gap: 10px;
 }
 
-.joker-emoji {
-    font-size: 4.2rem;
+.joker-image {
+    width: 120%;
+    height: auto;
+    object-fit: contain;
 }
 
 .joker-text {
