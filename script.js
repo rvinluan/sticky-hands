@@ -22,7 +22,7 @@ const SIMULTANEOUS_SLAP_THRESHOLD = 150; // Time threshold for simultaneous slap
 // Set this array to force specific starting conditions instead of random selection
 // Example: ['double', 'spades', 'six'] will force these as starting conditions
 // Leave empty [] for normal random selection
-const INITIAL_CONDITIONS_OVERRIDES = ['joker'];
+const INITIAL_CONDITIONS_OVERRIDES = [];
 
 // Confetti settings
 const CONFETTI_COUNT = 1500; // Number of confetti pieces
