@@ -639,7 +639,7 @@ function displayConditions() {
     // Create text element
     const text = document.createElement('div');
     text.className = 'conditions-display-text';
-    text.innerHTML = 'press<br>LEFT<br>to view<br>rules';
+    text.innerHTML = 'press LEFT to pause and view rules';
     conditionsDisplay.appendChild(text);
     
     // Create chips container
@@ -1642,6 +1642,52 @@ async function showNewConditionScreen(condition) {
     conditionDescriptionElements.forEach(el => el.textContent = condition.description);
     conditionExampleElements.forEach(el => el.innerHTML = `E.g. ${condition.example}`);
     
+    // Update current rules list (excluding the new condition being added)
+    const currentRulesItemsContainer = document.querySelector('.current-rules-items');
+    if (currentRulesItemsContainer) {
+        currentRulesItemsContainer.innerHTML = '';
+        
+        // Get all active conditions except the one being shown
+        const otherConditions = [];
+        for (const conditionKey of activeConditions) {
+            const activeCondition = conditions[conditionKey];
+            
+            // Skip the condition that's being shown as the new one
+            if (activeCondition.name !== condition.name) {
+                otherConditions.push(activeCondition);
+            }
+        }
+        
+        // Add each condition as an inline item
+        otherConditions.forEach((activeCondition, index) => {
+            // Create container for chip and rule name
+            const ruleItem = document.createElement('div');
+            ruleItem.className = 'current-rule-item';
+            
+            // Add chip icon first (on the left)
+            const chipImg = document.createElement('img');
+            chipImg.className = 'condition-chip';
+            chipImg.src = activeCondition.chipImage;
+            chipImg.alt = activeCondition.name;
+            ruleItem.appendChild(chipImg);
+            
+            // Add rule name
+            const ruleName = document.createElement('span');
+            ruleName.textContent = activeCondition.name;
+            ruleItem.appendChild(ruleName);
+            
+            // Add comma after every rule except the last one
+            if (index < otherConditions.length - 1) {
+                const comma = document.createElement('span');
+                comma.className = 'rule-comma';
+                comma.textContent = ',';
+                ruleItem.appendChild(comma);
+            }
+            
+            currentRulesItemsContainer.appendChild(ruleItem);
+        });
+    }
+    
     // Show new condition screen
     gameplayScreen.classList.add('hidden');
     newConditionScreen.classList.remove('hidden');
@@ -1649,8 +1695,15 @@ async function showNewConditionScreen(condition) {
     // Reset countdown bar
     newConditionCountdownBar.style.width = '350px';
     
-    // Animate countdown with 6 second duration
-    await animateCountdown(newConditionCountdownBar, 6000);
+    // Determine if this is the first new rule screen
+    const newConditionRounds = [2, 3, 4, 5, 7];
+    const isFirstNewRule = currentRound === newConditionRounds[0];
+    
+    // First new rule gets 30% more time (9.36s), subsequent ones get 7.2s
+    const duration = isFirstNewRule ? 9360 : 7200;
+    
+    // Animate countdown
+    await animateCountdown(newConditionCountdownBar, duration);
     
     // Hide new condition screen
     newConditionScreen.classList.add('hidden');
@@ -1663,7 +1716,7 @@ async function startNewRound() {
     drawInterval = Math.max(MIN_DRAW_INTERVAL, drawInterval - drawIntervalDelta);
     
     // Add a new random condition if there are still inactive ones
-    const newConditionRounds = [3, 5, 7];
+    const newConditionRounds = [2, 3, 4, 5, 7];
     if (newConditionRounds.includes(currentRound)) {
         const inactiveConditions = Object.keys(conditions).filter(key => !activeConditions.has(key));
         if (inactiveConditions.length > 0) {

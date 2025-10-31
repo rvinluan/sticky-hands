@@ -114,6 +114,7 @@ function checkGamepadInput() {
 //keyboard input
 document.addEventListener('keydown', (event) => {
     if (event.key === '9') {
+        console.log('9');
         debugger;
     }
 
